@@ -1,0 +1,14 @@
+openapi: 3.0.3
+info:
+  title: RaktDal API
+  version: 1.0.0
+  description: Initial API contract. Feature endpoints will be added as they are implemented.
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      summary: Check API health
+      responses:
+        '200':
+          description: API is healthy
