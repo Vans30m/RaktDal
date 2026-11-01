@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="RaktDal Donor Profile & Active Sessions">
+  <title>Donor Profile | RaktDal</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="RaktDal home"><span class="brand-mark">R</span> RaktDal</a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#find-blood">Find Blood</a>
+      <a href="../index.html#blood-banks">Blood Banks</a>
+      <a href="../index.html#camps">Donation Camps</a>
+    </nav>
+    <div id="authNavContainer">
+      <button id="navLogoutBtn" class="button button-outline" style="padding:6px 12px; font-size:0.85rem;">Sign out</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div id="profileContainer" class="auth-card" style="max-width: 560px; text-align: left;">
+      <div style="text-align: center; padding: 20px 0;">
+        <div class="spinner"></div>
+        <p style="color: var(--text-muted);">Loading donor profile...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">© <span id="year"></span> RaktDal · Built for responsible blood donation coordination</footer>
+
+  <script type="module">
+    import { api } from "../js/api.js";
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    async function loadProfile() {
+      try {
+        const res = await api.getMe();
+        if (!res.ok) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const data = await res.json();
+        const user = data.data.user;
+
+        let sessions = [];
+        try {
+          const sessRes = await api.getSessions();
+          if (sessRes.ok) {
+            const sessData = await sessRes.json();
+            sessions = sessData.data?.sessions || [];
+          }
+        } catch (e) {}
+
+        const isEmailVerified = !!user.emailVerifiedAt;
+
+        document.getElementById("profileContainer").innerHTML = `
+          <div style="text-align: center; margin-bottom: 24px;">
+            ${user.profileImage ? `<img src="${user.profileImage}" class="profile-avatar" alt="">` : ""}
+            <h2 style="margin: 0;">${user.fullName}</h2>
+            <p style="color: var(--text-muted); margin: 6px 0 14px;">${user.email}</p>
+            <div>
+              <span class="badge ${user.accountStatus === "ACTIVE" ? "badge-active" : ""}">${user.accountStatus}</span>
+              <span class="badge ${isEmailVerified ? "badge-active" : ""}" style="margin-left: 6px;">
+                ${isEmailVerified ? "✓ Verified Donor" : "Email Unverified"}
+              </span>
+              ${user.platformRoles.map((r) => `<span class="badge" style="background:#e0f2fe; color:#0369a1; margin-left:6px;">${r}</span>`).join("")}
+            </div>
+          </div>
+
+          ${
+            !isEmailVerified
+              ? `
+            <div class="alert alert-warning" style="margin-bottom: 20px;">
+              <div>
+                <strong>Action Needed:</strong> Your email is unverified.
+                <div style="margin-top: 6px;">
+                  <a href="verify-email.html?email=${encodeURIComponent(user.email)}" class="button" style="padding: 6px 12px; font-size: 0.8rem;">
+                    Enter Verification Code
+                  </a>
+                </div>
+              </div>
+            </div>
+          `
+              : ""
+          }
+
+          <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 16px;">
+            <h3 style="font-size: 1rem; margin: 0 0 12px; color: var(--text-main);">Active Sessions (${sessions.length})</h3>
+            <div class="session-list" style="max-height: 180px; overflow-y: auto;">
+              ${sessions.map((s) => `
+                <div class="session-item ${s.isCurrent ? "current" : ""}">
+                  <div>
+                    <div style="font-weight: 600;">${s.isCurrent ? "★ This Device" : "Remote Session"}</div>
+                    <div style="color: var(--text-muted); font-size: 0.75rem;">IP: ${s.ipAddress} · Active: ${new Date(s.lastActiveAt).toLocaleDateString()}</div>
+                  </div>
+                  ${s.isCurrent ? `<span style="color: var(--success); font-weight: 700; font-size: 0.75rem;">CURRENT</span>` : ""}
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border); padding-top: 14px; font-size: 0.85rem; color: var(--text-muted);">
+            <p style="margin: 4px 0;"><strong>Member Since:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
+            <p style="margin: 4px 0;"><strong>Last Sign In:</strong> ${new Date(user.lastLoginAt).toLocaleString()}</p>
+          </div>
+
+          <button id="profileLogoutBtn" class="button" style="margin-top: 24px; width: 100%;">
+            Sign Out
+          </button>
+        `;
+
+        document.getElementById("profileLogoutBtn")?.addEventListener("click", handleLogout);
+        document.getElementById("navLogoutBtn")?.addEventListener("click", handleLogout);
+      } catch (err) {
+        window.location.href = "login.html";
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        await api.logout();
+      } catch (e) {}
+      window.location.href = "login.html";
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

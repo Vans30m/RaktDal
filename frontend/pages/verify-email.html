@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Verify your RaktDal email address">
+  <title>Verify Email | RaktDal</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="RaktDal home"><span class="brand-mark">R</span> RaktDal</a>
+    <nav aria-label="Main navigation">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#find-blood">Find Blood</a>
+      <a href="../index.html#blood-banks">Blood Banks</a>
+      <a href="../index.html#camps">Donation Camps</a>
+    </nav>
+    <div id="authNavContainer">
+      <a class="button button-outline" href="login.html" style="padding:7px 14px; font-size:0.88rem;">Sign in</a>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="auth-card">
+      <div class="brand-mark" style="margin: 0 auto 16px;">R</div>
+      <h2>Verify Email</h2>
+      <p class="subtitle">Enter the 6-digit code sent to your email to activate your account.</p>
+      <div id="verifyMsg"></div>
+
+      <form id="verifyForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="verifyEmailInput">Email Address</label>
+          <input type="email" id="verifyEmailInput" class="form-input" required placeholder="you@example.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="verifyOtpInput">6-Digit Code</label>
+          <input type="text" id="verifyOtpInput" class="form-input" maxlength="6" required placeholder="123456" style="letter-spacing: 4px; text-align: center; font-size: 1.25rem; font-weight: 700;">
+        </div>
+
+        <button type="submit" id="verifySubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
+          <span>Verify Account</span>
+        </button>
+      </form>
+
+      <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+        <button id="resendCodeBtn" class="button button-outline" style="padding: 6px 12px; font-size: 0.82rem;">
+          Resend Code
+        </button>
+        <a href="login.html" style="color: var(--text-muted);">Back to Sign In</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">© <span id="year"></span> RaktDal · Built for responsible blood donation coordination</footer>
+
+  <script type="module">
+    import { api, updateNavAuth } from "../js/api.js";
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    updateNavAuth();
+
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get("email");
+    if (emailParam) {
+      document.getElementById("verifyEmailInput").value = emailParam;
+    }
+
+    document.getElementById("verifyForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("verifyEmailInput").value.trim();
+      const otp = document.getElementById("verifyOtpInput").value.trim();
+      const msgEl = document.getElementById("verifyMsg");
+      const btn = document.getElementById("verifySubmitBtn");
+
+      if (!email || otp.length !== 6) {
+        msgEl.innerHTML = `<div class="alert alert-error">Please provide a valid email and 6-digit verification code.</div>`;
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = `<div class="btn-spinner"></div><span>Verifying...</span>`;
+        const res = await api.verifyEmail({ email, otp });
+        const data = await res.json();
+
+        if (res.ok) {
+          msgEl.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+          setTimeout(() => {
+            window.location.href = "login.html?success=Email_verified_successfully._Please_sign_in.";
+          }, 1500);
+        } else {
+          msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Verification failed."}</div>`;
+        }
+      } catch (err) {
+        msgEl.innerHTML = `<div class="alert alert-error">Network error. Please try again.</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Verify Account</span>`;
+      }
+    });
+
+    document.getElementById("resendCodeBtn").addEventListener("click", async () => {
+      const email = document.getElementById("verifyEmailInput").value.trim();
+      const msgEl = document.getElementById("verifyMsg");
+      const resendBtn = document.getElementById("resendCodeBtn");
+
+      if (!email) {
+        msgEl.innerHTML = `<div class="alert alert-error">Please enter your email to resend code.</div>`;
+        return;
+      }
+
+      try {
+        resendBtn.disabled = true;
+        resendBtn.textContent = "Sending...";
+        const res = await api.resendOtp({ email });
+        const data = await res.json();
+
+        if (res.ok) {
+          msgEl.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+        } else {
+          msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Failed to resend code."}</div>`;
+        }
+      } catch (err) {
+        msgEl.innerHTML = `<div class="alert alert-error">Failed to send request.</div>`;
+      } finally {
+        resendBtn.disabled = false;
+        resendBtn.textContent = "Resend Code";
+      }
+    });
+  </script>
+</body>
+</html>
