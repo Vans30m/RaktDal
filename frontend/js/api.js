@@ -11,7 +11,10 @@
 const getApiBase = () => {
   if (typeof window !== "undefined") {
     if (window.RAKTDAL_API_URL) return window.RAKTDAL_API_URL;
-    if (window.location?.hostname === "localhost" || window.location?.hostname === "127.0.0.1") {
+    if (window.location?.hostname === "127.0.0.1") {
+      return "http://127.0.0.1:5000/api/v1";
+    }
+    if (window.location?.hostname === "localhost") {
       return "http://localhost:5000/api/v1";
     }
     return `${window.location?.origin || ""}/api/v1`;
@@ -327,3 +330,49 @@ export const api = {
   }
 };
 
+
+
+export async function updateNavAuth() {
+  const container = document.getElementById("authNavContainer");
+  if (!container) return null;
+  try {
+    const res = await api.getMe();
+    if (res.ok) {
+      const data = await res.json();
+      const user = data.data?.user;
+      if (user) {
+        container.innerHTML = `
+          <a href="../index.html#/profile" class="button" style="padding:7px 14px; font-size:0.88rem;">
+            ${user.fullName ? user.fullName.split(" ")[0] : "Profile"}
+          </a>
+        `;
+        return user;
+      }
+    }
+  } catch (e) {}
+  return null;
+}
+
+export function setupPasswordToggle(inputSelector, buttonSelector) {
+  const input = document.querySelector(inputSelector);
+  const btn = document.querySelector(buttonSelector);
+  if (input && btn) {
+    btn.addEventListener("click", () => {
+      const isPwd = input.type === "password";
+      input.type = isPwd ? "text" : "password";
+      btn.textContent = isPwd ? "Hide" : "Show";
+    });
+  }
+}
+
+export function evaluatePasswordStrength(password) {
+  if (!password || password.length < 8) return { score: 1, text: "Weak" };
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasDigit = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  const count = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
+  if (password.length >= 12 && count >= 3) return { score: 4, text: "Strong" };
+  if (password.length >= 8 && count >= 2) return { score: 3, text: "Good" };
+  return { score: 2, text: "Fair" };
+}

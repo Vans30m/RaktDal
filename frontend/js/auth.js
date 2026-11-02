@@ -61,11 +61,22 @@ class AuthStateManager {
         const body = await res.json();
         this.user = body.data?.user || null;
       } else {
-        this.user = null;
+        // If we don't have a verified user in memory or storage, nullify
+        const saved = sessionStorage.getItem("raktdal_auth_user");
+        if (saved) {
+          try { this.user = JSON.parse(saved); } catch (e) { this.user = null; }
+        } else {
+          this.user = null;
+        }
       }
     } catch (err) {
       console.warn("Could not retrieve active session:", err.message);
-      this.user = null;
+      const saved = sessionStorage.getItem("raktdal_auth_user");
+      if (saved) {
+        try { this.user = JSON.parse(saved); } catch (e) { this.user = null; }
+      } else {
+        this.user = null;
+      }
     } finally {
       this.loading = false;
       this.initialized = true;
@@ -92,6 +103,7 @@ class AuthStateManager {
       console.warn("Logout API call failed, continuing with client state cleanup:", err);
     } finally {
       this.user = null;
+      sessionStorage.removeItem("raktdal_auth_user");
       this.loading = false;
       this.notify();
       window.location.hash = "#/login";
@@ -103,6 +115,11 @@ class AuthStateManager {
    */
   setUser(userData) {
     this.user = userData;
+    if (userData) {
+      sessionStorage.setItem("raktdal_auth_user", JSON.stringify(userData));
+    } else {
+      sessionStorage.removeItem("raktdal_auth_user");
+    }
     this.notify();
   }
 }

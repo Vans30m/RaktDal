@@ -16,6 +16,7 @@ import { authState } from "./auth.js";
 import { api } from "./api.js";
 import { donorViews } from "./donor.js";
 import { homeViews } from "./home.js";
+import { toast } from "./toast.js";
 
 // Template for Google Login button SVG
 const GOOGLE_ICON_SVG = `
@@ -242,7 +243,7 @@ export class Router {
 
     // Route Guards
     if ((path === "/profile" || path === "/requests/create" || path === "/requests/my" || path === "/donor/dashboard" || path === "/donor/register" || path === "/donor/edit" || path === "/donor/availability" || path === "/donor/consent") && !state.isAuthenticated) {
-      window.location.hash = "#/login?error=auth_required";
+      window.location.hash = "#/login";
       return;
     }
 
@@ -442,9 +443,12 @@ export class Router {
 
         <div id="loginMsg">
           ${errorMessage ? `
-            <div class="alert alert-error" role="alert">
-              <span>⚠️</span>
-              <div>${errorMessage}</div>
+            <div class="alert alert-error" role="alert" style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span>⚠️</span>
+                <span>${errorMessage}</span>
+              </div>
+              <button type="button" onclick="document.getElementById('loginMsg').innerHTML=''" style="background:none; border:none; color:inherit; cursor:pointer; font-size:1.1rem; padding:0 4px;">&times;</button>
             </div>
           ` : ""}
         </div>
@@ -484,6 +488,13 @@ export class Router {
       </div>
     `;
 
+    
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+    const clearMsg = () => { const m = document.getElementById("loginMsg"); if (m) m.innerHTML = ""; };
+    emailInput?.addEventListener("input", clearMsg);
+    passwordInput?.addEventListener("input", clearMsg);
+
     document.getElementById("spaLoginForm")?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
@@ -503,13 +514,27 @@ export class Router {
         const data = await res.json();
 
         if (res.ok) {
+          const user = data.data?.user;
+          if (user) {
+            authState.setUser(user);
+            this.renderNav(authState.getState());
+          }
+          toast.success(`Welcome back, ${user?.fullName?.split(" ")[0] || "Donor"}!`, "Signed In");
           await authState.init();
-          window.location.hash = "#/donor/dashboard";
+          this.renderNav(authState.getState());
+          setTimeout(() => {
+            window.location.hash = "#/";
+          }, 400);
         } else {
-          msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Invalid credentials."}</div>`;
+          const errMsg = data.message || "Invalid credentials.";
+          msgEl.innerHTML = `<div class="alert alert-error">${errMsg}</div>`;
+          toast.error(errMsg, "Sign In Failed");
         }
       } catch (err) {
-        msgEl.innerHTML = '<div class="alert alert-error">Network error. Please try again.</div>';
+        console.error("Login attempt failed:", err);
+        const errMsg = "Unable to connect to server. Please check your network.";
+        msgEl.innerHTML = `<div class="alert alert-error">${errMsg}</div>`;
+        toast.error(errMsg, "Connection Error");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>Sign In</span>';
@@ -592,7 +617,8 @@ export class Router {
         if (res.ok) {
           msgEl.innerHTML = `<div class="alert alert-success">${data.message || "Registration successful!"}</div>`;
           setTimeout(() => {
-            window.location.href = "pages/verify-email.html?email=" + encodeURIComponent(email);
+            localStorage.setItem("raktdal_pending_email", email);
+          window.location.href = "pages/verify-email.html?email=" + encodeURIComponent(email);
           }, 1200);
         } else {
           msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Registration failed."}</div>`;

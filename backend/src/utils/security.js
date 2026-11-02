@@ -9,9 +9,9 @@ import { Session } from "../models/Session.js";
 export function getCookieOptions({ maxAge } = {}) {
   const options = {
     httpOnly: true,
+    // If not production, we allow lax over http://127.0.0.1 and localhost
     secure: env.isProduction,
-    // SameSite=None is required for cross-site cookies over HTTPS (Render frontend & backend)
-    sameSite: env.isProduction ? "none" : "lax",
+    sameSite: "lax",
     path: "/"
   };
   if (maxAge) options.maxAge = maxAge;
