@@ -15,6 +15,7 @@
 import { authState } from "./auth.js";
 import { api } from "./api.js";
 import { donorViews } from "./donor.js";
+import { homeViews } from "./home.js";
 
 // Template for Google Login button SVG
 const GOOGLE_ICON_SVG = `
@@ -31,9 +32,15 @@ export class Router {
     this.appContainer = document.getElementById(appContainerId);
     this.navContainer = document.getElementById(navContainerId);
     this.isMenuOpen = false;
+    this.isMobileNavOpen = false;
 
     // Listen to hash changes and auth state changes
-    window.addEventListener("hashchange", () => this.handleRoute());
+    window.addEventListener("hashchange", () => {
+      this.handleRoute();
+      this.updateActiveNav();
+      this.closeMobileNav();
+    });
+
     authState.subscribe((state) => {
       this.renderNav(state);
       this.handleRoute();
@@ -43,6 +50,65 @@ export class Router {
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".user-menu-wrapper") && this.isMenuOpen) {
         this.closeUserMenu();
+      }
+      if (this.isMobileNavOpen && !e.target.closest("#mainNav") && !e.target.closest("#mobileNavToggle")) {
+        this.closeMobileNav();
+      }
+    });
+
+    // Header scroll appearance treatment
+    window.addEventListener("scroll", () => {
+      const header = document.getElementById("siteHeader");
+      if (header) {
+        if (window.scrollY > 20) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+      }
+    }, { passive: true });
+
+    // Setup mobile nav hamburger toggle
+    this.setupMobileNav();
+  }
+
+  setupMobileNav() {
+    const toggleBtn = document.getElementById("mobileNavToggle");
+    const mainNav = document.getElementById("mainNav");
+    if (toggleBtn && mainNav) {
+      toggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.isMobileNavOpen = !this.isMobileNavOpen;
+        mainNav.classList.toggle("mobile-open", this.isMobileNavOpen);
+        toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
+      });
+
+      // Close mobile menu when selecting any link
+      mainNav.querySelectorAll("a").forEach(a => {
+        a.addEventListener("click", () => this.closeMobileNav());
+      });
+    }
+  }
+
+  closeMobileNav() {
+    this.isMobileNavOpen = false;
+    const mainNav = document.getElementById("mainNav");
+    const toggleBtn = document.getElementById("mobileNavToggle");
+    if (mainNav) mainNav.classList.remove("mobile-open");
+    if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
+  }
+
+  updateActiveNav() {
+    const { path } = this.getRouteInfo();
+    const navLinks = document.querySelectorAll("#mainNav a");
+    navLinks.forEach(link => {
+      const route = link.getAttribute("data-route");
+      if (route === path || (route !== "/" && path.startsWith(route))) {
+        link.classList.add("active");
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.classList.remove("active");
+        link.removeAttribute("aria-current");
       }
     });
   }
@@ -158,6 +224,14 @@ export class Router {
   async handleRoute() {
     if (!this.appContainer) return;
     const { path, params } = this.getRouteInfo();
+
+    // Toggle default footer visibility based on whether on landing page
+    const defaultFooter = document.getElementById("defaultSiteFooter");
+    if (defaultFooter) {
+      defaultFooter.style.display = path === "/" ? "none" : "block";
+    }
+
+    this.updateActiveNav();
     const state = authState.getState();
 
     // Wait for initial auth inspection to complete before running guards
@@ -244,8 +318,6 @@ export class Router {
       case "/register":
         this.renderRegister(params);
         break;
-        this.renderLogin(params);
-        break;
       case "/auth/callback":
         this.renderAuthCallback(params);
         break;
@@ -254,6 +326,73 @@ export class Router {
         break;
       case "/admin":
         this.renderAdminDashboard();
+        break;
+      case "/blood-banks":
+        this.renderPlaceholderPage(
+          "Blood Bank Directory",
+          "Directory listings for authorized regional blood banks and storage facilities across India. Real-time API integration with national portal coming soon.",
+          "🏥",
+          "Find Participating Donors",
+          "#/find-blood"
+        );
+        break;
+      case "/camps":
+        this.renderPlaceholderPage(
+          "Blood Donation Camps",
+          "Scheduled public donation drives organized by colleges, hospitals, and verified community partners across India.",
+          "⛺",
+          "Register as Donor",
+          "#/donor/register"
+        );
+        break;
+      case "/about":
+        this.renderPlaceholderPage(
+          "About RaktDal",
+          "RaktDal is a Pan-India blood donor coordination and emergency request platform built to streamline the voluntary blood donation network with strict privacy controls.",
+          "❤️"
+        );
+        break;
+      case "/how-it-works":
+        this.renderPlaceholderPage(
+          "How RaktDal Works",
+          "RaktDal connects donors and healthcare coordinators using verified profiles, location-indexed discovery, and direct request-response communication.",
+          "⚙️"
+        );
+        break;
+      case "/contact":
+        this.renderPlaceholderPage(
+          "Contact RaktDal",
+          "For technical assistance, organization onboarding, or general queries, please reach out to our platform support team.",
+          "✉️"
+        );
+        break;
+      case "/privacy":
+        this.renderPlaceholderPage(
+          "Privacy Policy",
+          "RaktDal strictly protects donor personal data. Phone numbers, emails, and last donation history are never revealed without explicit donor consent.",
+          "🛡️"
+        );
+        break;
+      case "/terms":
+        this.renderPlaceholderPage(
+          "Terms and Conditions",
+          "RaktDal is a voluntary coordination platform. Users agree to provide truthful information and adhere to responsible community standards.",
+          "📜"
+        );
+        break;
+      case "/disclaimer":
+        this.renderPlaceholderPage(
+          "Medical Disclaimer",
+          "RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified medical professionals. RaktDal does not verify blood suitability.",
+          "⚠️"
+        );
+        break;
+      case "/help":
+        this.renderPlaceholderPage(
+          "Help & Support",
+          "Frequently asked questions, donor guides, and instructions for posting emergency blood requests.",
+          "💡"
+        );
         break;
       default:
         this.renderHome();
@@ -271,18 +410,13 @@ export class Router {
   }
 
   renderHome() {
-    this.appContainer.innerHTML = `
-      <section class="hero">
-        <p class="eyebrow">Blood Donation & Donor Coordination</p>
-        <h1>Every connection can <span>save a life.</span></h1>
-        <p class="hero-copy">Discover blood donation resources and connect with participating donors and verified organizations.</p>
-        <div class="hero-actions">
-          <a class="button" href="#/login">Get Started</a>
-          <a class="button button-outline" href="#/camps">Donation Camps</a>
-        </div>
-        <p class="notice">RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified professionals.</p>
-      </section>
-    `;
+    // Hide minimal fallback footer on landing page because landing page has its own full 4-column footer
+    const defaultFooter = document.getElementById("defaultSiteFooter");
+    if (defaultFooter) defaultFooter.style.display = "none";
+
+    this.appContainer.innerHTML = homeViews.getHomeHtml();
+    homeViews.initScrollAnimations(this.appContainer);
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   renderLogin(params) {
@@ -1944,15 +2078,25 @@ export class Router {
       `;
     }
   }
+
+
+  renderPlaceholderPage(title, description, icon = "ℹ️", ctaText = "Back to Home", ctaLink = "#/") {
+    this.appContainer.innerHTML = `
+      <div class="landing-container" style="padding: 64px 20px;">
+        <div class="auth-card" style="max-width: 600px; text-align: center; margin: 0 auto;">
+          <div style="font-size: 2.8rem; margin-bottom: 16px;">${icon}</div>
+          <h1 style="font-size: 1.8rem; margin: 0 0 12px 0;">${title}</h1>
+          <p style="color: var(--text-muted); line-height: 1.6; margin: 0 0 28px 0; font-size: 1rem;">
+            ${description}
+          </p>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <a href="${ctaLink}" class="button">${ctaText}</a>
+            <a href="#/find-blood" class="button button-outline">Find Blood Donors</a>
+          </div>
+        </div>
+      </div>
+    `;
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
 }
-
-
-
-
-
-
-
-
-
-
-
