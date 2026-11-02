@@ -17,14 +17,19 @@ const userSchema = new mongoose.Schema(
       index: true,
       match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address"]
     },
+    passwordHash: {
+      type: String,
+      default: null,
+      select: false
+    },
     emailVerifiedAt: {
       type: Date,
       default: null
     },
     googleSubject: {
       type: String,
-      required: true,
-      unique: true,
+      default: null,
+      sparse: true,
       index: true
     },
     profileImage: {

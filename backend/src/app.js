@@ -10,9 +10,22 @@ const app = express();
 app.use(helmet());
 app.use(cookieParser());
 
-// Strict CORS: Explicit origin (never wildcard *), credentials true, custom CSRF header allowed
+// Allow configured FRONTEND_URL and common dev origins (both localhost and 127.0.0.1)
+const allowedOrigins = [
+  env.frontendUrl,
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+  "http://localhost:5000"
+].filter(Boolean);
+
 app.use(cors({
-  origin: env.frontendUrl,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Blocked by CORS: ${origin}`));
+    }
+  },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "X-CSRF-Token"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]

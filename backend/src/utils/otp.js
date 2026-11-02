@@ -2,8 +2,9 @@ import crypto from "crypto";
 import { Resend } from "resend";
 import { env } from "../config/env.js";
 
-// Initialize Resend client only if API key is provided
-const resend = env.resendApiKey ? new Resend(env.resendApiKey) : null;
+// Check if a real Resend API key is configured
+const hasValidApiKey = env.resendApiKey && !env.resendApiKey.startsWith("re_your_");
+const resend = hasValidApiKey ? new Resend(env.resendApiKey) : null;
 
 /**
  * Generates a cryptographically secure 6-digit OTP string
@@ -26,7 +27,10 @@ export function hashOtp(otp) {
 export async function sendOtpEmail({ email, otp }) {
   if (!resend) {
     if (env.nodeEnv !== "production") {
-      console.log(`[DEV MODE] Resend API key not set. Email to ${email} would contain OTP: ${otp}`);
+      console.log(`\n========================================`);
+      console.log(`[DEV OTP SIMULATION] Email to: ${email}`);
+      console.log(`[DEV OTP SIMULATION] Verification OTP: >>> ${otp} <<<`);
+      console.log(`========================================\n`);
       return { success: true, id: "dev-simulated-id" };
     }
     throw new Error("Resend email service is not configured.");
@@ -63,7 +67,11 @@ export async function sendPasswordResetEmail({ email, resetToken }) {
 
   if (!resend) {
     if (env.nodeEnv !== "production") {
-      console.log(`[DEV MODE] Resend API key not set. Password reset for ${email}: ${resetUrl} (Token: ${resetToken})`);
+      console.log(`\n========================================`);
+      console.log(`[DEV MODE] Password reset for: ${email}`);
+      console.log(`[DEV MODE] Reset URL: ${resetUrl}`);
+      console.log(`[DEV MODE] Token: >>> ${resetToken} <<<`);
+      console.log(`========================================\n`);
       return { success: true, id: "dev-simulated-id" };
     }
     throw new Error("Resend email service is not configured.");
