@@ -97,6 +97,29 @@ export const api = {
     }
   },
 
+  register(data) {
+    return this.request("/auth/register", { method: "POST", body: data });
+  },
+
+  login(data) {
+    return this.request("/auth/login", { method: "POST", body: data });
+  },
+
+  verifyEmail(data) {
+    return this.request("/auth/verify-email", { method: "POST", body: data });
+  },
+
+  resendOtp(data) {
+    return this.request("/auth/resend-otp", { method: "POST", body: data });
+  },
+
+  forgotPassword(data) {
+    return this.request("/auth/forgot-password", { method: "POST", body: data });
+  },
+
+  resetPassword(data) {
+    return this.request("/auth/reset-password", { method: "POST", body: data });
+  },
   getMe() {
     return this.request("/auth/me");
   },
@@ -117,11 +140,61 @@ export const api = {
     return this.request("/auth/logout-all", { method: "POST" });
   },
 
+  // ==========================================
+  // --- Phase 10: Donor Profiles & Discovery APIs ---
+  // ==========================================
+
+  createDonorProfile(data) {
+    return this.request("/donors/profile", {
+      method: "POST",
+      body: data
+    });
+  },
+
+  getMyDonorProfile() {
+    return this.request("/donors/me");
+  },
+
+  updateMyDonorProfile(data) {
+    return this.request("/donors/me", {
+      method: "PATCH",
+      body: data
+    });
+  },
+
+  updateDonorAvailability(availabilityStatus) {
+    return this.request("/donors/me/availability", {
+      method: "PATCH",
+      body: { availabilityStatus }
+    });
+  },
+
+  updateDonorConsent(consents) {
+    return this.request("/donors/me/consent", {
+      method: "PATCH",
+      body: consents
+    });
+  },
+
+  searchDonors(params = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, val]) => {
+      if (val !== undefined && val !== null && val !== "") {
+        query.append(key, val);
+      }
+    });
+    const qs = query.toString();
+    return this.request(qs ? `/donors/search?${qs}` : "/donors/search");
+  },
+
+  // ==========================================
+  // --- Other Modules ---
+  // ==========================================
+
   getAdminDashboard() {
     return this.request("/admin/stats");
   },
 
-  // --- Phase 15 Administrative Control Plane APIs ---
   getAdminStats() {
     return this.request("/admin/stats");
   },
@@ -226,7 +299,7 @@ export const api = {
     });
   },
 
-  // --- Phase 16 Reports & Analytics APIs ---
+  // Reports & Analytics APIs
   getAdminReportsOverview(params = {}) {
     const query = new URLSearchParams(params).toString();
     return this.request(query ? `/admin/reports/overview?${query}` : "/admin/reports/overview");
@@ -253,5 +326,4 @@ export const api = {
     return `${baseUrl}/admin/reports/export?${query}`;
   }
 };
-
 

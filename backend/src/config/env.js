@@ -19,7 +19,13 @@ export const env = {
   refreshExpiresDays: 7, // Refresh token valid for 7 days
   isProduction: process.env.NODE_ENV === "production",
 
-  // Resend Email Delivery
+  // Email Delivery Configuration
+  emailFrom: process.env.EMAIL_FROM || "RaktDal <onboarding@resend.dev>",
+  
+  // Resend
   resendApiKey: process.env.RESEND_API_KEY || "",
-  emailFrom: process.env.EMAIL_FROM || "RaktDal <onboarding@resend.dev>"
+
+  // Gmail SMTP
+  smtpUser: process.env.SMTP_USER || "",
+  smtpPass: process.env.SMTP_PASS || ""
 };

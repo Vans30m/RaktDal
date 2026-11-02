@@ -14,6 +14,7 @@
 
 import { authState } from "./auth.js";
 import { api } from "./api.js";
+import { donorViews } from "./donor.js";
 
 // Template for Google Login button SVG
 const GOOGLE_ICON_SVG = `
@@ -123,14 +124,19 @@ export class Router {
       });
     } else {
       this.navContainer.innerHTML = `
-        <a href="#/login" class="button" style="padding:7px 16px; font-size:0.88rem;">
-          Sign in
-        </a>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="#/login" class="button button-outline" style="padding:7px 14px; font-size:0.88rem;">
+            Sign in
+          </a>
+          <a href="#/register" class="button" style="padding:7px 14px; font-size:0.88rem;">
+            Register
+          </a>
+        </div>
       `;
     }
   }
 
-  toggleUserMenu() {
+    toggleUserMenu() {
     this.isMenuOpen = !this.isMenuOpen;
     const dropdown = document.getElementById("userMenuDropdown");
     const trigger = document.getElementById("userMenuTrigger");
@@ -161,7 +167,7 @@ export class Router {
     }
 
     // Route Guards
-    if ((path === "/profile" || path === "/requests/create" || path === "/requests/my") && !state.isAuthenticated) {
+    if ((path === "/profile" || path === "/requests/create" || path === "/requests/my" || path === "/donor/dashboard" || path === "/donor/register" || path === "/donor/edit" || path === "/donor/availability" || path === "/donor/consent") && !state.isAuthenticated) {
       window.location.hash = "#/login?error=auth_required";
       return;
     }
@@ -199,6 +205,32 @@ export class Router {
       return;
     }
 
+        // Phase 10: Donor Profiles & Discovery Routes
+    if (path === "/find-blood" || path === "/donors") {
+      donorViews.renderDonorSearch(this.appContainer, params);
+      return;
+    }
+    if (path === "/donor/dashboard") {
+      donorViews.renderDonorDashboard(this.appContainer);
+      return;
+    }
+    if (path === "/donor/register") {
+      donorViews.renderCreateProfile(this.appContainer);
+      return;
+    }
+    if (path === "/donor/edit") {
+      donorViews.renderEditProfile(this.appContainer);
+      return;
+    }
+    if (path === "/donor/availability") {
+      donorViews.renderAvailabilitySettings(this.appContainer);
+      return;
+    }
+    if (path === "/donor/consent") {
+      donorViews.renderConsentSettings(this.appContainer);
+      return;
+    }
+
     switch (path) {
       case "/":
         this.renderHome();
@@ -207,6 +239,11 @@ export class Router {
         this.renderBloodRequests(params);
         break;
       case "/login":
+        this.renderLogin(params);
+        break;
+      case "/register":
+        this.renderRegister(params);
+        break;
         this.renderLogin(params);
         break;
       case "/auth/callback":
@@ -264,30 +301,175 @@ export class Router {
     const errorMessage = error ? (errorMap[error] || "An unexpected error occurred. Please try again.") : null;
 
     this.appContainer.innerHTML = `
-      <div class="auth-card">
+      <div class="auth-card" style="max-width: 440px;">
         <div class="brand-mark" style="margin: 0 auto 16px;">R</div>
         <h2>Sign In to RaktDal</h2>
         <p class="subtitle">Access your blood donor profile, request support, and manage appointments securely.</p>
 
-        ${errorMessage ? `
-          <div class="alert alert-error" role="alert">
-            <span>⚠️</span>
-            <div>${errorMessage}</div>
-          </div>
-        ` : ""}
+        <div id="loginMsg">
+          ${errorMessage ? `
+            <div class="alert alert-error" role="alert">
+              <span>⚠️</span>
+              <div>${errorMessage}</div>
+            </div>
+          ` : ""}
+        </div>
 
-        <div style="margin: 28px 0 16px;">
+        <form id="spaLoginForm" novalidate style="margin-top: 20px; text-align: left;">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email Address</label>
+            <input type="email" id="loginEmail" class="form-input" required placeholder="you@example.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password">
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
+            <span>Sign In</span>
+          </button>
+        </form>
+
+        <div style="margin: 20px 0; display:flex; align-items:center; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+          <span style="flex:1; border-bottom:1px solid var(--border);"></span>
+          <span style="padding:0 10px;">OR</span>
+          <span style="flex:1; border-bottom:1px solid var(--border);"></span>
+        </div>
+
+        <div>
           <a id="loginWithGoogleBtn" href="${api.getGoogleAuthUrl()}" class="google-btn" style="text-decoration:none;">
             ${GOOGLE_ICON_SVG}
             <span>Continue with Google</span>
           </a>
         </div>
 
-        <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin-top:24px;">
-          Protected with Google OpenID Connect, PKCE authorization code validation, and secure cryptographic sessions.
+        <p style="margin-top: 22px; font-size: 0.88rem; color: var(--text-muted);">
+          Don't have an account? <a href="#/register" style="color: var(--primary); font-weight: 600;">Register here</a>
         </p>
       </div>
     `;
+
+    document.getElementById("spaLoginForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const msgEl = document.getElementById("loginMsg");
+      const btn = document.getElementById("loginSubmitBtn");
+
+      if (!email || !password) {
+        msgEl.innerHTML = '<div class="alert alert-error">Please enter both email and password.</div>';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="btn-spinner"></div><span>Signing in...</span>';
+        const res = await api.login({ email, password });
+        const data = await res.json();
+
+        if (res.ok) {
+          await authState.init();
+          window.location.hash = "#/donor/dashboard";
+        } else {
+          msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Invalid credentials."}</div>`;
+        }
+      } catch (err) {
+        msgEl.innerHTML = '<div class="alert alert-error">Network error. Please try again.</div>';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Sign In</span>';
+      }
+    });
+  }
+
+  renderRegister(params) {
+    this.appContainer.innerHTML = `
+      <div class="auth-card" style="max-width: 440px;">
+        <div class="brand-mark" style="margin: 0 auto 16px;">R</div>
+        <h2>Create an Account</h2>
+        <p class="subtitle">Join RaktDal to connect with donors or coordinate blood assistance.</p>
+
+        <div id="registerMsg"></div>
+
+        <form id="spaRegisterForm" novalidate style="margin-top: 20px; text-align: left;">
+          <div class="form-group">
+            <label class="form-label" for="regFullName">Full Name</label>
+            <input type="text" id="regFullName" class="form-input" required placeholder="Your Full Name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmail">Email Address</label>
+            <input type="email" id="regEmail" class="form-input" required placeholder="you@example.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Password</label>
+            <input type="password" id="regPassword" class="form-input" required minlength="8" placeholder="At least 8 characters">
+          </div>
+
+          <button type="submit" id="regSubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
+            <span>Register Account</span>
+          </button>
+        </form>
+
+        <div style="margin: 20px 0; display:flex; align-items:center; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+          <span style="flex:1; border-bottom:1px solid var(--border);"></span>
+          <span style="padding:0 10px;">OR</span>
+          <span style="flex:1; border-bottom:1px solid var(--border);"></span>
+        </div>
+
+        <div>
+          <a id="regWithGoogleBtn" href="${api.getGoogleAuthUrl()}" class="google-btn" style="text-decoration:none;">
+            ${GOOGLE_ICON_SVG}
+            <span>Sign up with Google</span>
+          </a>
+        </div>
+
+        <p style="margin-top: 22px; font-size: 0.88rem; color: var(--text-muted);">
+          Already have an account? <a href="#/login" style="color: var(--primary); font-weight: 600;">Sign In</a>
+        </p>
+      </div>
+    `;
+
+    document.getElementById("spaRegisterForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById("regFullName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const msgEl = document.getElementById("registerMsg");
+      const btn = document.getElementById("regSubmitBtn");
+
+      if (!fullName || !email || !password) {
+        msgEl.innerHTML = '<div class="alert alert-error">Please fill in all required fields.</div>';
+        return;
+      }
+      if (password.length < 8) {
+        msgEl.innerHTML = '<div class="alert alert-error">Password must be at least 8 characters.</div>';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="btn-spinner"></div><span>Creating account...</span>';
+        const res = await api.register({ fullName, email, password });
+        const data = await res.json();
+
+        if (res.ok) {
+          msgEl.innerHTML = `<div class="alert alert-success">${data.message || "Registration successful!"}</div>`;
+          setTimeout(() => {
+            window.location.href = "pages/verify-email.html?email=" + encodeURIComponent(email);
+          }, 1200);
+        } else {
+          msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Registration failed."}</div>`;
+        }
+      } catch (err) {
+        msgEl.innerHTML = '<div class="alert alert-error">Network error. Please try again.</div>';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Register Account</span>';
+      }
+    });
   }
 
   async renderAuthCallback(params) {
@@ -376,6 +558,25 @@ export class Router {
         </div>
       </div>
     `;
+
+        // Check and populate donor banner
+    (async () => {
+      try {
+        const dRes = await api.getMyDonorProfile();
+        if (dRes.ok) {
+          const dBody = await dRes.json();
+          const d = dBody.data?.donor;
+          const bannerText = document.getElementById("donorBannerStatusText");
+          const bannerBtn = document.getElementById("donorBannerActionBtn");
+          if (bannerText && bannerBtn && d) {
+            bannerText.innerHTML = `<strong>Blood Group:</strong> ${d.bloodGroup} - <strong>City:</strong> ${d.location.city} (${d.availabilityStatus})`;
+            bannerBtn.textContent = "Open Donor Dashboard";
+            bannerBtn.href = "#/donor/dashboard";
+            bannerBtn.className = "button button-outline";
+          }
+        }
+      } catch (e) {}
+    })();
 
     document.getElementById("profileSignOutBtn")?.addEventListener("click", () => {
       authState.logout();
@@ -1744,4 +1945,14 @@ export class Router {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
 

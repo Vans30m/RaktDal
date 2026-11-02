@@ -5,36 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#b91c1c">
   <meta name="description" content="RaktDal - Blood Donation and Donor Coordination Platform">
-  <title>RaktDal | Blood Donation Platform</title>
+  <title>RaktDal | Blood Donation & Donor Coordination</title>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="index.html" aria-label="RaktDal home"><span class="brand-mark">R</span> RaktDal</a>
+    <a class="brand" href="#/" aria-label="RaktDal home"><span class="brand-mark">R</span> RaktDal</a>
     <nav aria-label="Main navigation">
       <a href="#/">Home</a>
+      <a href="#/find-blood" style="font-weight: 600;">Find Donors</a>
+      <a href="#/donor/register" style="font-weight: 600; color: var(--primary);">Donate Blood</a>
       <a href="#/requests">Blood Requests</a>
-      <a href="#/find-blood">Find Blood</a>
-      <a href="#/blood-banks">Blood Banks</a>
       <a href="#/camps">Donation Camps</a>
     </nav>
     <div id="authNavContainer">
-      <a class="button" href="#/login" style="padding:7px 16px; font-size:0.88rem;">Sign in</a>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <a href="#/login" class="button button-outline" style="padding:7px 14px; font-size:0.88rem;">
+          Sign In
+        </a>
+        <a href="#/register" class="button" style="padding:7px 14px; font-size:0.88rem;">
+          Register
+        </a>
+      </div>
     </div>
   </header>
   
-  <main id="app" class="main-content" aria-live="polite">
-    <section class="hero">
-      <p class="eyebrow">Blood Donation & Donor Coordination</p>
-      <h1>Every connection can <span>save a life.</span></h1>
-      <p class="hero-copy">Discover blood donation resources and connect with participating donors and verified organizations.</p>
-      <div class="hero-actions">
-        <a class="button" href="#/login">Get Started</a>
-        <a class="button button-outline" href="#/camps">Donation Camps</a>
-      </div>
-
-      <p class="notice">RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified professionals.</p>
-    </section>
+  <main id="app" class="main-content" aria-live="polite"><!-- Dynamic SPA Views -->
+    
   </main>
   
   <footer class="site-footer">© <span id="year"></span> RaktDal · Built for responsible blood donation coordination</footer>
@@ -42,3 +39,8 @@
   <script type="module" src="./js/app.js"></script>
 </body>
 </html>
+
+
+
+
+

@@ -4,10 +4,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
-import bloodRequestRoutes from "./routes/bloodRequest.routes.js";
-import requestResponseRoutes from "./routes/requestResponse.routes.js";
-import adminRoutes from "./routes/admin.routes.js";
-import reportsRoutes from "./routes/reports.routes.js";
+import donorRoutes from "./routes/donor.routes.js";
 
 const app = express();
 
@@ -42,10 +39,29 @@ app.get("/api/v1/health", (_req, res) => {
   res.json({ success: true, message: "RaktDal API is running.", environment: env.nodeEnv });
 });
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/requests", bloodRequestRoutes);
-app.use("/api/v1/responses", requestResponseRoutes);
-app.use("/api/v1/admin", adminRoutes);
-app.use("/api/v1/reports", reportsRoutes);
+app.use("/api/v1/donors", donorRoutes);
+
+// Dynamically load future colleague routes if available (Phase 11: bloodRequest, requestResponse, admin, reports)
+async function registerColleagueRoutes() {
+  const optionalModules = [
+    { path: "/api/v1/requests", file: "./routes/bloodRequest.routes.js" },
+    { path: "/api/v1/responses", file: "./routes/requestResponse.routes.js" },
+    { path: "/api/v1/admin", file: "./routes/admin.routes.js" },
+    { path: "/api/v1/reports", file: "./routes/reports.routes.js" }
+  ];
+
+  for (const mod of optionalModules) {
+    try {
+      const routeModule = await import(mod.file);
+      if (routeModule?.default) {
+        app.use(mod.path, routeModule.default);
+      }
+    } catch {
+      // Colleague route file not yet present in repository; skipped safely without crashing
+    }
+  }
+}
+registerColleagueRoutes();
 
 // Fallback error handlers
 app.use((_req, res) => {

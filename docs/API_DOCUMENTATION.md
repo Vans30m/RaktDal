@@ -179,3 +179,29 @@ All endpoints under `/api/v1/admin` are strictly reserved for users possessing t
 
 
 
+
+---
+
+## 10. Phase 10 — Donor Profiles & Discovery Reference
+
+### 10.1 Donor Profile & Discovery Endpoints
+
+| Method | Endpoint | Description | Auth Required | Permissions Enforced |
+| :--- | :--- | :--- | :--- | :--- |
+| POST | /api/v1/donors/profile | Create authenticated donor profile (1 per account) | Yes | Authenticated USER + erifyCsrf |
+| GET | /api/v1/donors/me | Retrieve authenticated donor's own profile | Yes | Resource Owner (eq.user._id) |
+| PATCH | /api/v1/donors/me | Update donor profile (location, age, contact method) | Yes | Resource Owner + erifyCsrf |
+| PATCH | /api/v1/donors/me/availability | Quick-toggle availability status (AVAILABLE/UNAVAILABLE) | Yes | Resource Owner + erifyCsrf |
+| PATCH | /api/v1/donors/me/consent | Update consent preferences (publicDiscovery, 
+otifications, contactSharing) | Yes | Resource Owner + erifyCsrf + Audit Logged |
+| GET | /api/v1/donors/search | Search active opted-in donors by bloodGroup, city, pinCode | No | Public (Scoped strictly to publicDiscoveryConsent: true and profileStatus: ACTIVE) |
+
+### 10.2 Privacy & Security Protections
+- **Zero Exposure of Private Data**: lastDonationDate is private and never exposed publicly. Phone number and email are hidden unless contactSharingConsent: true is explicitly granted.
+- **Independent Consents**: Public discovery, urgent notifications, and contact sharing are separate permissions.
+- **Audit Logging**: Every consent change generates an immutable entry in consentAuditLog with timestamp, user ID, IP address, and user agent.
+- **Compound Database Indexes**:
+  - { profileStatus: 1, publicDiscoveryConsent: 1, bloodGroup: 1, "location.city": 1, availabilityStatus: 1 }
+  - { profileStatus: 1, publicDiscoveryConsent: 1, bloodGroup: 1, "location.pinCode": 1, availabilityStatus: 1 }
+  - { profileStatus: 1, publicDiscoveryConsent: 1, "location.city": 1, "location.pinCode": 1 }
+- **Medical Disclaimer**: Self-reported donor availability is never treated as medical eligibility; suitability is always determined by certified professionals at collection centers.

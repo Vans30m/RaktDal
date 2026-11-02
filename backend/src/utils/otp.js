@@ -1,10 +1,23 @@
 import crypto from "crypto";
+import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import { env } from "../config/env.js";
 
-// Check if a real Resend API key is configured
-const hasValidApiKey = env.resendApiKey && !env.resendApiKey.startsWith("re_your_");
-const resend = hasValidApiKey ? new Resend(env.resendApiKey) : null;
+// 1. Resend Client (used if RESEND_API_KEY is provided and not a placeholder)
+const hasValidResendKey = env.resendApiKey && !env.resendApiKey.startsWith("re_your_");
+const resend = hasValidResendKey ? new Resend(env.resendApiKey) : null;
+
+// 2. Nodemailer Transporter (used if SMTP_USER and SMTP_PASS are provided)
+const hasSmtpConfig = Boolean(env.smtpUser && env.smtpPass);
+const transporter = hasSmtpConfig
+  ? nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: env.smtpUser,
+        pass: env.smtpPass
+      }
+    })
+  : null;
 
 /**
  * Generates a cryptographically secure 6-digit OTP string
@@ -22,23 +35,62 @@ export function hashOtp(otp) {
 }
 
 /**
- * Sends OTP email using Resend
+ * Sends email using either Gmail SMTP (Nodemailer), Resend, or falls back to dev terminal simulation
  */
-export async function sendOtpEmail({ email, otp }) {
-  if (!resend) {
-    if (env.nodeEnv !== "production") {
-      console.log(`\n========================================`);
-      console.log(`[DEV OTP SIMULATION] Email to: ${email}`);
-      console.log(`[DEV OTP SIMULATION] Verification OTP: >>> ${otp} <<<`);
-      console.log(`========================================\n`);
-      return { success: true, id: "dev-simulated-id" };
-    }
-    throw new Error("Resend email service is not configured.");
+async function dispatchEmail({ to, subject, html }) {
+  const from = env.smtpUser ? `RaktDal <${env.smtpUser}>` : env.emailFrom;
+
+  // Priority 1: Gmail SMTP (Sends to ANY email address)
+  if (transporter) {
+    const info = await transporter.sendMail({
+      from,
+      to,
+      subject,
+      html
+    });
+    return { success: true, id: info.messageId };
   }
 
-  const { data, error } = await resend.emails.send({
-    from: env.emailFrom,
-    to: [email],
+  // Priority 2: Resend
+  if (resend) {
+    const { data, error } = await resend.emails.send({
+      from: env.emailFrom,
+      to: [to],
+      subject,
+      html
+    });
+    if (error) {
+      throw new Error(error.message || "Failed to deliver email through Resend");
+    }
+    return { success: true, id: data?.id };
+  }
+
+  // Fallback: Development simulation
+  if (env.nodeEnv !== "production") {
+    console.log(`\n========================================`);
+    console.log(`[DEV EMAIL SIMULATION] To: ${to}`);
+    console.log(`[DEV EMAIL SIMULATION] Subject: ${subject}`);
+    console.log(`========================================\n`);
+    return { success: true, id: "dev-simulated-id" };
+  }
+
+  throw new Error("No email service configured (requires SMTP_USER/SMTP_PASS or RESEND_API_KEY).");
+}
+
+/**
+ * Sends OTP email
+ */
+export async function sendOtpEmail({ email, otp }) {
+  if (!transporter && !resend && env.nodeEnv !== "production") {
+    console.log(`\n========================================`);
+    console.log(`[DEV OTP SIMULATION] Email to: ${email}`);
+    console.log(`[DEV OTP SIMULATION] Verification OTP: >>> ${otp} <<<`);
+    console.log(`========================================\n`);
+    return { success: true, id: "dev-simulated-id" };
+  }
+
+  return dispatchEmail({
+    to: email,
     subject: "Your RaktDal Email Verification Code",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
@@ -51,35 +103,25 @@ export async function sendOtpEmail({ email, otp }) {
       </div>
     `
   });
-
-  if (error) {
-    throw new Error(error.message || "Failed to deliver email through Resend");
-  }
-
-  return { success: true, id: data?.id };
 }
 
 /**
  * Sends Password Reset email with link and reset token
  */
 export async function sendPasswordResetEmail({ email, resetToken }) {
-  const resetUrl = `${env.frontendUrl}/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
+  const resetUrl = `${env.frontendUrl}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
-  if (!resend) {
-    if (env.nodeEnv !== "production") {
-      console.log(`\n========================================`);
-      console.log(`[DEV MODE] Password reset for: ${email}`);
-      console.log(`[DEV MODE] Reset URL: ${resetUrl}`);
-      console.log(`[DEV MODE] Token: >>> ${resetToken} <<<`);
-      console.log(`========================================\n`);
-      return { success: true, id: "dev-simulated-id" };
-    }
-    throw new Error("Resend email service is not configured.");
+  if (!transporter && !resend && env.nodeEnv !== "production") {
+    console.log(`\n========================================`);
+    console.log(`[DEV MODE] Password reset for: ${email}`);
+    console.log(`[DEV MODE] Reset URL: ${resetUrl}`);
+    console.log(`[DEV MODE] Token: >>> ${resetToken} <<<`);
+    console.log(`========================================\n`);
+    return { success: true, id: "dev-simulated-id" };
   }
 
-  const { data, error } = await resend.emails.send({
-    from: env.emailFrom,
-    to: [email],
+  return dispatchEmail({
+    to: email,
     subject: "Reset Your RaktDal Password",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
@@ -98,10 +140,4 @@ export async function sendPasswordResetEmail({ email, resetToken }) {
       </div>
     `
   });
-
-  if (error) {
-    throw new Error(error.message || "Failed to deliver reset email through Resend");
-  }
-
-  return { success: true, id: data?.id };
 }
