@@ -12,16 +12,14 @@
   <header class="site-header">
     <a class="brand" href="index.html" aria-label="RaktDal home"><span class="brand-mark">R</span> RaktDal</a>
     <nav aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="index.html#find-blood">Find Blood</a>
-      <a href="index.html#blood-banks">Blood Banks</a>
-      <a href="index.html#camps">Donation Camps</a>
+      <a href="#/">Home</a>
+      <a href="#/requests">Blood Requests</a>
+      <a href="#/find-blood">Find Blood</a>
+      <a href="#/blood-banks">Blood Banks</a>
+      <a href="#/camps">Donation Camps</a>
     </nav>
     <div id="authNavContainer">
-      <div style="display:flex; gap:10px;">
-        <a class="button button-outline" href="pages/login.html" style="padding:7px 14px; font-size:0.88rem;">Sign in</a>
-        <a class="button" href="pages/register.html" style="padding:7px 14px; font-size:0.88rem;">Register</a>
-      </div>
+      <a class="button" href="#/login" style="padding:7px 16px; font-size:0.88rem;">Sign in</a>
     </div>
   </header>
   
@@ -31,8 +29,8 @@
       <h1>Every connection can <span>save a life.</span></h1>
       <p class="hero-copy">Discover blood donation resources and connect with participating donors and verified organizations.</p>
       <div class="hero-actions">
-        <a class="button" href="index.html#find-blood">Find blood support</a>
-        <a class="button button-outline" href="pages/register.html">Become a donor</a>
+        <a class="button" href="#/login">Get Started</a>
+        <a class="button button-outline" href="#/camps">Donation Camps</a>
       </div>
 
       <p class="notice">RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified professionals.</p>
@@ -41,10 +39,6 @@
   
   <footer class="site-footer">© <span id="year"></span> RaktDal · Built for responsible blood donation coordination</footer>
   
-  <script type="module">
-    import { updateNavAuth } from "./js/api.js";
-    document.getElementById("year").textContent = new Date().getFullYear();
-    updateNavAuth();
-  </script>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>

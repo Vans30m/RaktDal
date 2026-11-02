@@ -1,12 +1,19 @@
 /**
- * RaktDal Main Homepage Script
+ * Main Application Bootstrap
  */
-import { updateNavAuth } from "./api.js";
+import { authState } from "./auth.js";
+import { Router } from "./router.js";
 
-const year = document.getElementById("year");
-if (year) {
-  year.textContent = new Date().getFullYear();
-}
+// Initialize Router and Auth State
+document.addEventListener("DOMContentLoaded", async () => {
+  const yearEl = document.getElementById("year");
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
 
-// Check and display user session in navbar
-updateNavAuth();
+  // Initialize router
+  const router = new Router("app", "authNavContainer");
+
+  // Fetch initial auth session
+  await authState.init();
+});

@@ -1,17 +1,40 @@
 /**
- * Centralized API Client Service
+ * Centralized API Client Service for RaktDal
+ *
+ * - Uses dynamic configuration (window.RAKTDAL_API_URL or local/origin default)
+ * - credentials: "include" for secure HttpOnly cookie transmission
+ * - CSRF custom header injection ("X-Requested-With: XMLHttpRequest")
+ * - Automatic token refresh with concurrency deduplication (prevents infinite refresh loops)
+ * - Zero token exposure to JavaScript
  */
-const API_BASE = window.RAKTDAL_API_URL || (
-  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    ? "http://localhost:5000/api/v1"
-    : `${window.location.origin}/api/v1`
-);
+
+const getApiBase = () => {
+  if (typeof window !== "undefined") {
+    if (window.RAKTDAL_API_URL) return window.RAKTDAL_API_URL;
+    if (window.location?.hostname === "localhost" || window.location?.hostname === "127.0.0.1") {
+      return "http://localhost:5000/api/v1";
+    }
+    return `${window.location?.origin || ""}/api/v1`;
+  }
+  return "http://localhost:5000/api/v1";
+};
+
+const API_BASE = getApiBase();
+
+let refreshPromise = null;
 
 export const api = {
   getBaseUrl() {
     return API_BASE;
   },
 
+  getGoogleAuthUrl() {
+    return `${API_BASE}/auth/google`;
+  },
+
+  /**
+   * Unified HTTP Request Handler
+   */
   async request(endpoint, options = {}) {
     const headers = {
       "Content-Type": "application/json",
@@ -23,43 +46,55 @@ export const api = {
       options.body = JSON.stringify(options.body);
     }
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      credentials: "include",
-      headers
-    });
+    try {
+      let response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        credentials: "include",
+        headers
+      });
 
-    // Auto-refresh token if expired (401) on protected calls
-    const isAuthCall = endpoint === "/auth/login" || endpoint === "/auth/register" || endpoint === "/auth/refresh" || endpoint === "/auth/me";
-    if (response.status === 401 && !isAuthCall) {
-      const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+      // Auto-refresh token if 401 Unauthorized encountered (excluding auth endpoints to prevent loops)
+      const isAuthExempt = endpoint.startsWith("/auth/google") || endpoint === "/auth/refresh" || endpoint === "/auth/logout";
+      if (response.status === 401 && !isAuthExempt) {
+        // Concurrency Deduplication: Reuse single refresh request for multiple parallel 401 calls
+        if (!refreshPromise) {
+          refreshPromise = this.refreshSession().finally(() => {
+            refreshPromise = null;
+          });
+        }
+
+        const refreshSucceeded = await refreshPromise;
+        if (refreshSucceeded) {
+          // Retry original request once
+          response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            credentials: "include",
+            headers
+          });
+        }
+      }
+
+      return response;
+    } catch (networkError) {
+      console.error("Network or API communication failure:", networkError.message);
+      throw networkError;
+    }
+  },
+
+  /**
+   * Refresh the access token using the HttpOnly refresh token cookie
+   */
+  async refreshSession() {
+    try {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: "POST",
         headers: { "X-Requested-With": "XMLHttpRequest" },
         credentials: "include"
       });
-
-      if (refreshRes.ok) {
-        return fetch(`${API_BASE}${endpoint}`, {
-          ...options,
-          credentials: "include",
-          headers
-        });
-      }
+      return res.ok;
+    } catch (err) {
+      return false;
     }
-
-    return response;
-  },
-
-  register(data) {
-    return this.request("/auth/register", { method: "POST", body: data });
-  },
-
-  login(data) {
-    return this.request("/auth/login", { method: "POST", body: data });
-  },
-
-  logout() {
-    return this.request("/auth/logout", { method: "POST" });
   },
 
   getMe() {
@@ -70,96 +105,153 @@ export const api = {
     return this.request("/auth/sessions");
   },
 
-  verifyEmail(data) {
-    return this.request("/auth/verify-email", { method: "POST", body: data });
+  updateProfile(data) {
+    return this.request("/auth/me", { method: "PATCH", body: data });
   },
 
-  resendOtp(data) {
-    return this.request("/auth/resend-otp", { method: "POST", body: data });
+  logout() {
+    return this.request("/auth/logout", { method: "POST" });
   },
 
-  forgotPassword(data) {
-    return this.request("/auth/forgot-password", { method: "POST", body: data });
+  logoutAll() {
+    return this.request("/auth/logout-all", { method: "POST" });
   },
 
-  resetPassword(data) {
-    return this.request("/auth/reset-password", { method: "POST", body: data });
+  getAdminDashboard() {
+    return this.request("/admin/stats");
+  },
+
+  // --- Phase 15 Administrative Control Plane APIs ---
+  getAdminStats() {
+    return this.request("/admin/stats");
+  },
+
+  getAdminOrganizations(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/organizations?${query}` : "/admin/organizations");
+  },
+
+  verifyOrganization(orgId, status, reason = "") {
+    return this.request(`/admin/organizations/${orgId}/verify`, {
+      method: "PATCH",
+      body: { status, reason }
+    });
+  },
+
+  getAdminUsers(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/users?${query}` : "/admin/users");
+  },
+
+  updateUserAccountStatus(userId, status, reason = "") {
+    return this.request(`/admin/users/${userId}/status`, {
+      method: "PATCH",
+      body: { status, reason }
+    });
+  },
+
+  getAdminBloodRequests(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/requests?${query}` : "/admin/requests");
+  },
+
+  getAdminFraudAlerts(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/fraud-alerts?${query}` : "/admin/fraud-alerts");
+  },
+
+  resolveFraudAlert(alertId, status, note = "") {
+    return this.request(`/admin/fraud-alerts/${alertId}`, {
+      method: "PATCH",
+      body: { status, note }
+    });
+  },
+
+  getAdminAuditLogs(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/audit-logs?${query}` : "/admin/audit-logs");
+  },
+
+  // Blood Request APIs
+  getBloodRequests(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const endpoint = query ? `/requests?${query}` : "/requests";
+    return this.request(endpoint);
+  },
+
+  getBloodRequestById(requestId) {
+    return this.request(`/requests/${requestId}`);
+  },
+
+  getMyBloodRequests() {
+    return this.request("/requests/my");
+  },
+
+  createBloodRequest(data) {
+    return this.request("/requests", {
+      method: "POST",
+      body: data
+    });
+  },
+
+  updateRequestStatus(requestId, status, note = "") {
+    return this.request(`/requests/${requestId}/status`, {
+      method: "PATCH",
+      body: { status, note }
+    });
+  },
+
+  verifyBloodRequest(requestId, status, note = "") {
+    return this.request(`/requests/${requestId}/verify`, {
+      method: "PATCH",
+      body: { status, note }
+    });
+  },
+
+  submitDonationResponse(requestId, data) {
+    return this.request(`/requests/${requestId}/responses`, {
+      method: "POST",
+      body: data
+    });
+  },
+
+  getRequestResponses(requestId) {
+    return this.request(`/requests/${requestId}/responses`);
+  },
+
+  updateResponseStatus(responseId, status, reason = "") {
+    return this.request(`/responses/${responseId}`, {
+      method: "PATCH",
+      body: { status, reason }
+    });
+  },
+
+  // --- Phase 16 Reports & Analytics APIs ---
+  getAdminReportsOverview(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/reports/overview?${query}` : "/admin/reports/overview");
+  },
+
+  getAdminReportsRequests(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/admin/reports/requests?${query}` : "/admin/reports/requests");
+  },
+
+  getOrganizationReports(orgId, params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/reports/organizations/${orgId}?${query}` : `/reports/organizations/${orgId}`);
+  },
+
+  getPersonalReports(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/reports/me/summary?${query}` : "/reports/me/summary");
+  },
+
+  getAdminExportCsvUrl(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const baseUrl = this.getBaseUrl();
+    return `${baseUrl}/admin/reports/export?${query}`;
   }
 };
 
-/**
- * Shared utility to update the navigation bar based on user login state
- */
-export async function updateNavAuth(containerId = "authNavContainer", isSubfolder = false) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
 
-  const prefix = isSubfolder ? "" : "pages/";
-  const homePrefix = isSubfolder ? "../index.html" : "index.html";
-
-  try {
-    const res = await api.getMe();
-    if (res.ok) {
-      const data = await res.json();
-      const user = data.data.user;
-      container.innerHTML = `
-        <div style="display:flex; align-items:center; gap:12px;">
-          <a href="${prefix}profile.html" style="display:flex; align-items:center; gap:8px; font-weight:600;">
-            ${user.profileImage ? `<img src="${user.profileImage}" alt="" style="width:28px; height:28px; border-radius:50%;">` : ""}
-            <span>${user.fullName.split(" ")[0]}</span>
-          </a>
-          <button id="globalNavLogoutBtn" class="button button-outline" style="padding:6px 12px; font-size:0.85rem;">Sign out</button>
-        </div>
-      `;
-      document.getElementById("globalNavLogoutBtn")?.addEventListener("click", async () => {
-        await api.logout();
-        window.location.href = `${prefix}login.html`;
-      });
-      return user;
-    }
-  } catch (e) {
-    // Not logged in
-  }
-
-  container.innerHTML = `
-    <div style="display:flex; gap:10px;">
-      <a class="button button-outline" href="${prefix}login.html" style="padding:7px 14px; font-size:0.88rem;">Sign in</a>
-      <a class="button" href="${prefix}register.html" style="padding:7px 14px; font-size:0.88rem;">Register</a>
-    </div>
-  `;
-  return null;
-}
-
-
-/**
- * Shared Password Strength Calculator
- */
-export function evaluatePasswordStrength(password) {
-  if (!password) return { score: 0, label: "", color: "#e2e8f0" };
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (password.length >= 12) score++;
-  if (/[0-9]/.test(password)) score++;
-  if (/[A-Z]/.test(password)) score++;
-  if (/[^A-Za-z0-9]/.test(password)) score++;
-
-  if (score <= 1) return { score: 25, label: "Weak", color: "#ef4444" };
-  if (score === 2) return { score: 50, label: "Fair", color: "#f59e0b" };
-  if (score === 3) return { score: 75, label: "Good", color: "#3b82f6" };
-  return { score: 100, label: "Strong", color: "#10b981" };
-}
-
-/**
- * Shared Password Visibility Toggle
- */
-export function setupPasswordToggle(inputId, toggleBtnId) {
-  const input = document.getElementById(inputId);
-  const btn = document.getElementById(toggleBtnId);
-  if (!input || !btn) return;
-
-  btn.addEventListener("click", () => {
-    const isPassword = input.type === "password";
-    input.type = isPassword ? "text" : "password";
-    btn.textContent = isPassword ? "Hide" : "Show";
-  });
-}
