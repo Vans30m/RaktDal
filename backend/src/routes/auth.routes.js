@@ -4,6 +4,7 @@ import {
   login,
   refresh,
   logout,
+  logoutAll,
   getCurrentUser,
   getSessions,
   forgotPassword,
@@ -16,7 +17,8 @@ import {
 import {
   authenticate,
   authorize,
-  preventSelfRoleElevation
+  preventSelfRoleElevation,
+  logAdminAction
 } from "../middleware/auth.middleware.js";
 import { verifyCsrf } from "../utils/security.js";
 
@@ -27,6 +29,7 @@ router.post("/register", verifyCsrf, register);
 router.post("/login", verifyCsrf, login);
 router.post("/refresh", verifyCsrf, refresh);
 router.post("/logout", verifyCsrf, logout);
+router.post("/logout-all", authenticate, verifyCsrf, logoutAll);
 
 // Password Reset Flow
 router.post("/forgot-password", verifyCsrf, forgotPassword);
@@ -48,8 +51,8 @@ router.patch("/me", authenticate, verifyCsrf, preventSelfRoleElevation, async (r
   res.json({ success: true, message: "Profile updated successfully.", data: { user: req.user.toPublicProfile() } });
 });
 
-// Admin-Only Endpoint
-router.get("/admin/dashboard", authenticate, authorize("ADMIN"), (req, res) => {
+// Admin-Only Endpoint with Audit Logging
+router.get("/admin/dashboard", authenticate, authorize("ADMIN"), logAdminAction("ACCESS_ADMIN_DASHBOARD"), (req, res) => {
   res.json({
     success: true,
     message: "Admin authorization verified. Access granted to administrative control plane.",

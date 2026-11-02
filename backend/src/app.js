@@ -4,6 +4,10 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
+import bloodRequestRoutes from "./routes/bloodRequest.routes.js";
+import requestResponseRoutes from "./routes/requestResponse.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import reportsRoutes from "./routes/reports.routes.js";
 
 const app = express();
 
@@ -38,6 +42,10 @@ app.get("/api/v1/health", (_req, res) => {
   res.json({ success: true, message: "RaktDal API is running.", environment: env.nodeEnv });
 });
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/requests", bloodRequestRoutes);
+app.use("/api/v1/responses", requestResponseRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/reports", reportsRoutes);
 
 // Fallback error handlers
 app.use((_req, res) => {

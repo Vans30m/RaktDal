@@ -1,11 +1,11 @@
-import { verifyAccessToken } from "../utils/security.js";
+import { verifyAccessToken, hashToken } from "../utils/security.js";
 import { User } from "../models/User.js";
+import { Session } from "../models/Session.js";
 import { Organization } from "../models/Organization.js";
-import { OrganizationMembership } from "../models/OrganizationMembership.js";
 
 /**
  * 1. Authentication Middleware
- * Validates access token and attaches user information to req.user
+ * Validates access token, checks session revocation & account status, and attaches req.user and req.session
  */
 export async function authenticate(req, res, next) {
   try {
@@ -20,7 +20,7 @@ export async function authenticate(req, res, next) {
     }
 
     const decoded = verifyAccessToken(token);
-    if (!decoded) {
+    if (!decoded || !decoded.id) {
       return res.status(401).json({
         success: false,
         message: "Invalid or expired access token.",
@@ -30,15 +30,44 @@ export async function authenticate(req, res, next) {
 
     const user = await User.findById(decoded.id);
 
-    if (!user || user.accountStatus !== "ACTIVE") {
+    if (!user) {
       return res.status(401).json({
         success: false,
-        message: "User account not found or suspended.",
-        error: { code: "ACCOUNT_INACTIVE" }
+        message: "User account not found.",
+        error: { code: "USER_NOT_FOUND" }
       });
     }
 
+    // Check account status: ACTIVE vs SUSPENDED vs DEACTIVATED
+    if (user.accountStatus !== "ACTIVE") {
+      // Security measure: Revoke any active sessions when an account is suspended or deactivated
+      await Session.updateMany({ userId: user._id, isRevoked: false }, { isRevoked: true });
+
+      return res.status(403).json({
+        success: false,
+        message: `Account is ${user.accountStatus.toLowerCase()}. Access denied.`,
+        error: { code: `ACCOUNT_${user.accountStatus}` }
+      });
+    }
+
+    // Check session validity if refresh token cookie is present
+    const rawRefreshToken = req.cookies?.refreshToken;
+    let currentSession = null;
+    if (rawRefreshToken) {
+      const tokenHash = hashToken(rawRefreshToken);
+      currentSession = await Session.findOne({ refreshTokenHash: tokenHash, userId: user._id });
+
+      if (currentSession && (currentSession.isRevoked || new Date() > currentSession.expiresAt)) {
+        return res.status(401).json({
+          success: false,
+          message: "Session has been revoked or expired.",
+          error: { code: "SESSION_REVOKED" }
+        });
+      }
+    }
+
     req.user = user;
+    req.session = currentSession || { userId: user._id };
     next();
   } catch (err) {
     return res.status(401).json({
@@ -110,69 +139,7 @@ export function requireOwnership(getOwnerIdFromRequest) {
   };
 }
 
-/**
- * 4. Organization Membership & Role Check Middleware
- * Verifies that the user belongs to the organization with one of the allowed org roles:
- * "OWNER", "ADMIN", "MANAGER", "STAFF"
- */
-export function requireOrgRole(getOrgIdFromRequest, ...allowedOrgRoles) {
-  return async (req, res, next) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({
-          success: false,
-          message: "Authentication required.",
-          error: { code: "UNAUTHORIZED" }
-        });
-      }
 
-      // Platform ADMIN can bypass organization membership checks
-      if (req.user.platformRoles.includes("ADMIN")) {
-        return next();
-      }
-
-      const orgId = getOrgIdFromRequest(req);
-      if (!orgId) {
-        return res.status(400).json({
-          success: false,
-          message: "Organization ID is required.",
-          error: { code: "ORG_ID_REQUIRED" }
-        });
-      }
-
-      const membership = await OrganizationMembership.findOne({
-        organizationId: orgId,
-        userId: req.user._id,
-        status: "ACTIVE"
-      });
-
-      if (!membership) {
-        return res.status(403).json({
-          success: false,
-          message: "Access denied. You are not an active member of this organization.",
-          error: { code: "NOT_ORG_MEMBER" }
-        });
-      }
-
-      if (allowedOrgRoles.length > 0 && !allowedOrgRoles.includes(membership.orgRole)) {
-        return res.status(403).json({
-          success: false,
-          message: `Access denied. Requires one of [${allowedOrgRoles.join(", ")}] roles in this organization.`,
-          error: { code: "INSUFFICIENT_ORG_ROLE" }
-        });
-      }
-
-      req.orgMembership = membership;
-      next();
-    } catch (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Error verifying organization membership.",
-        error: { code: "INTERNAL_ERROR" }
-      });
-    }
-  };
-}
 
 /**
  * 5. Verified Organization Check Middleware
@@ -220,6 +187,69 @@ export function requireVerifiedOrganization(getOrgIdFromRequest) {
 }
 
 /**
+ * 6. Organization Admin Authorization Middleware
+ * Verifies that the authenticated user is an authorized Organization ADMIN for the target organization.
+ * (Platform ADMIN can also administer or moderate organization resources).
+ */
+export function requireOrganizationAdmin(getOrgIdFromRequest) {
+  return async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: "Authentication required.",
+          error: { code: "UNAUTHORIZED" }
+        });
+      }
+
+      // Platform ADMIN has global oversight
+      if (req.user.platformRoles.includes("ADMIN")) {
+        return next();
+      }
+
+      const orgId = getOrgIdFromRequest(req);
+      if (!orgId) {
+        return res.status(400).json({
+          success: false,
+          message: "Organization ID is required.",
+          error: { code: "ORG_ID_REQUIRED" }
+        });
+      }
+
+      const organization = await Organization.findById(orgId);
+      if (!organization) {
+        return res.status(404).json({
+          success: false,
+          message: "Organization not found.",
+          error: { code: "ORG_NOT_FOUND" }
+        });
+      }
+
+      const isOrgAdmin = organization.organizationAdmins?.some(
+        adminId => adminId.toString() === req.user._id.toString()
+      );
+
+      if (!isOrgAdmin) {
+        return res.status(403).json({
+          success: false,
+          message: "Access denied. You are not an authorized Organization ADMIN.",
+          error: { code: "NOT_ORG_ADMIN" }
+        });
+      }
+
+      req.organization = organization;
+      next();
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Error verifying organization administrator authorization.",
+        error: { code: "INTERNAL_ERROR" }
+      });
+    }
+  };
+}
+
+/**
  * 6. Prevent Self Role Elevation Middleware
  * Prevents users from changing their own platform roles in update requests
  */
@@ -235,4 +265,23 @@ export function preventSelfRoleElevation(req, res, next) {
     }
   }
   next();
+}
+
+/**
+ * 7. Administrative Audit Logging Middleware
+ * Securely logs sensitive administrative control actions without exposing tokens or passwords
+ */
+export function logAdminAction(actionName) {
+  return (req, res, next) => {
+    const adminEmail = req.user?.email || "Unknown Admin";
+    const adminId = req.user?._id || "Unknown ID";
+    const ip = req.ip || req.connection?.remoteAddress || "Unknown IP";
+    const timestamp = new Date().toISOString();
+
+    console.log(
+      `[ADMIN AUDIT LOG] ${timestamp} | Admin: ${adminEmail} (${adminId}) | Action: ${actionName} | Route: ${req.method} ${req.originalUrl} | IP: ${ip}`
+    );
+
+    next();
+  };
 }

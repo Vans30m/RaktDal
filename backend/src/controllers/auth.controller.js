@@ -291,6 +291,31 @@ export async function logout(req, res) {
 }
 
 /**
+ * Logout from all devices
+ * POST /api/v1/auth/logout-all
+ */
+export async function logoutAll(req, res) {
+  try {
+    if (req.user?._id) {
+      await Session.updateMany({ userId: req.user._id, isRevoked: false }, { isRevoked: true });
+    }
+
+    res.clearCookie("accessToken", getCookieOptions());
+    res.clearCookie("refreshToken", getCookieOptions());
+
+    return res.json({
+      success: true,
+      message: "All sessions have been revoked successfully."
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Error during global logout."
+    });
+  }
+}
+
+/**
  * Get current authenticated user profile
  * GET /api/v1/auth/me
  */
@@ -676,7 +701,7 @@ export async function handleGoogleCallback(req, res) {
     const { code, state, error } = req.query;
 
     if (error || !code) {
-      return res.redirect(`${env.frontendUrl}/pages/login.html?error=cancelled`);
+      return res.redirect(`${env.frontendUrl}/index.html#/login?error=cancelled`);
     }
 
     const savedState = req.cookies?.oauth_state;
@@ -688,12 +713,12 @@ export async function handleGoogleCallback(req, res) {
 
     if (!savedState || typeof state !== "string" || savedState !== state) {
       console.warn("OAuth state validation failed: state mismatch or missing cookie.");
-      return res.redirect(`${env.frontendUrl}/pages/login.html?error=invalid_state`);
+      return res.redirect(`${env.frontendUrl}/index.html#/login?error=invalid_state`);
     }
 
     if (!savedVerifier || typeof savedVerifier !== "string") {
       console.warn("PKCE code_verifier is missing from cookies.");
-      return res.redirect(`${env.frontendUrl}/pages/login.html?error=invalid_pkce`);
+      return res.redirect(`${env.frontendUrl}/index.html#/login?error=invalid_pkce`);
     }
 
     // Exchange code for tokens and verify Google ID token
@@ -704,7 +729,7 @@ export async function handleGoogleCallback(req, res) {
 
     if (!payload.email || !payload.sub) {
       console.warn("Google ID token missing essential claims (email or sub).");
-      return res.redirect(`${env.frontendUrl}/pages/login.html?error=invalid_account`);
+      return res.redirect(`${env.frontendUrl}/index.html#/login?error=invalid_account`);
     }
 
     // Lookup user by immutable Google Subject ID ('sub') first
@@ -717,7 +742,7 @@ export async function handleGoogleCallback(req, res) {
         if (existingUserWithEmail.googleSubject && existingUserWithEmail.googleSubject !== payload.sub) {
           // Conflict: Email belongs to an account linked to a different Google Subject
           console.warn("Prevented unsafe account linking: sub mismatch on existing email.");
-          return res.redirect(`${env.frontendUrl}/pages/login.html?error=identity_conflict`);
+          return res.redirect(`${env.frontendUrl}/index.html#/login?error=identity_conflict`);
         }
         // Link Google Subject to the existing record
         existingUserWithEmail.googleSubject = payload.sub;
@@ -743,7 +768,7 @@ export async function handleGoogleCallback(req, res) {
     }
 
     if (user.accountStatus !== "ACTIVE") {
-      return res.redirect(`${env.frontendUrl}/pages/login.html?error=account_suspended`);
+      return res.redirect(`${env.frontendUrl}/index.html#/login?error=account_suspended`);
     }
 
     user.lastLoginAt = new Date();
@@ -764,10 +789,10 @@ export async function handleGoogleCallback(req, res) {
     res.cookie("accessToken", accessToken, getCookieOptions({ maxAge: ACCESS_TOKEN_MAX_AGE }));
     res.cookie("refreshToken", rawRefreshToken, getCookieOptions({ maxAge: REFRESH_TOKEN_MAX_AGE }));
 
-    return res.redirect(`${env.frontendUrl}/pages/profile.html`);
+    return res.redirect(`${env.frontendUrl}/index.html#/auth/callback?status=success`);
   } catch (err) {
     console.error("Google OAuth callback error:", err.message);
-    return res.redirect(`${env.frontendUrl}/pages/login.html?error=auth_failed`);
+    return res.redirect(`${env.frontendUrl}/index.html#/login?error=auth_failed`);
   }
 }
 
