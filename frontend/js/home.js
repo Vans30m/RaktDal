@@ -27,16 +27,16 @@ export const homeViews = {
         </defs>
 
         <!-- Background Glow Elements -->
-        <circle cx="270" cy="225" r="180" fill="#fef2f2" opacity="0.8"/>
-        <circle cx="430" cy="90" r="75" fill="#fee2e2" opacity="0.6"/>
-        <circle cx="100" cy="340" r="95" fill="#fef2f2" opacity="0.7"/>
+        <circle class="anim-glow-pulse" cx="270" cy="225" r="180" fill="#fef2f2" opacity="0.8"/>
+        <circle class="anim-glow-pulse-secondary" cx="430" cy="90" r="75" fill="#fee2e2" opacity="0.6"/>
+        <circle class="anim-glow-pulse" cx="100" cy="340" r="95" fill="#fef2f2" opacity="0.7"/>
 
         <!-- Flowing Heartbeat Line -->
-        <path d="M 30 220 L 120 220 L 140 190 L 160 260 L 190 140 L 220 280 L 245 190 L 265 235 L 285 220 L 510 220" 
+        <path class="anim-heartbeat-line" d="M 30 220 L 120 220 L 140 190 L 160 260 L 190 140 L 220 280 L 245 190 L 265 235 L 285 220 L 510 220" 
               stroke="url(#pulseGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 
         <!-- Main Medical Coordination Tablet / Visual Card -->
-        <rect x="85" y="55" width="370" height="340" rx="22" fill="url(#heroCardGrad)" stroke="#e2e8f0" stroke-width="1.5" filter="url(#cardShadow)"/>
+        <rect class="hero-card-base" x="85" y="55" width="370" height="340" rx="22" fill="url(#heroCardGrad)" stroke="#e2e8f0" stroke-width="1.5" filter="url(#cardShadow)"/>
         
         <!-- Header bar in visual card -->
         <rect x="85" y="55" width="370" height="54" rx="22" fill="#ffffff"/>
@@ -47,16 +47,16 @@ export const homeViews = {
         <rect x="190" y="76" width="160" height="12" rx="6" fill="#f1f5f9"/>
 
         <!-- Floating Badge TOP RIGHT: Emergency Needs -->
-        <g transform="translate(325, 115)" filter="url(#cardShadow)">
+        <g class="anim-badge-float-1" transform="translate(325, 115)" filter="url(#cardShadow)">
           <rect width="170" height="56" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
           <circle cx="28" cy="28" r="15" fill="#fef2f2"/>
-          <path d="M28 20 L28 29 M28 34 L28 36" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
+          <path class="anim-pulse-emergency" d="M28 20 L28 29 M28 34 L28 36" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
           <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Emergency Needs</text>
           <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">Instant Coordination</text>
         </g>
 
         <!-- Floating Badge TOP LEFT: Verified Donors (Moved higher so it never overlaps the bottom chips!) -->
-        <g transform="translate(45, 140)" filter="url(#cardShadow)">
+        <g class="anim-badge-float-2" transform="translate(45, 140)" filter="url(#cardShadow)">
           <rect width="170" height="56" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
           <circle cx="28" cy="28" r="15" fill="#f0fdf4"/>
           <path d="M22 28 L27 33 L35 23" stroke="#15803d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -65,33 +65,44 @@ export const homeViews = {
         </g>
 
         <!-- Center Glowing Blood Drop Icon -->
-        <g transform="translate(270, 215)">
-          <circle cx="0" cy="0" r="54" fill="#fee2e2" opacity="0.7"/>
-          <circle cx="0" cy="0" r="42" fill="#fecaca" opacity="0.8"/>
-          <!-- Blood drop path -->
+        <g class="anim-drop-pulse" transform="translate(270, 215)">
+          <!-- Circular Halos centered exactly on the drop's visual center (cy=9) -->
+          <circle class="anim-drop-halo-1" cx="0" cy="9" r="54" fill="#fee2e2" opacity="0.7"/>
+          <circle class="anim-drop-halo-2" cx="0" cy="9" r="42" fill="#fecaca" opacity="0.8"/>
+          <!-- Blood drop path (Top apex at -28, Bottom curve at +46 -> exact center is cy=9) -->
           <path d="M0 -28 C14 -8 24 8 24 22 C24 35 13 46 0 46 C-13 46 -24 35 -24 22 C-24 8 -14 -8 0 -28 Z" fill="url(#dropGrad)"/>
           <!-- Reflection -->
           <path d="M-8 10 C-4 2 -1 -3 3 -12 C0 -6 -2 3 -4 14 C-5 18 -9 18 -8 10 Z" fill="#ffffff" opacity="0.45"/>
           <!-- Inner cross -->
-          <path d="M-4 22 L4 22 M0 18 L0 26" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M-4 16 L4 16 M0 12 L0 20" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
         </g>
 
         <!-- Blood Type Chips at Bottom of Card (Now completely unobstructed and centered!) -->
-        <g transform="translate(130, 325)">
-          <rect x="0" y="0" width="48" height="32" rx="9" fill="#fef2f2" stroke="#fecaca"/>
-          <text x="24" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#b91c1c" text-anchor="middle">O+</text>
+        <g class="anim-chips-container" transform="translate(130, 325)">
+          <g class="anim-chip-item anim-chip-highlight">
+            <rect x="0" y="0" width="48" height="32" rx="9" fill="#fef2f2" stroke="#fecaca"/>
+            <text x="24" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#b91c1c" text-anchor="middle">O+</text>
+          </g>
 
-          <rect x="58" y="0" width="48" height="32" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="82" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">A+</text>
+          <g class="anim-chip-item">
+            <rect x="58" y="0" width="48" height="32" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+            <text x="82" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">A+</text>
+          </g>
 
-          <rect x="116" y="0" width="48" height="32" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="140" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">B+</text>
+          <g class="anim-chip-item">
+            <rect x="116" y="0" width="48" height="32" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+            <text x="140" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">B+</text>
+          </g>
 
-          <rect x="174" y="0" width="48" height="32" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="198" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">AB+</text>
+          <g class="anim-chip-item">
+            <rect x="174" y="0" width="48" height="32" rx="9" fill="#ffffff" stroke="#e2e8f0"/>
+            <text x="198" y="21" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">AB+</text>
+          </g>
 
-          <rect x="232" y="0" width="58" height="32" rx="9" fill="#f1f5f9" stroke="#e2e8f0"/>
-          <text x="261" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">+4 more</text>
+          <g class="anim-chip-item">
+            <rect x="232" y="0" width="58" height="32" rx="9" fill="#f1f5f9" stroke="#e2e8f0"/>
+            <text x="261" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">+4 more</text>
+          </g>
         </g>
       </svg>
     `;
@@ -370,79 +381,6 @@ export const homeViews = {
             </div>
           </div>
         </section>
-
-        <!-- SECTION 5: PROFESSIONAL FOOTER -->
-        <footer class="landing-footer" role="contentinfo">
-          <div class="landing-container">
-            <div class="footer-columns-grid">
-              <!-- Column 1: Brand -->
-              <div class="footer-col col-brand">
-                <a class="brand brand-light" href="#/" aria-label="RaktDal home">
-                  <span class="brand-mark">R</span>
-                  <span class="brand-text">RaktDal</span>
-                </a>
-                <p class="footer-about-text">
-                  Connecting people, donors, and verified organizations for responsible blood donation coordination across India.
-                </p>
-                <div class="footer-badge-box">
-                  <span class="footer-mini-badge">Pan-India Network</span>
-                  <span class="footer-mini-badge">Privacy First</span>
-                </div>
-              </div>
-
-              <!-- Column 2: Quick Links -->
-              <div class="footer-col">
-                <h4 class="footer-col-title">Quick Links</h4>
-                <ul class="footer-nav-list">
-                  <li><a href="#/">Home</a></li>
-                  <li><a href="#/find-blood">Find Donors</a></li>
-                  <li><a href="#/requests">Blood Requests</a></li>
-                  <li><a href="#/camps">Donation Camps</a></li>
-                  <li><a href="#/donor/register">Become a Donor</a></li>
-                </ul>
-              </div>
-
-              <!-- Column 3: Platform -->
-              <div class="footer-col">
-                <h4 class="footer-col-title">Platform</h4>
-                <ul class="footer-nav-list">
-                  <li><a href="#/about">About RaktDal</a></li>
-                  <li><a href="#/how-it-works">How It Works</a></li>
-                  <li><a href="#/blood-banks">Blood Bank Inventory</a></li>
-                  <li><a href="#/contact">Contact Us</a></li>
-                </ul>
-              </div>
-
-              <!-- Column 4: Important Information -->
-              <div class="footer-col">
-                <h4 class="footer-col-title">Important Information</h4>
-                <ul class="footer-nav-list">
-                  <li><a href="#/privacy">Privacy Policy</a></li>
-                  <li><a href="#/terms">Terms and Conditions</a></li>
-                  <li><a href="#/disclaimer">Medical Disclaimer</a></li>
-                  <li><a href="#/help">Help and Support</a></li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Footer Medical Disclaimer Notice -->
-            <div class="footer-disclaimer-banner">
-              <p>
-                <strong>Medical Disclaimer:</strong> RaktDal facilitates coordination and does not independently verify real-time blood availability or determine medical suitability. Blood transfusion compatibility and recipient eligibility must strictly be confirmed by authorized medical professionals and certified blood bank staff.
-              </p>
-            </div>
-
-            <!-- Footer Bottom Bar -->
-            <div class="footer-bottom-bar">
-              <div class="footer-copyright">
-                &copy; 2026 RaktDal. All rights reserved.
-              </div>
-              <div class="footer-tagline">
-                Built for responsible blood donation coordination.
-              </div>
-            </div>
-          </div>
-        </footer>
       </div>
     `;
   },
@@ -450,6 +388,82 @@ export const homeViews = {
   /**
    * Initializes IntersectionObserver for scroll-triggered reveal animations
    */
+  getFooterHtml() {
+    return `
+      <footer class="landing-footer" role="contentinfo">
+        <div class="landing-container">
+          <div class="footer-columns-grid">
+            <!-- Column 1: Brand -->
+            <div class="footer-col col-brand">
+              <a class="brand brand-light" href="#/" aria-label="RaktDal home">
+                <span class="brand-mark">R</span>
+                <span class="brand-text">RaktDal</span>
+              </a>
+              <p class="footer-about-text">
+                Connecting people, donors, and verified organizations for responsible blood donation coordination across India.
+              </p>
+              <div class="footer-badge-box">
+                <span class="footer-mini-badge">Pan-India Network</span>
+                <span class="footer-mini-badge">Privacy First</span>
+              </div>
+            </div>
+
+            <!-- Column 2: Quick Links -->
+            <div class="footer-col">
+              <h4 class="footer-col-title">Quick Links</h4>
+              <ul class="footer-nav-list">
+                <li><a href="#/">Home</a></li>
+                <li><a href="#/find-blood">Find Donors</a></li>
+                <li><a href="#/requests">Blood Requests</a></li>
+                <li><a href="#/camps">Donation Camps</a></li>
+                <li><a href="#/donor/register">Become a Donor</a></li>
+              </ul>
+            </div>
+
+            <!-- Column 3: Platform -->
+            <div class="footer-col">
+              <h4 class="footer-col-title">Platform</h4>
+              <ul class="footer-nav-list">
+                <li><a href="#/about">About RaktDal</a></li>
+                <li><a href="#/how-it-works">How It Works</a></li>
+                <li><a href="#/blood-banks">Blood Bank Inventory</a></li>
+                <li><a href="#/contact">Contact Us</a></li>
+              </ul>
+            </div>
+
+            <!-- Column 4: Important Information -->
+            <div class="footer-col">
+              <h4 class="footer-col-title">Important Information</h4>
+              <ul class="footer-nav-list">
+                <li><a href="#/privacy">Privacy Policy</a></li>
+                <li><a href="#/terms">Terms and Conditions</a></li>
+                <li><a href="#/disclaimer">Medical Disclaimer</a></li>
+                <li><a href="#/help">Help and Support</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Footer Medical Disclaimer Notice -->
+          <div class="footer-disclaimer-banner">
+            <p>
+              <strong>Medical Disclaimer:</strong> RaktDal facilitates coordination and does not independently verify real-time blood availability or determine medical suitability. Blood transfusion compatibility and recipient eligibility must strictly be confirmed by authorized medical professionals and certified blood bank staff.
+            </p>
+          </div>
+
+          <!-- Footer Bottom Bar -->
+          <div class="footer-bottom-bar">
+            <div class="footer-copyright">
+              &copy; 2026 RaktDal. All rights reserved.
+            </div>
+            <div class="footer-tagline">
+              Built for responsible blood donation coordination.
+            </div>
+          </div>
+        </div>
+      </footer>
+    `;
+  },
+
   initScrollAnimations(container) {
     if (!container) return;
 

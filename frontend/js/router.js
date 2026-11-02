@@ -152,28 +152,43 @@ export class Router {
 
           <div id="userMenuDropdown" class="user-menu-dropdown ${this.isMenuOpen ? "show" : ""}" role="menu">
             <div class="user-menu-header">
-              <div class="user-menu-name">${u.fullName}</div>
-              <div class="user-menu-email">${u.email}</div>
-              <div style="margin-top:6px;">
-                <span class="badge ${u.accountStatus === "ACTIVE" ? "badge-active" : ""}">${u.accountStatus}</span>
-                ${state.isAdmin ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; margin-left:4px;">ADMIN</span>` : ""}
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <div class="user-menu-name">${u.fullName}</div>
+                <span class="badge ${u.accountStatus === "ACTIVE" ? "badge-active" : ""}" style="font-size:0.68rem; padding:2px 6px;">${u.accountStatus}</span>
+                ${state.isAdmin ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.68rem; padding:2px 6px;">ADMIN</span>` : ""}
               </div>
+              <div class="user-menu-email" style="margin-top:2px;">${u.email}</div>
             </div>
 
             <div class="user-menu-items">
               <a href="#/profile" class="user-menu-item">
-                <span>👤</span> Profile & Sessions
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Profile & Sessions
               </a>
               <a href="#/requests/my" class="user-menu-item">
-                <span>🩸</span> My Blood Requests
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2c-4 6-6.5 9-6.5 12a6.5 6.5 0 0 0 13 0c0-3-2.5-6-6.5-12z"></path>
+                </svg>
+                My Blood Requests
               </a>
               ${state.isAdmin ? `
                 <a href="#/admin" class="user-menu-item" style="color:#0369a1; font-weight:600;">
-                  <span>🛡️</span> Admin Dashboard
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                  Admin Dashboard
                 </a>
               ` : ""}
               <button id="userMenuLogoutBtn" class="user-menu-item logout">
-                <span>🚪</span> Sign Out
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sign Out
               </button>
             </div>
           </div>
@@ -226,10 +241,10 @@ export class Router {
     if (!this.appContainer) return;
     const { path, params } = this.getRouteInfo();
 
-    // Toggle default footer visibility based on whether on landing page
-    const defaultFooter = document.getElementById("defaultSiteFooter");
-    if (defaultFooter) {
-      defaultFooter.style.display = path === "/" ? "none" : "block";
+    // Always render the rich 4-column footer on all pages
+    const globalFooter = document.getElementById("globalSiteFooter");
+    if (globalFooter && !globalFooter.innerHTML.trim()) {
+      globalFooter.innerHTML = homeViews.getFooterHtml();
     }
 
     this.updateActiveNav();
@@ -412,8 +427,7 @@ export class Router {
 
   renderHome() {
     // Hide minimal fallback footer on landing page because landing page has its own full 4-column footer
-    const defaultFooter = document.getElementById("defaultSiteFooter");
-    if (defaultFooter) defaultFooter.style.display = "none";
+    
 
     this.appContainer.innerHTML = homeViews.getHomeHtml();
     homeViews.initScrollAnimations(this.appContainer);

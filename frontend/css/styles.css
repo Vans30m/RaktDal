@@ -23,6 +23,46 @@
   --focus-ring: rgba(185, 28, 28, 0.25);
 }
 
+
+/* ==========================================================================
+   ENHANCED MODERN SCROLLBAR
+   ========================================================================== */
+/* Standard modern Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* WebKit (Chrome, Edge, Safari, Opera) */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  border: 2px solid #ffffff;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #b91c1c; /* Brand red accent on active drag */
+}
+
+/* Smooth scrolling across the application */
+html {
+  scroll-behavior: smooth;
+}
+
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -105,9 +145,13 @@ nav a:hover { color: var(--red); }
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: 0;
+  padding: 32px max(5vw, 20px) 96px;
   background: #f8fafc;
   min-height: calc(100vh - 120px);
+}
+
+.landing-page-wrapper {
+  margin: -32px max(-5vw, -20px) -96px;
 }
 
 /* Hero Section */
@@ -128,7 +172,7 @@ h1 span { color: var(--red); }
   padding: 36px 32px;
   max-width: 440px;
   width: 100%;
-  margin: 0 auto;
+  margin: 20px auto 48px;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
   text-align: center;
 }
@@ -472,6 +516,20 @@ h1 span { color: var(--red); }
   cursor: pointer;
   text-align: left;
   transition: background 0.15s ease;
+}
+
+.user-menu-item svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+}
+
+.user-menu-item:hover svg {
+  color: var(--red);
+}
+
+.user-menu-item.logout:hover svg {
+  color: #dc2626;
 }
 
 .user-menu-item:hover {
@@ -1923,5 +1981,191 @@ html {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Hero Illustration Micro-Animations
+   ========================================================================== */
+
+/* Heartbeat ECG Line Flow */
+.anim-heartbeat-line {
+  stroke-dasharray: 200 400;
+  stroke-dashoffset: 600;
+  animation: ecgFlow 4s linear infinite;
+}
+
+@keyframes ecgFlow {
+  0% {
+    stroke-dashoffset: 600;
+  }
+  100% {
+    stroke-dashoffset: -600;
+  }
+}
+
+/* Central Blood Drop Heartbeat Pulse */
+.anim-drop-pulse {
+  animation: dropHeartbeat 4.5s ease-in-out infinite;
+}
+
+@keyframes dropHeartbeat {
+  0%, 100% {
+    transform: translate(270px, 215px) scale(1);
+  }
+  15% {
+    transform: translate(270px, 215px) scale(1.05);
+  }
+  30% {
+    transform: translate(270px, 215px) scale(1);
+  }
+  45% {
+    transform: translate(270px, 215px) scale(1.03);
+  }
+  60% {
+    transform: translate(270px, 215px) scale(1);
+  }
+}
+
+/* Concentric Aura Halos expanding around blood drop */
+.anim-drop-halo-1 {
+  animation: haloPulse1 4.5s ease-in-out infinite;
+}
+
+.anim-drop-halo-2 {
+  animation: haloPulse2 4.5s ease-in-out infinite;
+}
+
+@keyframes haloPulse1 {
+  0%, 100% {
+    r: 54;
+    opacity: 0.7;
+  }
+  20% {
+    r: 58;
+    opacity: 0.45;
+  }
+  50% {
+    r: 54;
+    opacity: 0.7;
+  }
+}
+
+@keyframes haloPulse2 {
+  0%, 100% {
+    r: 42;
+    opacity: 0.8;
+  }
+  20% {
+    r: 45;
+    opacity: 0.6;
+  }
+  50% {
+    r: 42;
+    opacity: 0.8;
+  }
+}
+
+/* Floating Badges (Subtle gentle hovering) */
+.anim-badge-float-1 {
+  animation: floatTopRight 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatTopRight {
+  0% {
+    transform: translate(325px, 115px);
+  }
+  100% {
+    transform: translate(325px, 105px);
+  }
+}
+
+.anim-badge-float-2 {
+  animation: floatTopLeft 4.5s ease-in-out 0.6s infinite alternate;
+}
+
+@keyframes floatTopLeft {
+  0% {
+    transform: translate(45px, 140px);
+  }
+  100% {
+    transform: translate(45px, 150px);
+  }
+}
+
+/* Ambient Background Glow Breathing */
+.anim-glow-pulse {
+  animation: glowPulse 5s ease-in-out infinite alternate;
+}
+
+.anim-glow-pulse-secondary {
+  animation: glowPulse 6s ease-in-out 1.2s infinite alternate;
+}
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.96);
+    transform-origin: 270px 225px;
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1.04);
+    transform-origin: 270px 225px;
+  }
+}
+
+/* Emergency Exclamation Pulse */
+.anim-pulse-emergency {
+  animation: emergencyBlink 2.5s ease-in-out infinite;
+}
+
+@keyframes emergencyBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Blood Type Chips Hover and Subtle Breathing */
+.anim-chip-item {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.anim-chip-item:hover {
+  transform: translateY(-3px);
+}
+
+.anim-chip-highlight rect {
+  animation: chipHighlightGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes chipHighlightGlow {
+  0% {
+    stroke: #fecaca;
+    stroke-width: 1;
+  }
+  100% {
+    stroke: #dc2626;
+    stroke-width: 1.8;
+  }
+}
+
+/* Accessibility: Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .anim-heartbeat-line,
+  .anim-drop-pulse,
+  .anim-drop-halo-1,
+  .anim-drop-halo-2,
+  .anim-badge-float-1,
+  .anim-badge-float-2,
+  .anim-glow-pulse,
+  .anim-glow-pulse-secondary,
+  .anim-pulse-emergency,
+  .anim-chip-highlight rect {
+    animation: none !important;
   }
 }
