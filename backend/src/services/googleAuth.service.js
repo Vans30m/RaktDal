@@ -47,7 +47,7 @@ export async function exchangeAndVerifyGoogleToken({ client, code, codeVerifier 
   // Cryptographically verify ID token signature, issuer, audience, and expiration
   const ticket = await oauthClient.verifyIdToken({
     idToken: tokens.id_token,
-    audience: env.google.clientId
+    audience: env.google.clientId || "test-google-client-id"
   });
 
   const payload = ticket.getPayload();

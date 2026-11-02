@@ -16,7 +16,6 @@ import {
   authenticate,
   authorize,
   requireOwnership,
-  requireOrgRole,
   requireVerifiedOrganization,
   preventSelfRoleElevation
 } from "../src/middleware/auth.middleware.js";

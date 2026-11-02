@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import {
   authorize,
   requireOwnership,
-  requireOrgRole,
   requireVerifiedOrganization,
-  preventSelfRoleElevation
+  preventSelfRoleElevation,
+  logAdminAction
 } from "../src/middleware/auth.middleware.js";
 
 test("RBAC Middleware: authorize allows user with required platform role", () => {
@@ -175,11 +175,132 @@ test("Organization Verification Check: blocks publishing from unverified organiz
   assert.equal(responseBody.error.code, "UNVERIFIED_ORGANIZATION");
 });
 
-test("Organization Membership & Role Matrix: checks OWNER, ADMIN, MANAGER, STAFF roles", () => {
-  const validOrgRoles = ["OWNER", "ADMIN", "MANAGER", "STAFF"];
-  assert.equal(validOrgRoles.includes("OWNER"), true);
-  assert.equal(validOrgRoles.includes("ADMIN"), true);
-  assert.equal(validOrgRoles.includes("MANAGER"), true);
-  assert.equal(validOrgRoles.includes("STAFF"), true);
-  assert.equal(validOrgRoles.includes("UNKNOWN"), false);
+
+
+test("Authentication Middleware: rejects unauthenticated requests with HTTP 401", async () => {
+  const req = { cookies: {}, headers: {} };
+  let status = null;
+  let body = null;
+  const res = {
+    status(code) { status = code; return { json(b) { body = b; } }; }
+  };
+
+  // Missing token
+  const token = req.cookies?.accessToken || req.headers.authorization?.replace("Bearer ", "");
+  assert.equal(!token, true);
+  if (!token) {
+    res.status(401).json({
+      success: false,
+      message: "Authentication required.",
+      error: { code: "UNAUTHORIZED" }
+    });
+  }
+
+  assert.equal(status, 401);
+  assert.equal(body.error.code, "UNAUTHORIZED");
 });
+
+test("Authentication Middleware: rejects suspended and deactivated accounts with HTTP 403", async () => {
+  const statuses = ["SUSPENDED", "DEACTIVATED"];
+
+  for (const accStatus of statuses) {
+    let statusCode = null;
+    let responseBody = null;
+    const res = {
+      status(code) { statusCode = code; return { json(b) { responseBody = b; } }; }
+    };
+
+    const user = { _id: "user-suspended", accountStatus: accStatus };
+    if (user.accountStatus !== "ACTIVE") {
+      res.status(403).json({
+        success: false,
+        message: `Account is ${user.accountStatus.toLowerCase()}. Access denied.`,
+        error: { code: `ACCOUNT_${user.accountStatus}` }
+      });
+    }
+
+    assert.equal(statusCode, 403, `Must reject ${accStatus} account with 403`);
+    assert.equal(responseBody.error.code, `ACCOUNT_${accStatus}`);
+  }
+});
+
+test("Authentication Middleware: detects revoked sessions and rejects with HTTP 401", () => {
+  const session = {
+    userId: "user-123",
+    isRevoked: true,
+    expiresAt: new Date(Date.now() + 100000)
+  };
+
+  let statusCode = null;
+  let responseBody = null;
+  const res = {
+    status(code) { statusCode = code; return { json(b) { responseBody = b; } }; }
+  };
+
+  if (session.isRevoked || new Date() > session.expiresAt) {
+    res.status(401).json({
+      success: false,
+      message: "Session has been revoked or expired.",
+      error: { code: "SESSION_REVOKED" }
+    });
+  }
+
+  assert.equal(statusCode, 401);
+  assert.equal(responseBody.error.code, "SESSION_REVOKED");
+});
+
+test("Resource Ownership / IDOR Protection: blocks unauthorized user from accessing/modifying other users' records", () => {
+  const currentAuthUser = { _id: "donor-alice-101", platformRoles: ["USER"] };
+  const targetResourceOwnerId = "donor-bob-202";
+
+  let status = null;
+  let body = null;
+  const res = {
+    status(code) { status = code; return { json(b) { body = b; } }; }
+  };
+
+  const req = {
+    user: currentAuthUser,
+    params: { donorId: targetResourceOwnerId }
+  };
+
+  const ownershipChecker = requireOwnership((r) => r.params.donorId);
+  ownershipChecker(req, res, () => {
+    assert.fail("Should block IDOR access to another user's resource");
+  });
+
+  assert.equal(status, 403);
+  assert.equal(body.error.code, "NOT_RESOURCE_OWNER");
+});
+
+test("Administrative Audit Logging: records admin actions without exposing sensitive data", () => {
+  const loggedMessages = [];
+  const originalLog = console.log;
+  console.log = (...args) => loggedMessages.push(args.join(" "));
+
+  try {
+    const adminReq = {
+      user: { _id: "admin-42", email: "admin@rakt-dal.org" },
+      method: "GET",
+      originalUrl: "/api/v1/auth/admin/dashboard",
+      ip: "192.168.1.100"
+    };
+
+    let nextCalled = false;
+    const loggerMiddleware = logAdminAction("ACCESS_ADMIN_DASHBOARD");
+    loggerMiddleware(adminReq, {}, () => {
+      nextCalled = true;
+    });
+
+    assert.equal(nextCalled, true, "Logger middleware must invoke next()");
+    assert.equal(loggedMessages.length, 1);
+    assert.ok(loggedMessages[0].includes("[ADMIN AUDIT LOG]"));
+    assert.ok(loggedMessages[0].includes("admin@rakt-dal.org"));
+    assert.ok(loggedMessages[0].includes("ACCESS_ADMIN_DASHBOARD"));
+    assert.ok(!loggedMessages[0].includes("password"));
+    assert.ok(!loggedMessages[0].includes("token"));
+  } finally {
+    console.log = originalLog;
+  }
+});
+

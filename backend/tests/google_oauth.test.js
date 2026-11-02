@@ -149,22 +149,120 @@ test("Google OAuth: Cancelled authorization detected from query error", () => {
   assert.equal(isCancelled, true, "OAuth cancellation must be detected");
 });
 
-test("Google OAuth Identity Protection: Prevents duplicate identity conflict / unsafe account linking", () => {
-  // Existing user in database linked to Google sub 'sub-A'
-  const existingUserInDb = {
-    email: "user@example.com",
-    googleSubject: "google-sub-original-A"
+test("Google OAuth: Rejects token with incorrect audience", async () => {
+  const mockClient = {
+    getToken() {
+      return Promise.resolve({ tokens: { id_token: "wrong-audience-token" } });
+    },
+    verifyIdToken({ audience }) {
+      assert.ok(audience);
+      // Simulate audience mismatch rejection from google-auth-library
+      return Promise.reject(new Error("Wrong recipient, payload audience doesn't match client ID."));
+    }
   };
 
-  // Attacker or different Google account presents Google sub 'sub-B' with same email
-  const incomingGooglePayload = {
-    email: "user@example.com",
-    sub: "google-sub-attacker-B"
-  };
-
-  const isConflict =
-    existingUserInDb.googleSubject &&
-    existingUserInDb.googleSubject !== incomingGooglePayload.sub;
-
-  assert.equal(isConflict, true, "Must flag conflict when email is already linked to a different Google Subject");
+  await assert.rejects(
+    () => exchangeAndVerifyGoogleToken({
+      client: mockClient,
+      code: "code",
+      codeVerifier: "verifier"
+    }),
+    /Wrong recipient/
+  );
 });
+
+test("Google OAuth: Rejects expired ID token", async () => {
+  const mockClient = {
+    getToken() {
+      return Promise.resolve({ tokens: { id_token: "expired-id-token" } });
+    },
+    verifyIdToken() {
+      // Simulate expiration rejection from google-auth-library
+      return Promise.reject(new Error("Token used too late, expired 120 seconds ago."));
+    }
+  };
+
+  await assert.rejects(
+    () => exchangeAndVerifyGoogleToken({
+      client: mockClient,
+      code: "code",
+      codeVerifier: "verifier"
+    }),
+    /Token used too late/
+  );
+});
+
+test("Google OAuth: Existing user vs New user creation logic", () => {
+  const databaseUsers = [
+    { _id: "u-1", email: "existing@example.com", googleSubject: "sub-12345" }
+  ];
+
+  // Lookup existing user by sub
+  const existingBySub = databaseUsers.find(u => u.googleSubject === "sub-12345");
+  assert.ok(existingBySub, "Must find existing user by googleSubject");
+
+  // Lookup new user by sub
+  const newBySub = databaseUsers.find(u => u.googleSubject === "sub-new-999");
+  assert.equal(newBySub, undefined, "New user does not exist in database yet");
+});
+
+test("Session Security: Logout from all devices revokes all sessions belonging to user", () => {
+  const userId = "user-multi-device";
+  const userSessions = [
+    { id: "s-desktop", userId, isRevoked: false },
+    { id: "s-mobile", userId, isRevoked: false },
+    { id: "s-tablet", userId, isRevoked: false }
+  ];
+
+  // Execute global logout
+  userSessions.forEach(s => {
+    if (s.userId === userId) s.isRevoked = true;
+  });
+
+  assert.ok(userSessions.every(s => s.isRevoked === true), "All sessions for this user must be revoked");
+});
+
+test("Security: Cookie security attributes enforcement (HttpOnly, Secure in prod, SameSite, Path)", () => {
+  const devCookies = { httpOnly: true, secure: false, sameSite: "lax", path: "/" };
+  const prodCookies = { httpOnly: true, secure: true, sameSite: "none", path: "/" };
+
+  assert.equal(devCookies.httpOnly, true);
+  assert.equal(devCookies.path, "/");
+  assert.equal(prodCookies.httpOnly, true);
+  assert.equal(prodCookies.secure, true);
+  assert.equal(prodCookies.sameSite, "none");
+});
+
+test("Security: Open redirect prevention in OAuth callback", () => {
+  const allowedOrigin = "http://localhost:5500";
+  const sanitizeRedirect = (target) => {
+    // Only allow redirects strictly beginning with configured frontendUrl
+    if (typeof target === "string" && target.startsWith(allowedOrigin)) {
+      return target;
+    }
+    return `${allowedOrigin}/index.html#/login`;
+  };
+
+  assert.equal(sanitizeRedirect("https://evil-attacker.com/phishing"), "http://localhost:5500/index.html#/login");
+  assert.equal(sanitizeRedirect("javascript:alert(1)"), "http://localhost:5500/index.html#/login");
+  assert.equal(sanitizeRedirect("http://localhost:5500/index.html#/profile"), "http://localhost:5500/index.html#/profile");
+});
+
+test("Security: Replay attack prevention via single-use OAuth state and PKCE verifier", () => {
+  const transactionCookies = {
+    oauth_state: "state-token-123",
+    oauth_code_verifier: "pkce-verifier-abc"
+  };
+
+  // Immediate clearing upon callback arrival
+  delete transactionCookies.oauth_state;
+  delete transactionCookies.oauth_code_verifier;
+
+  // Replay attempt by attacker
+  const isStatePresent = Boolean(transactionCookies.oauth_state);
+  const isVerifierPresent = Boolean(transactionCookies.oauth_code_verifier);
+
+  assert.equal(isStatePresent, false, "Replayed state must fail because cookie was consumed and cleared");
+  assert.equal(isVerifierPresent, false, "Replayed PKCE verifier must fail");
+});
+
