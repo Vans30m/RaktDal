@@ -120,7 +120,7 @@ export const homeViews = {
                 BLOOD DONATION &amp; DONOR COORDINATION
               </span>
               <h1 id="heroHeadline" class="hero-title">
-                Every connection can <span class="text-accent">save a life.</span>
+                Every Connection Can <span class="text-accent">Save a Life.</span>
               </h1>
               <p class="hero-supporting-text">
                 Discover blood donation resources and connect with participating donors and verified organizations across India.
@@ -396,7 +396,7 @@ export const homeViews = {
             <!-- Column 1: Brand -->
             <div class="footer-col col-brand">
               <a class="brand brand-light" href="#/" aria-label="RaktDal home">
-                <span class="brand-mark">R</span>
+                <img src="assets/logo-removebg.png" style="height: 32px; width: 32px; object-fit: contain;" alt="RaktDal Logo">
                 <span class="brand-text">RaktDal</span>
               </a>
               <p class="footer-about-text">

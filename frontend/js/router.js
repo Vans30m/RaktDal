@@ -81,6 +81,7 @@ export class Router {
         e.stopPropagation();
         this.isMobileNavOpen = !this.isMobileNavOpen;
         mainNav.classList.toggle("mobile-open", this.isMobileNavOpen);
+        document.body.classList.toggle("nav-open-lock", this.isMobileNavOpen);
         toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
       });
 
@@ -96,6 +97,7 @@ export class Router {
     const mainNav = document.getElementById("mainNav");
     const toggleBtn = document.getElementById("mobileNavToggle");
     if (mainNav) mainNav.classList.remove("mobile-open");
+    document.body.classList.remove("nav-open-lock");
     if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
   }
 
@@ -426,9 +428,6 @@ export class Router {
   }
 
   renderHome() {
-    // Hide minimal fallback footer on landing page because landing page has its own full 4-column footer
-    
-
     this.appContainer.innerHTML = homeViews.getHomeHtml();
     homeViews.initScrollAnimations(this.appContainer);
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -451,7 +450,7 @@ export class Router {
 
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width: 440px;">
-        <div class="brand-mark" style="margin: 0 auto 16px;">R</div>
+        <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 16px; display: block; object-fit: contain;">
         <h2>Sign In to RaktDal</h2>
         <p class="subtitle">Access your blood donor profile, request support, and manage appointments securely.</p>
 
@@ -559,7 +558,7 @@ export class Router {
   renderRegister(params) {
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width: 440px;">
-        <div class="brand-mark" style="margin: 0 auto 16px;">R</div>
+        <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 16px; display: block; object-fit: contain;">
         <h2>Create an Account</h2>
         <p class="subtitle">Join RaktDal to connect with donors or coordinate blood assistance.</p>
 

@@ -197,7 +197,7 @@ export const donorViews = {
         // No profile exists yet -> prompt user to create one
         contentEl.innerHTML = `
           <div class="auth-card" style="text-align: center; padding: 48px 24px;">
-            <div class="brand-mark" style="margin: 0 auto 16px;">R</div>
+            <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 16px; display: block; object-fit: contain;">
             <h2>Become a Blood Donor</h2>
             <p class="subtitle" style="max-width: 500px; margin: 0 auto 20px;">
               Join RaktDal's voluntary donor network to help patients in emergency need across India.
@@ -243,7 +243,7 @@ export const donorViews = {
     container.innerHTML = `
       <div class="auth-card" style="max-width: 620px; text-align: left;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <div class="brand-mark" style="margin: 0 auto 12px;">R</div>
+          <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 12px; display: block; object-fit: contain;">
           <h2 style="margin: 0 0 6px;">Register as a Blood Donor</h2>
           <p class="subtitle">Complete your confidential donor profile to participate in voluntary coordination.</p>
         </div>
