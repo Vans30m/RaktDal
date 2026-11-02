@@ -11,21 +11,29 @@ const app = express();
 app.use(helmet());
 app.use(cookieParser());
 
-// Allow configured FRONTEND_URL and common dev origins (both localhost and 127.0.0.1)
+// Allow configured FRONTEND_URL and common dev origins (both localhost and 127.0.0.1 on ports 3000, 5000, 5173, 5500, 8080)
 const allowedOrigins = [
   env.frontendUrl,
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
   "http://localhost:5500",
   "http://127.0.0.1:5500",
-  "http://localhost:5000"
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5000",
+  "http://127.0.0.1:5000"
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Allow non-browser requests or matching origins, or any localhost/127.0.0.1 dev port in non-production
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Blocked by CORS: ${origin}`));
+      return callback(null, true);
     }
+    if (!env.isProduction && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Blocked by CORS: ${origin}`));
   },
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "X-CSRF-Token"],

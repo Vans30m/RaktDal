@@ -6,6 +6,7 @@ import { User } from "../models/User.js";
 import { Session } from "../models/Session.js";
 import { EmailOtp } from "../models/EmailOtp.js";
 import { PasswordResetToken } from "../models/PasswordResetToken.js";
+import { isDatabaseConnected } from "../config/database.js";
 import { generateSixDigitOtp, hashOtp, sendOtpEmail, sendPasswordResetEmail } from "../utils/otp.js";
 import {
   getCookieOptions,
@@ -41,6 +42,13 @@ const MAX_RESET_REQUESTS = 5;
  */
 export async function register(req, res) {
   try {
+    if (!isDatabaseConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service is unavailable. Please ensure MONGODB_URI is configured and the database is reachable."
+      });
+    }
+
     const { fullName, email, password } = req.body || {};
 
     if (
