@@ -1,3 +1,4 @@
+import { i18n, t, SUPPORTED_LANGUAGES } from "./i18n/i18n.js";
 /**
  * Centralized Hash Router and Route Protection for RaktDal
  *
@@ -71,6 +72,16 @@ export class Router {
 
     // Setup mobile nav hamburger toggle
     this.setupMobileNav();
+
+    // Subscribe to i18n language changes to re-render dynamic views & navbar immediately
+    i18n.subscribe(() => {
+      this.updateNavbarTranslations();
+      this.renderLanguageSelector();
+      this.handleRoute();
+    });
+
+    // Setup language dropdown in navbar
+    this.setupLanguageSelector();
   }
 
   setupMobileNav() {
@@ -89,6 +100,101 @@ export class Router {
       mainNav.querySelectorAll("a").forEach(a => {
         a.addEventListener("click", () => this.closeMobileNav());
       });
+    }
+  }
+
+  
+  setupLanguageSelector() {
+    this.renderLanguageSelector();
+
+    // Close language selector when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#langSelectorWrapper")) {
+        this.closeLanguageSelector();
+      }
+    });
+  }
+
+  toggleLanguageSelector() {
+    const dropdown = document.getElementById("langDropdown");
+    const wrapper = document.getElementById("langSelectorWrapper");
+    const btn = document.getElementById("langSelectorBtn");
+    if (!dropdown || !wrapper) return;
+
+    const isOpen = dropdown.classList.contains("show");
+    if (isOpen) {
+      this.closeLanguageSelector();
+    } else {
+      dropdown.classList.add("show");
+      wrapper.classList.add("open");
+      btn?.setAttribute("aria-expanded", "true");
+    }
+  }
+
+  closeLanguageSelector() {
+    const dropdown = document.getElementById("langDropdown");
+    const wrapper = document.getElementById("langSelectorWrapper");
+    const btn = document.getElementById("langSelectorBtn");
+    if (dropdown) dropdown.classList.remove("show");
+    if (wrapper) wrapper.classList.remove("open");
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
+
+  renderLanguageSelector() {
+    const dropdown = document.getElementById("langDropdown");
+    const currentLabel = document.getElementById("currentLangLabel");
+    const triggerBtn = document.getElementById("langSelectorBtn");
+    if (!dropdown) return;
+
+    const currentMeta = i18n.getCurrentLanguageMeta();
+    if (currentLabel) {
+      currentLabel.textContent = currentMeta.nativeName;
+    }
+
+    dropdown.innerHTML = SUPPORTED_LANGUAGES.map(lang => {
+      const isSelected = lang.code === currentMeta.code;
+      return `
+        <button class="lang-option-item ${isSelected ? 'active' : ''}" data-lang="${lang.code}" role="menuitem" aria-label="${lang.name} (${lang.nativeName})">
+          <span>${lang.nativeName} <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(${lang.name})</small></span>
+          ${isSelected ? '<span class="lang-check-icon">✓</span>' : ''}
+        </button>
+      `;
+    }).join("");
+
+    if (triggerBtn) {
+      triggerBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.toggleLanguageSelector();
+      };
+    }
+
+    dropdown.querySelectorAll(".lang-option-item").forEach(item => {
+      item.onclick = async (e) => {
+        e.stopPropagation();
+        const code = item.getAttribute("data-lang");
+        this.closeLanguageSelector();
+        await i18n.setLanguage(code);
+      };
+    });
+  }
+
+  updateNavbarTranslations() {
+    // Translate static nav links
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      const translated = t(key);
+      if (translated) {
+        el.textContent = translated;
+      }
+    });
+
+    // Re-render auth navigation with current language
+    this.renderNav(authState.getState());
+
+    // Update global footer text if rendered
+    const globalFooter = document.getElementById("globalSiteFooter");
+    if (globalFooter) {
+      globalFooter.innerHTML = homeViews.getFooterHtml();
     }
   }
 
@@ -135,7 +241,7 @@ export class Router {
 
     if (state.loading && !state.initialized) {
       this.navContainer.innerHTML = `
-        <div style="font-size:0.85rem; color:var(--text-muted);">Checking session...</div>
+        <div style="font-size:0.85rem; color:var(--text-muted);">${t("navbar.checkingSession")}</div>
       `;
       return;
     }
@@ -347,68 +453,68 @@ export class Router {
         break;
       case "/blood-banks":
         this.renderPlaceholderPage(
-          "Blood Bank Directory",
-          "Directory listings for authorized regional blood banks and storage facilities across India. Real-time API integration with national portal coming soon.",
+          t("pages.bloodBanksTitle"),
+          t("pages.bloodBanksDesc"),
           "🏥",
-          "Find Participating Donors",
+          t("hero.findDonorsBtn"),
           "#/find-blood"
         );
         break;
       case "/camps":
         this.renderPlaceholderPage(
-          "Blood Donation Camps",
-          "Scheduled public donation drives organized by colleges, hospitals, and verified community partners across India.",
+          t("pages.campsTitle"),
+          t("pages.campsDesc"),
           "⛺",
-          "Register as Donor",
+          t("donor.registerAsDonorBtn"),
           "#/donor/register"
         );
         break;
       case "/about":
         this.renderPlaceholderPage(
-          "About RaktDal",
-          "RaktDal is a Pan-India blood donor coordination and emergency request platform built to streamline the voluntary blood donation network with strict privacy controls.",
+          t("pages.aboutTitle"),
+          t("pages.aboutDesc"),
           "❤️"
         );
         break;
       case "/how-it-works":
         this.renderPlaceholderPage(
-          "How RaktDal Works",
-          "RaktDal connects donors and healthcare coordinators using verified profiles, location-indexed discovery, and direct request-response communication.",
+          t("pages.howItWorksTitle"),
+          t("pages.howItWorksDesc"),
           "⚙️"
         );
         break;
       case "/contact":
         this.renderPlaceholderPage(
-          "Contact RaktDal",
-          "For technical assistance, organization onboarding, or general queries, please reach out to our platform support team.",
+          t("pages.contactTitle"),
+          t("pages.contactDesc"),
           "✉️"
         );
         break;
       case "/privacy":
         this.renderPlaceholderPage(
-          "Privacy Policy",
-          "RaktDal strictly protects donor personal data. Phone numbers, emails, and last donation history are never revealed without explicit donor consent.",
+          t("pages.privacyTitle"),
+          t("pages.privacyDesc"),
           "🛡️"
         );
         break;
       case "/terms":
         this.renderPlaceholderPage(
-          "Terms and Conditions",
-          "RaktDal is a voluntary coordination platform. Users agree to provide truthful information and adhere to responsible community standards.",
+          t("pages.termsTitle"),
+          t("pages.termsDesc"),
           "📜"
         );
         break;
       case "/disclaimer":
         this.renderPlaceholderPage(
-          "Medical Disclaimer",
-          "RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified medical professionals. RaktDal does not verify blood suitability.",
+          t("pages.disclaimerTitle"),
+          t("pages.disclaimerDesc"),
           "⚠️"
         );
         break;
       case "/help":
         this.renderPlaceholderPage(
-          "Help & Support",
-          "Frequently asked questions, donor guides, and instructions for posting emergency blood requests.",
+          t("pages.helpTitle"),
+          t("pages.helpDesc"),
           "💡"
         );
         break;
@@ -451,8 +557,8 @@ export class Router {
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width: 440px;">
         <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 16px; display: block; object-fit: contain;">
-        <h2>Sign In to RaktDal</h2>
-        <p class="subtitle">Access your blood donor profile, request support, and manage appointments securely.</p>
+        <h2>${t("auth.signInTitle")}</h2>
+        <p class="subtitle">${t("auth.signInSubtitle")}</p>
 
         <div id="loginMsg">
           ${errorMessage ? `
@@ -468,17 +574,17 @@ export class Router {
 
         <form id="spaLoginForm" novalidate style="margin-top: 20px; text-align: left;">
           <div class="form-group">
-            <label class="form-label" for="loginEmail">Email Address</label>
-            <input type="email" id="loginEmail" class="form-input" required placeholder="you@example.com">
+            <label class="form-label" for="loginEmail">${t("auth.emailLabel")}</label>
+            <input type="email" id="loginEmail" class="form-input" required placeholder="${t("auth.emailPlaceholder")}">
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password">
+            <label class="form-label" for="loginPassword">${t("auth.passwordLabel")}</label>
+            <input type="password" id="loginPassword" class="form-input" required placeholder="${t("auth.passwordPlaceholder")}">
           </div>
 
           <button type="submit" id="loginSubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
-            <span>Sign In</span>
+            <span>${t("auth.signInBtn")}</span>
           </button>
         </form>
 
@@ -491,7 +597,7 @@ export class Router {
         <div>
           <a id="loginWithGoogleBtn" href="${api.getGoogleAuthUrl()}" class="google-btn" style="text-decoration:none;">
             ${GOOGLE_ICON_SVG}
-            <span>Continue with Google</span>
+            <span>${t("auth.continueWithGoogle")}</span>
           </a>
         </div>
 
@@ -559,14 +665,14 @@ export class Router {
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width: 440px;">
         <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 16px; display: block; object-fit: contain;">
-        <h2>Create an Account</h2>
+        <h2>${t("auth.createAccountTitle")}</h2>
         <p class="subtitle">Join RaktDal to connect with donors or coordinate blood assistance.</p>
 
         <div id="registerMsg"></div>
 
         <form id="spaRegisterForm" novalidate style="margin-top: 20px; text-align: left;">
           <div class="form-group">
-            <label class="form-label" for="regFullName">Full Name</label>
+            <label class="form-label" for="regFullName">${t("auth.fullNameLabel")}</label>
             <input type="text" id="regFullName" class="form-input" required placeholder="Your Full Name">
           </div>
 
@@ -1503,7 +1609,7 @@ export class Router {
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width:480px;">
         <div style="font-size:2.4rem; margin-bottom:10px;">🚫</div>
-        <h2>Access Denied</h2>
+        <h2>${t("errors.accessDenied")}</h2>
         <p class="subtitle" style="margin-bottom:20px;">
           You do not have administrative permissions to view this section.
         </p>
@@ -1534,21 +1640,21 @@ export class Router {
         <div class="requests-container">
           <div class="requests-header">
             <div>
-              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">Blood Requests</h1>
+              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">${t("requests.title")}</h1>
               <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
-                Browse emergency and scheduled blood requirements across hospitals and healthcare centers.
+                ${t("requests.subtitle")}
               </p>
             </div>
             <a href="#/requests/create" class="button">
-              <span>+</span> Create Request
+              ${t("requests.createBtn")}
             </a>
           </div>
 
           <div class="filter-bar">
             <div class="filter-group">
-              <label class="filter-label" for="filterBloodGroup">Blood Group</label>
+              <label class="filter-label" for="filterBloodGroup">${t("donor.bloodGroupLabel")}</label>
               <select id="filterBloodGroup" class="filter-select">
-                <option value="">All Groups</option>
+                <option value="">${t("donor.allBloodGroups")}</option>
                 <option value="A+" ${bloodGroup === "A+" ? "selected" : ""}>A+</option>
                 <option value="A-" ${bloodGroup === "A-" ? "selected" : ""}>A-</option>
                 <option value="B+" ${bloodGroup === "B+" ? "selected" : ""}>B+</option>
@@ -1561,14 +1667,14 @@ export class Router {
             </div>
 
             <div class="filter-group">
-              <label class="filter-label" for="filterCity">City</label>
-              <input type="text" id="filterCity" class="filter-input" placeholder="e.g. Delhi, Mumbai" value="${city}">
+              <label class="filter-label" for="filterCity">${t("donor.cityLabel")}</label>
+              <input type="text" id="filterCity" class="filter-input" placeholder="${t("requests.filterCityPlaceholder")}" value="${city}">
             </div>
 
             <div class="filter-group">
-              <label class="filter-label" for="filterUrgency">Urgency</label>
+              <label class="filter-label" for="filterUrgency">${t("requests.urgencyLevel")}</label>
               <select id="filterUrgency" class="filter-select">
-                <option value="">All Urgencies</option>
+                <option value="">${t("requests.allUrgencies")}</option>
                 <option value="CRITICAL" ${urgency === "CRITICAL" ? "selected" : ""}>Critical</option>
                 <option value="HIGH" ${urgency === "HIGH" ? "selected" : ""}>High</option>
                 <option value="MEDIUM" ${urgency === "MEDIUM" ? "selected" : ""}>Medium</option>
@@ -1585,7 +1691,7 @@ export class Router {
           ${requests.length === 0 ? `
             <div class="auth-card" style="max-width:540px; margin: 40px auto; text-align:center;">
               <div style="font-size:2.2rem; margin-bottom:8px;">🩸</div>
-              <h3>No Active Requests Found</h3>
+              <h3>${t("requests.noRequestsFound")}</h3>
               <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:20px;">
                 No blood requests matched your current filter criteria. Check back soon or create a new request.
               </p>
@@ -1667,7 +1773,7 @@ export class Router {
   renderCreateBloodRequest() {
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width:680px; text-align:left;">
-        <h2 style="margin:0 0 6px 0;">Create Blood Request</h2>
+        <h2 style="margin:0 0 6px 0;">${t("requests.createRequestTitle")}</h2>
         <p class="subtitle" style="margin-bottom:24px;">
           Submit a new requirement for urgent or planned transfusion needs. All requests are verified for safety.
         </p>
@@ -1691,7 +1797,7 @@ export class Router {
             <div>
               <label class="filter-label" for="reqComponent">Component *</label>
               <select id="reqComponent" class="filter-select" style="width:100%; margin-top:4px;" required>
-                <option value="WHOLE_BLOOD">Whole Blood</option>
+                <option value="WHOLE_BLOOD">${t("requests.wholeBlood")}</option>
                 <option value="PACKED_RED_CELLS">Packed Red Cells</option>
                 <option value="PLATELETS">Platelets</option>
                 <option value="PLASMA">Fresh Frozen Plasma</option>
@@ -2044,7 +2150,7 @@ export class Router {
         <div class="requests-container">
           <div class="requests-header">
             <div>
-              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">My Blood Requests</h1>
+              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">${t("requests.myRequestsTitle")}</h1>
               <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
                 Manage your active and completed blood requirements, review donor responses, and update statuses.
               </p>

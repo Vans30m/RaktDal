@@ -1,7 +1,8 @@
 /**
  * Homepage Multi-Section Component for RaktDal
- * Modern, responsive healthcare landing page
+ * Modern, responsive healthcare landing page with complete i18n support
  */
+import { t } from "./i18n/i18n.js";
 
 export const homeViews = {
   getHeroIllustrationSvg() {
@@ -51,25 +52,24 @@ export const homeViews = {
           <rect width="170" height="56" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
           <circle cx="28" cy="28" r="15" fill="#fef2f2"/>
           <path class="anim-pulse-emergency" d="M28 20 L28 29 M28 34 L28 36" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
-          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Emergency Needs</text>
-          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">Instant Coordination</text>
+          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${t("hero.emergencyNeedsBadge")}</text>
+          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">${t("hero.instantCoordination")}</text>
         </g>
 
-        <!-- Floating Badge TOP LEFT: Verified Donors (Moved higher so it never overlaps the bottom chips!) -->
+        <!-- Floating Badge TOP LEFT: Verified Donors -->
         <g class="anim-badge-float-2" transform="translate(45, 140)" filter="url(#cardShadow)">
           <rect width="170" height="56" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
           <circle cx="28" cy="28" r="15" fill="#f0fdf4"/>
           <path d="M22 28 L27 33 L35 23" stroke="#15803d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Verified Donors</text>
-          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">Pan-India Support</text>
+          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${t("hero.verifiedDonorsBadge")}</text>
+          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">${t("hero.panIndiaSupport")}</text>
         </g>
 
         <!-- Center Glowing Blood Drop Icon -->
         <g class="anim-drop-pulse" transform="translate(270, 215)">
-          <!-- Circular Halos centered exactly on the drop's visual center (cy=9) -->
           <circle class="anim-drop-halo-1" cx="0" cy="9" r="54" fill="#fee2e2" opacity="0.7"/>
           <circle class="anim-drop-halo-2" cx="0" cy="9" r="42" fill="#fecaca" opacity="0.8"/>
-          <!-- Blood drop path (Top apex at -28, Bottom curve at +46 -> exact center is cy=9) -->
+          <!-- Blood drop path -->
           <path d="M0 -28 C14 -8 24 8 24 22 C24 35 13 46 0 46 C-13 46 -24 35 -24 22 C-24 8 -14 -8 0 -28 Z" fill="url(#dropGrad)"/>
           <!-- Reflection -->
           <path d="M-8 10 C-4 2 -1 -3 3 -12 C0 -6 -2 3 -4 14 C-5 18 -9 18 -8 10 Z" fill="#ffffff" opacity="0.45"/>
@@ -77,7 +77,7 @@ export const homeViews = {
           <path d="M-4 16 L4 16 M0 12 L0 20" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
         </g>
 
-        <!-- Blood Type Chips at Bottom of Card (Now completely unobstructed and centered!) -->
+        <!-- Blood Type Chips at Bottom of Card -->
         <g class="anim-chips-container" transform="translate(130, 325)">
           <g class="anim-chip-item anim-chip-highlight">
             <rect x="0" y="0" width="48" height="32" rx="9" fill="#fef2f2" stroke="#fecaca"/>
@@ -101,7 +101,7 @@ export const homeViews = {
 
           <g class="anim-chip-item">
             <rect x="232" y="0" width="58" height="32" rx="9" fill="#f1f5f9" stroke="#e2e8f0"/>
-            <text x="261" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">+4 more</text>
+            <text x="261" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">${t("hero.moreBloodGroups")}</text>
           </g>
         </g>
       </svg>
@@ -117,13 +117,13 @@ export const homeViews = {
             <div class="hero-content-col scroll-reveal">
               <span class="landing-eyebrow">
                 <span class="eyebrow-dot"></span>
-                BLOOD DONATION &amp; DONOR COORDINATION
+                ${t("hero.eyebrow")}
               </span>
               <h1 id="heroHeadline" class="hero-title">
-                Every Connection Can <span class="text-accent">Save a Life.</span>
+                ${t("hero.title")} <span class="text-accent">${t("hero.titleAccent")}</span>
               </h1>
               <p class="hero-supporting-text">
-                Discover blood donation resources and connect with participating donors and verified organizations across India.
+                ${t("hero.subtitle")}
               </p>
               <div class="hero-cta-group">
                 <a href="#/find-blood" class="button button-lg button-primary shadow-hover">
@@ -131,13 +131,13 @@ export const homeViews = {
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
-                  Find Blood Donors
+                  ${t("hero.findDonorsBtn")}
                 </a>
                 <a href="#/donor/register" class="button button-lg button-secondary shadow-hover">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                   </svg>
-                  Become a Donor
+                  ${t("hero.becomeDonorBtn")}
                 </a>
               </div>
               <div class="hero-disclaimer-card">
@@ -147,7 +147,7 @@ export const homeViews = {
                   <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
                 <span>
-                  <strong>Medical Coordination Notice:</strong> RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified professionals.
+                  <strong>${t("hero.noticeTitle")}</strong> ${t("hero.noticeText")}
                 </span>
               </div>
             </div>
@@ -162,10 +162,10 @@ export const homeViews = {
         <section class="landing-section section-how-it-works bg-surface-alt" aria-labelledby="howItWorksHeading">
           <div class="landing-container">
             <div class="section-header-center scroll-reveal">
-              <span class="section-badge">How It Works</span>
-              <h2 id="howItWorksHeading" class="section-heading">Making Blood Donation Connections Easier</h2>
+              <span class="section-badge">${t("howItWorks.tag")}</span>
+              <h2 id="howItWorksHeading" class="section-heading">${t("howItWorks.heading")}</h2>
               <p class="section-subheading">
-                RaktDal helps people, donors, and verified organizations coordinate blood donation more effectively.
+                ${t("howItWorks.subtitle")}
               </p>
             </div>
 
@@ -179,9 +179,9 @@ export const homeViews = {
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
                 </div>
-                <h3 class="card-title">Find Blood Donors</h3>
+                <h3 class="card-title">${t("howItWorks.step1Title")}</h3>
                 <p class="card-text">
-                  Search for participating donors using city and PIN code.
+                  ${t("howItWorks.step1Desc")}
                 </p>
               </div>
 
@@ -196,9 +196,9 @@ export const homeViews = {
                     <line x1="9" y1="15" x2="15" y2="15"></line>
                   </svg>
                 </div>
-                <h3 class="card-title">Create Blood Requests</h3>
+                <h3 class="card-title">${t("howItWorks.step2Title")}</h3>
                 <p class="card-text">
-                  Coordinate blood requirements and receive responses from participating donors.
+                  ${t("howItWorks.step2Desc")}
                 </p>
               </div>
 
@@ -213,9 +213,9 @@ export const homeViews = {
                     <path d="M22 11h-6"></path>
                   </svg>
                 </div>
-                <h3 class="card-title">Become a Donor</h3>
+                <h3 class="card-title">${t("howItWorks.step3Title")}</h3>
                 <p class="card-text">
-                  Create a donor profile and choose whether to receive donation notifications.
+                  ${t("howItWorks.step3Desc")}
                 </p>
               </div>
 
@@ -230,9 +230,9 @@ export const homeViews = {
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                   </svg>
                 </div>
-                <h3 class="card-title">Organize Donation Camps</h3>
+                <h3 class="card-title">${t("howItWorks.step4Title")}</h3>
                 <p class="card-text">
-                  Discover donation camps and connect with camp organizers.
+                  ${t("howItWorks.step4Desc")}
                 </p>
               </div>
             </div>
@@ -243,111 +243,106 @@ export const homeViews = {
         <section class="landing-section section-explore" aria-labelledby="exploreHeading">
           <div class="landing-container">
             <div class="section-header-center scroll-reveal">
-              <span class="section-badge">Platform Capabilities</span>
-              <h2 id="exploreHeading" class="section-heading">One Platform. Multiple Ways to Help.</h2>
+              <span class="section-badge">${t("explore.tag")}</span>
+              <h2 id="exploreHeading" class="section-heading">${t("explore.heading")}</h2>
               <p class="section-subheading">
-                Comprehensive coordination features built specifically for donors, recipients, and volunteer networks.
+                ${t("explore.subtitle")}
               </p>
             </div>
 
             <div class="explore-grid">
-              <!-- Card 1: Donor Discovery -->
+              <!-- Card 1 -->
               <div class="explore-card scroll-reveal stagger-1">
-                <div class="explore-card-top">
-                  <div class="explore-icon-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                  </div>
-                  <span class="explore-tag">Directory</span>
+                <div class="explore-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
                 </div>
-                <h3 class="explore-title">Donor Discovery</h3>
-                <p class="explore-description">
-                  Filter verified donor profiles by blood group, state, city, and local PIN code with privacy controls.
+                <h3 class="explore-title">${t("explore.card1Title")}</h3>
+                <p class="explore-desc">
+                  ${t("explore.card1Desc")}
                 </p>
-                <div class="explore-footer">
-                  <a href="#/find-blood" class="button button-sm button-secondary">
-                    Find Donors
-                    <span aria-hidden="true">&rarr;</span>
-                  </a>
-                </div>
+                <a href="#/find-blood" class="explore-link">
+                  <span>${t("explore.card1Link")}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
               </div>
 
-              <!-- Card 2: Blood Requests -->
+              <!-- Card 2 -->
               <div class="explore-card scroll-reveal stagger-2">
-                <div class="explore-card-top">
-                  <div class="explore-icon-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                  </div>
-                  <span class="explore-tag">Urgent &amp; Scheduled</span>
+                <div class="explore-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
                 </div>
-                <h3 class="explore-title">Blood Requests</h3>
-                <p class="explore-description">
-                  Post requirements for patients in hospitals and coordinate responses directly with eligible volunteers.
+                <h3 class="explore-title">${t("explore.card2Title")}</h3>
+                <p class="explore-desc">
+                  ${t("explore.card2Desc")}
                 </p>
-                <div class="explore-footer">
-                  <a href="#/requests" class="button button-sm button-secondary">
-                    Browse Requests
-                    <span aria-hidden="true">&rarr;</span>
-                  </a>
-                </div>
+                <a href="#/requests" class="explore-link">
+                  <span>${t("explore.card2Link")}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
               </div>
 
-              <!-- Card 3: Blood Bank Inventory -->
+              <!-- Card 3 -->
               <div class="explore-card scroll-reveal stagger-3">
-                <div class="explore-card-top">
-                  <div class="explore-icon-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                  </div>
-                  <span class="explore-tag">Directory</span>
+                <div class="explore-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
                 </div>
-                <h3 class="explore-title">Blood Bank Inventory</h3>
-                <p class="explore-description">
-                  Access contact details and listings of licensed blood centers and storage facilities in your region.
+                <h3 class="explore-title">${t("explore.card3Title")}</h3>
+                <p class="explore-desc">
+                  ${t("explore.card3Desc")}
                 </p>
-                <div class="explore-footer">
-                  <a href="#/blood-banks" class="button button-sm button-secondary">
-                    Explore Directory
-                    <span aria-hidden="true">&rarr;</span>
-                  </a>
-                </div>
+                <a href="#/blood-banks" class="explore-link">
+                  <span>${t("explore.card3Link")}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
               </div>
 
-              <!-- Card 4: Donation Camps -->
+              <!-- Card 4 -->
               <div class="explore-card scroll-reveal stagger-4">
-                <div class="explore-card-top">
-                  <div class="explore-icon-box">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                  </div>
-                  <span class="explore-tag">Community Drives</span>
+                <div class="explore-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
                 </div>
-                <h3 class="explore-title">Donation Camps</h3>
-                <p class="explore-description">
-                  View scheduled public blood donation drives organized by colleges, hospitals, and community NGOs.
+                <h3 class="explore-title">${t("explore.card4Title")}</h3>
+                <p class="explore-desc">
+                  ${t("explore.card4Desc")}
                 </p>
-                <div class="explore-footer">
-                  <a href="#/camps" class="button button-sm button-secondary">
-                    View Camps
-                    <span aria-hidden="true">&rarr;</span>
-                  </a>
-                </div>
+                <a href="#/camps" class="explore-link">
+                  <span>${t("explore.card4Link")}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- SECTION 4: COMMUNITY CALL TO ACTION -->
+        <!-- SECTION 4: COMMUNITY CTA -->
         <section class="landing-section section-cta" aria-labelledby="ctaHeadline">
           <div class="landing-container">
             <div class="cta-banner-card scroll-reveal">
@@ -355,17 +350,17 @@ export const homeViews = {
               <div class="cta-decorative-circle circle-2"></div>
               
               <div class="cta-inner-content">
-                <span class="cta-tag">Join Our Community Network</span>
-                <h2 id="ctaHeadline" class="cta-heading">Be Someone's Reason to Smile.</h2>
+                <span class="cta-tag">${t("cta.tag")}</span>
+                <h2 id="ctaHeadline" class="cta-heading">${t("cta.heading")}</h2>
                 <p class="cta-supporting-text">
-                  Your willingness to help can make a meaningful difference. Join RaktDal and support responsible blood donation coordination.
+                  ${t("cta.subtitle")}
                 </p>
                 <div class="cta-buttons-row">
                   <a href="#/donor/register" class="button button-lg button-white shadow-hover">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                     </svg>
-                    Become a Donor
+                    ${t("cta.becomeDonorBtn")}
                   </a>
                   <a href="#/requests" class="button button-lg button-outline-white shadow-hover">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -374,7 +369,7 @@ export const homeViews = {
                       <line x1="16" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                     </svg>
-                    Explore Blood Requests
+                    ${t("cta.exploreRequestsBtn")}
                   </a>
                 </div>
               </div>
@@ -400,45 +395,45 @@ export const homeViews = {
                 <span class="brand-text">RaktDal</span>
               </a>
               <p class="footer-about-text">
-                Connecting people, donors, and verified organizations for responsible blood donation coordination across India.
+                ${t("footer.aboutText")}
               </p>
               <div class="footer-badge-box">
-                <span class="footer-mini-badge">Pan-India Network</span>
-                <span class="footer-mini-badge">Privacy First</span>
+                <span class="footer-mini-badge">${t("footer.panIndiaNetwork")}</span>
+                <span class="footer-mini-badge">${t("footer.privacyFirst")}</span>
               </div>
             </div>
 
             <!-- Column 2: Quick Links -->
             <div class="footer-col">
-              <h4 class="footer-col-title">Quick Links</h4>
+              <h4 class="footer-col-title">${t("footer.quickLinks")}</h4>
               <ul class="footer-nav-list">
-                <li><a href="#/">Home</a></li>
-                <li><a href="#/find-blood">Find Donors</a></li>
-                <li><a href="#/requests">Blood Requests</a></li>
-                <li><a href="#/camps">Donation Camps</a></li>
-                <li><a href="#/donor/register">Become a Donor</a></li>
+                <li><a href="#/">${t("footer.home")}</a></li>
+                <li><a href="#/find-blood">${t("footer.findDonors")}</a></li>
+                <li><a href="#/requests">${t("footer.bloodRequests")}</a></li>
+                <li><a href="#/camps">${t("footer.donationCamps")}</a></li>
+                <li><a href="#/donor/register">${t("footer.becomeDonor")}</a></li>
               </ul>
             </div>
 
             <!-- Column 3: Platform -->
             <div class="footer-col">
-              <h4 class="footer-col-title">Platform</h4>
+              <h4 class="footer-col-title">${t("footer.platform")}</h4>
               <ul class="footer-nav-list">
-                <li><a href="#/about">About RaktDal</a></li>
-                <li><a href="#/how-it-works">How It Works</a></li>
-                <li><a href="#/blood-banks">Blood Bank Inventory</a></li>
-                <li><a href="#/contact">Contact Us</a></li>
+                <li><a href="#/about">${t("footer.aboutRaktDal")}</a></li>
+                <li><a href="#/how-it-works">${t("footer.howItWorks")}</a></li>
+                <li><a href="#/blood-banks">${t("footer.bloodBankInventory")}</a></li>
+                <li><a href="#/contact">${t("footer.contactUs")}</a></li>
               </ul>
             </div>
 
             <!-- Column 4: Important Information -->
             <div class="footer-col">
-              <h4 class="footer-col-title">Important Information</h4>
+              <h4 class="footer-col-title">${t("footer.importantInfo")}</h4>
               <ul class="footer-nav-list">
-                <li><a href="#/privacy">Privacy Policy</a></li>
-                <li><a href="#/terms">Terms and Conditions</a></li>
-                <li><a href="#/disclaimer">Medical Disclaimer</a></li>
-                <li><a href="#/help">Help and Support</a></li>
+                <li><a href="#/privacy">${t("footer.privacyPolicy")}</a></li>
+                <li><a href="#/terms">${t("footer.termsAndConditions")}</a></li>
+                <li><a href="#/disclaimer">${t("footer.medicalDisclaimer")}</a></li>
+                <li><a href="#/help">${t("footer.helpAndSupport")}</a></li>
               </ul>
             </div>
           </div>
@@ -446,17 +441,17 @@ export const homeViews = {
           <!-- Footer Medical Disclaimer Notice -->
           <div class="footer-disclaimer-banner">
             <p>
-              <strong>Medical Disclaimer:</strong> RaktDal facilitates coordination and does not independently verify real-time blood availability or determine medical suitability. Blood transfusion compatibility and recipient eligibility must strictly be confirmed by authorized medical professionals and certified blood bank staff.
+              <strong>${t("footer.medicalDisclaimer")}:</strong> ${t("footer.disclaimerNotice")}
             </p>
           </div>
 
           <!-- Footer Bottom Bar -->
           <div class="footer-bottom-bar">
             <div class="footer-copyright">
-              &copy; 2026 RaktDal. All rights reserved.
+              ${t("footer.copyright")}
             </div>
             <div class="footer-tagline">
-              Built for responsible blood donation coordination.
+              ${t("footer.tagline")}
             </div>
           </div>
         </div>
@@ -491,13 +486,12 @@ export const homeViews = {
         }
       );
 
-      const reveals = container.querySelectorAll(".scroll-reveal");
-      reveals.forEach(el => observer.observe(el));
+      const revealElements = container.querySelectorAll(".scroll-reveal");
+      revealElements.forEach(el => observer.observe(el));
     } else {
-      // Fallback for older browsers
+      // Fallback: reveal immediately if IntersectionObserver not supported
       const reveals = container.querySelectorAll(".scroll-reveal");
       reveals.forEach(el => el.classList.add("revealed"));
     }
   }
 };
-

@@ -1,3 +1,4 @@
+import { t } from "./i18n/i18n.js";
 import { api } from "./api.js";
 import { authState } from "./auth.js";
 
@@ -17,10 +18,10 @@ export const donorViews = {
 
     container.innerHTML = `
       <section class="donor-search-header" style="text-align: center; margin-bottom: 24px;">
-        <p class="eyebrow">Direct Volunteer Coordination</p>
-        <h1 style="font-size: 2rem; margin: 4px 0 8px;">Find Opted-In <span>Blood Donors</span></h1>
+        <p class="eyebrow">${t("donor.discoveryEyebrow")}</p>
+        <h1 style="font-size: 2rem; margin: 4px 0 8px;">${t("donor.searchTitle")}</h1>
         <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-          Search active, voluntary blood donors by blood group, city, or 6-digit postal PIN code.
+          ${t("donor.searchSubtitle")}
         </p>
       </section>
 
@@ -28,35 +29,35 @@ export const donorViews = {
       <div class="auth-card" style="max-width: 900px; margin: 0 auto 24px; text-align: left;">
         <form id="donorSearchForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end;">
           <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchBloodGroup">Blood Group</label>
+            <label class="form-label" for="searchBloodGroup">${t("donor.bloodGroupLabel")}</label>
             <select id="searchBloodGroup" class="form-input">
-              <option value="">All Blood Groups</option>
+              <option value="">${t("donor.allBloodGroups")}</option>
               ${BLOOD_GROUPS.map((bg) => `<option value="${bg}" ${bloodGroup === bg ? "selected" : ""}>${bg}</option>`).join("")}
             </select>
           </div>
 
           <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchCity">City</label>
-            <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai, Delhi" value="${escapeHtml(city)}">
+            <label class="form-label" for="searchCity">${t("donor.cityLabel")}</label>
+            <input type="text" id="searchCity" class="form-input" placeholder="${t("donor.cityPlaceholder")}" value="${escapeHtml(city)}">
           </div>
 
           <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchPinCode">PIN Code</label>
-            <input type="text" id="searchPinCode" class="form-input" maxlength="6" placeholder="6-digit PIN" value="${escapeHtml(pinCode)}">
+            <label class="form-label" for="searchPinCode">${t("donor.pinCodeLabel")}</label>
+            <input type="text" id="searchPinCode" class="form-input" maxlength="6" placeholder="${t("donor.pinCodePlaceholder")}" value="${escapeHtml(pinCode)}">
           </div>
 
           <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchAvailability">Availability</label>
+            <label class="form-label" for="searchAvailability">${t("donor.availabilityLabel")}</label>
             <select id="searchAvailability" class="form-input">
-              <option value="">Any Status</option>
-              <option value="AVAILABLE" ${availabilityStatus === "AVAILABLE" ? "selected" : ""}>Available Now</option>
-              <option value="UNAVAILABLE" ${availabilityStatus === "UNAVAILABLE" ? "selected" : ""}>Unavailable</option>
+              <option value="">${t("donor.anyStatus")}</option>
+              <option value="AVAILABLE" ${availabilityStatus === "AVAILABLE" ? "selected" : ""}>${t("donor.availableNow")}</option>
+              <option value="UNAVAILABLE" ${availabilityStatus === "UNAVAILABLE" ? "selected" : ""}>${t("common.unavailable")}</option>
             </select>
           </div>
 
           <div style="display: flex; gap: 8px;">
-            <button type="submit" class="button" style="flex: 1; height: 42px;">Search</button>
-            <button type="button" id="clearSearchBtn" class="button button-outline" style="height: 42px; padding: 0 14px;">Reset</button>
+            <button type="submit" class="button" style="flex: 1; height: 42px;">${t("common.search")}</button>
+            <button type="button" id="clearSearchBtn" class="button button-outline" style="height: 42px; padding: 0 14px;">${t("common.reset")}</button>
           </div>
         </form>
       </div>
@@ -65,7 +66,7 @@ export const donorViews = {
       <div id="donorSearchResults" style="max-width: 900px; margin: 0 auto;">
         <div style="text-align: center; padding: 30px; color: var(--text-muted);">
           <div class="spinner" style="margin: 0 auto 10px;"></div>
-          Searching active donors...
+          ${t("donor.searchingDonors")}
         </div>
       </div>
     `;
@@ -121,11 +122,11 @@ export const donorViews = {
         resultsEl.innerHTML = `
           <div class="auth-card" style="text-align: center; padding: 40px 20px;">
             <div style="font-size: 2.5rem; margin-bottom: 10px;">🩸</div>
-            <h3 style="margin: 0 0 8px;">No matching donors found</h3>
+            <h3 style="margin: 0 0 8px;">${t("donor.noDonorsFound")}</h3>
             <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 450px; margin: 0 auto 16px;">
-              Try broadening your search criteria or searching for nearby cities and PIN codes.
+              ${t("donor.noDonorsSub")}
             </p>
-            <a href="#/donor/register" class="button button-outline" style="font-size: 0.88rem;">Register as a Donor</a>
+            <a href="#/donor/register" class="button button-outline" style="font-size: 0.88rem;">${t("donor.registerAsDonorBtn")}</a>
           </div>
         `;
         return;
@@ -244,8 +245,8 @@ export const donorViews = {
       <div class="auth-card" style="max-width: 620px; text-align: left;">
         <div style="text-align: center; margin-bottom: 20px;">
           <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 12px; display: block; object-fit: contain;">
-          <h2 style="margin: 0 0 6px;">Register as a Blood Donor</h2>
-          <p class="subtitle">Complete your confidential donor profile to participate in voluntary coordination.</p>
+          <h2 style="margin: 0 0 6px;">${t("donor.registerTitle")}</h2>
+          <p class="subtitle">${t("donor.registerSubtitle")}</p>
         </div>
 
         <div id="createDonorMsg"></div>
@@ -261,13 +262,13 @@ export const donorViews = {
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="donorAge">Age (18 - 65) *</label>
+              <label class="form-label" for="donorAge">${t("donor.ageLabel")} *</label>
               <input type="number" id="donorAge" class="form-input" min="18" max="65" placeholder="e.g. 25" required>
             </div>
           </div>
 
           <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
-            <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Residential Location</h4>
+            <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">${t("donor.residentialLocation")}</h4>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
               <div class="form-group">
@@ -329,27 +330,27 @@ export const donorViews = {
             <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; cursor: pointer;">
               <input type="checkbox" id="consentPublicDiscovery" checked style="margin-top: 3px;">
               <span style="font-size: 0.85rem; color: var(--text-main);">
-                <strong>Public Donor Discovery:</strong> Allow verified requesters to discover your blood group and city in search results.
+                <strong>Public Donor Discovery:</strong> ${t("donor.consentPublic")}
               </span>
             </label>
 
             <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; cursor: pointer;">
               <input type="checkbox" id="consentNotifications" checked style="margin-top: 3px;">
               <span style="font-size: 0.85rem; color: var(--text-main);">
-                <strong>Emergency Notifications:</strong> Receive urgent blood donation alerts when patients in your area need your blood group.
+                <strong>Emergency Notifications:</strong> ${t("donor.consentEmergency")}
               </span>
             </label>
 
             <label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer;">
               <input type="checkbox" id="consentContactSharing" style="margin-top: 3px;">
               <span style="font-size: 0.85rem; color: var(--text-main);">
-                <strong>Contact Information Sharing:</strong> Share selected contact info directly on search cards. (Unchecked by default for privacy).
+                <strong>Contact Information Sharing:</strong> ${t("donor.consentContact")}
               </span>
             </label>
           </div>
 
           <button type="submit" id="createProfileSubmitBtn" class="button" style="width: 100%;">
-            <span>Complete Donor Registration</span>
+            <span>${t("donor.completeRegistrationBtn")}</span>
           </button>
         </form>
       </div>
@@ -414,8 +415,8 @@ export const donorViews = {
     container.innerHTML = `
       <div class="auth-card" style="max-width: 620px; text-align: left;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="margin: 0 0 6px;">Edit Donor Profile</h2>
-          <p class="subtitle">Update your location and donation details.</p>
+          <h2 style="margin: 0 0 6px;">${t("donor.editProfileTitle")}</h2>
+          <p class="subtitle">${t("donor.editProfileSubtitle")}</p>
         </div>
         <div id="editDonorMsg"></div>
         <div id="editDonorFormContainer">
@@ -552,7 +553,7 @@ export const donorViews = {
           msgEl.innerHTML = `<div class="alert alert-error">Network error.</div>`;
         } finally {
           btn.disabled = false;
-          btn.innerHTML = `<span>Save Changes</span>`;
+          btn.innerHTML = `<span>${t("common.save")}</span>`;
         }
       });
     } catch (e) {
@@ -567,7 +568,7 @@ export const donorViews = {
   async renderAvailabilitySettings(container) {
     container.innerHTML = `
       <div class="auth-card" style="max-width: 540px; text-align: left;">
-        <h2 style="margin: 0 0 8px;">Availability Status</h2>
+        <h2 style="margin: 0 0 8px;">${t("donor.availabilityStatus")}</h2>
         <p class="subtitle">Quickly toggle whether you can respond to urgent donation calls.</p>
         
         <div id="availMsg"></div>
@@ -649,7 +650,7 @@ export const donorViews = {
   async renderConsentSettings(container) {
     container.innerHTML = `
       <div class="auth-card" style="max-width: 600px; text-align: left;">
-        <h2 style="margin: 0 0 8px;">Privacy & Consent Settings</h2>
+        <h2 style="margin: 0 0 8px;">${t("donor.privacySettings")}</h2>
         <p class="subtitle">Control exactly how and where your information is used. Changes are strictly logged for your protection.</p>
         
         <div id="consentSettingsMsg"></div>

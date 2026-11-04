@@ -20,24 +20,41 @@
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </button>
-
     <nav id="mainNav" aria-label="Main navigation">
-      <a href="#/" data-route="/">Home</a>
-      <a href="#/find-blood" data-route="/find-blood">Find Donors</a>
-      <a href="#/donor/register" data-route="/donor/register">Donate Blood</a>
-      <a href="#/requests" data-route="/requests">Blood Requests</a>
-      <a href="#/blood-banks" data-route="/blood-banks">Blood Banks</a>
-      <a href="#/camps" data-route="/camps">Donation Camps</a>
+      <a href="#/" data-route="/" data-i18n="navbar.home">Home</a>
+      <a href="#/find-blood" data-route="/find-blood" data-i18n="navbar.findDonors">Find Donors</a>
+      <a href="#/donor/register" data-route="/donor/register" data-i18n="navbar.donateBlood">Donate Blood</a>
+      <a href="#/requests" data-route="/requests" data-i18n="navbar.bloodRequests">Blood Requests</a>
+      <a href="#/blood-banks" data-route="/blood-banks" data-i18n="navbar.bloodBanks">Blood Banks</a>
+      <a href="#/camps" data-route="/camps" data-i18n="navbar.donationCamps">Donation Camps</a>
     </nav>
 
-    <div id="authNavContainer">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <a href="#/login" class="button button-outline" style="padding:7px 14px; font-size:0.88rem;">
-          Sign In
-        </a>
-        <a href="#/register" class="button" style="padding:7px 14px; font-size:0.88rem;">
-          Register
-        </a>
+    <div class="nav-actions-group">
+      <!-- Language Selector Dropdown -->
+      <div class="lang-selector-wrapper" id="langSelectorWrapper">
+        <button id="langSelectorBtn" class="lang-selector-btn" aria-haspopup="true" aria-expanded="false" aria-label="Select Language" title="Select Language">
+          <svg class="lang-globe-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span id="currentLangLabel" class="current-lang-text">English</span>
+          <svg class="lang-arrow-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div id="langDropdown" class="lang-dropdown" role="menu" aria-label="Language selection options"></div>
+      </div>
+
+      <div id="authNavContainer">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="#/login" class="button button-outline" style="padding:7px 14px; font-size:0.88rem;" data-i18n="navbar.signIn">
+            Sign In
+          </a>
+          <a href="#/register" class="button" style="padding:7px 14px; font-size:0.88rem;" data-i18n="navbar.register">
+            Register
+          </a>
+        </div>
       </div>
     </div>
   </header>

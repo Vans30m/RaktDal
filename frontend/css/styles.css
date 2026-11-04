@@ -2340,3 +2340,159 @@ html {
     animation: none !important;
   }
 }
+
+
+/* ==========================================================================
+   LANGUAGE SELECTOR DROPDOWN & TYPOGRAPHY
+   ========================================================================== */
+:root {
+  /* Script-compatible typography stack supporting Latin, Devanagari, Bengali, Telugu, and Tamil */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', 'Noto Sans Devanagari', 'Noto Sans Bengali', 'Noto Sans Telugu', 'Noto Sans Tamil', sans-serif;
+}
+
+.nav-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-selector-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-selector-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.lang-selector-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: var(--red);
+}
+
+.lang-selector-btn:focus-visible {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.lang-globe-icon {
+  color: var(--red);
+  flex-shrink: 0;
+}
+
+.current-lang-text {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.lang-arrow-icon {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.lang-selector-wrapper.open .lang-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 170px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+  padding: 6px;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.16s ease-out forwards;
+}
+
+.lang-dropdown.show {
+  display: block;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lang-option-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lang-option-item:hover {
+  background: #f1f5f9;
+  color: var(--red);
+}
+
+.lang-option-item:focus-visible {
+  outline: none;
+  background: #fef2f2;
+  color: var(--red);
+}
+
+.lang-option-item.active {
+  background: #fef2f2;
+  color: var(--red);
+  font-weight: 700;
+}
+
+.lang-check-icon {
+  color: var(--red);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* Indic text line-height adjustment for clear script rendering */
+:lang(hi), :lang(mr), :lang(bn), :lang(te), :lang(ta) {
+  line-height: 1.55;
+}
+
+@media (max-width: 768px) {
+  .lang-selector-btn {
+    padding: 6px 10px;
+    font-size: 0.82rem;
+  }
+  .current-lang-text {
+    max-width: 65px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
