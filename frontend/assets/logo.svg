@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
-  <!-- Blood Drop Shape in RaktDal Red (#E51A24 / #DC2626) -->
-  <path d="M250 55 C240 75 120 230 120 330 A130 130 0 0 0 380 330 C380 230 260 75 250 55 Z" fill="#E51A24"/>
-  <!-- Centered Medical White Cross -->
-  <path d="M225 240 H275 V295 H330 V345 H275 V400 H225 V345 H170 V295 H225 Z" fill="#FFFFFF"/>
-</svg>

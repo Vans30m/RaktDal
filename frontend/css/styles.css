@@ -1104,6 +1104,8 @@ html {
 .landing-eyebrow {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
+  max-width: 100%;
   gap: 8px;
   color: var(--red);
   font-size: 0.8rem;
@@ -1450,6 +1452,27 @@ html {
   border-radius: 6px;
 }
 
+
+/* Explore Card Header - Icon and Text on Single Line */
+.explore-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.explore-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.explore-title {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+}
 .explore-title {
   font-size: clamp(1rem, 1.2vw + 0.6rem, 1.12rem);
   font-weight: 750;
@@ -1463,6 +1486,37 @@ html {
   line-height: 1.55;
   margin: 0 0 20px 0;
   flex: 1;
+}
+
+
+/* Explore Card Action Link - text and arrow on same line on the right side */
+.explore-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+  color: var(--primary, #b91c1c);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  width: 100%;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.explore-link:hover {
+  gap: 12px;
+  color: #991b1b;
+}
+
+.explore-link svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.explore-link:hover svg {
+  transform: translateX(3px);
 }
 
 .explore-footer {
@@ -1863,6 +1917,48 @@ html {
 /* Mobile & Small Tablets (max-width: 768px) */
 @media (max-width: 768px) {
 
+  .landing-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 5px 12px;
+    white-space: nowrap;
+  }
+
+  .feature-card,
+  .explore-card {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .card-icon-bubble {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .card-icon-bubble svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .feature-card h3,
+  .explore-card h3 {
+    font-size: 1.18rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .feature-card p,
+  .explore-card p {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
   .hero-grid {
     grid-template-columns: 1fr;
     text-align: center;
@@ -1879,7 +1975,18 @@ html {
   }
 
   .hero-cta-group {
+    display: flex;
+    flex-direction: row;
     justify-content: center;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .hero-cta-group .button {
+    flex: 1;
+    max-width: 240px;
+    justify-content: center;
+    white-space: nowrap;
   }
 
   .hero-disclaimer-card {
@@ -1887,8 +1994,12 @@ html {
     text-align: left;
   }
 
+  .hero-content-col {
+    order: 1;
+  }
+
   .hero-visual-col {
-    order: -1;
+    order: 2;
   }
 
   .hero-illustration-svg {
@@ -1898,7 +2009,19 @@ html {
   .how-cards-grid,
   .explore-grid {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 20px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 601px) and (max-width: 768px) {
+    .how-cards-grid,
+    .explore-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      max-width: none;
+    }
   }
 
   .cta-banner-card {
@@ -1916,12 +2039,43 @@ html {
   }
 
   .footer-columns-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 16px;
   }
 
   .col-brand {
+    grid-column: 1 / -1;
     padding-right: 0;
+    margin-bottom: 4px;
+  }
+
+  .footer-col {
+    min-width: 0;
+  }
+
+  /* Make Important Information span full width with a 2x2 link grid */
+  .footer-col:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .footer-col:last-child .footer-nav-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
+  }
+
+  .footer-col-title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .footer-nav-list {
+    gap: 10px;
+  }
+
+  .footer-disclaimer-banner {
+    padding: 16px 18px;
+    margin-bottom: 28px;
   }
 
   .footer-bottom-bar {
@@ -2014,12 +2168,27 @@ html {
   }
 
   .hero-cta-group {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     width: 100%;
+    gap: 10px;
   }
 
   .hero-cta-group .button {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    padding: 11px 8px;
+    font-size: 0.84rem;
+    white-space: nowrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .hero-cta-group .button svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
   }
 
   .landing-section {
@@ -2494,5 +2663,265 @@ html {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+
+/* ==========================================================================
+   PHASE 18: PWA & COMPLETE RESPONSIVE OPTIMIZATION
+   ========================================================================== */
+
+/* Safe area insets for notched phones & standalone PWA header padding */
+body {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+body.pwa-standalone .site-header {
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+}
+
+/* PWA Connectivity Banner */
+.pwa-connectivity-banner {
+  display: none;
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.pwa-connectivity-banner .banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pwa-connectivity-banner.offline {
+  display: block;
+  background: #fef2f2;
+  color: #991b1b;
+  border-bottom: 1px solid #fecaca;
+  animation: slideDownBanner 0.25s ease forwards;
+}
+
+.pwa-connectivity-banner.online {
+  display: block;
+  background: #f0fdf4;
+  color: #166534;
+  border-bottom: 1px solid #bbf7d0;
+  animation: slideDownBanner 0.25s ease forwards;
+}
+
+@keyframes slideDownBanner {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+/* PWA App Update Notification Card */
+.pwa-update-card {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1050;
+  max-width: 420px;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* PWA Install Banner at Bottom-Right */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: calc(100% - 48px);
+  max-width: 440px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.18);
+  z-index: 1040;
+  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 640px) {
+  .pwa-install-banner {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+.pwa-install-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pwa-install-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pwa-install-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pwa-install-text strong {
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+.pwa-install-text span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.pwa-install-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwa-dismiss-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.pwa-dismiss-btn:hover {
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   TOUCH TARGET & COMPACT RESPONSIVE REFINEMENTS
+   ========================================================================== */
+
+/* Minimum 44x44 CSS pixel touch targets for all interactive buttons on mobile */
+@media (max-width: 768px) {
+  .button,
+  .lang-selector-btn,
+  .mobile-nav-toggle,
+  .user-menu-trigger,
+  .filter-select,
+  .filter-input {
+    min-height: 44px;
+  }
+
+  .site-header {
+    padding: 10px 16px;
+    gap: 8px;
+  }
+
+  .brand img {
+    height: 34px !important;
+  }
+
+  .brand {
+    font-size: 1.15rem;
+    gap: 6px;
+  }
+
+  .nav-actions-group {
+    gap: 6px;
+  }
+
+  .lang-selector-btn {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+
+  /* Prevent accidental horizontal overflow on mobile viewports */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  /* Responsive table card adaptation for admin and lists */
+  .admin-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure cards never touch the screen edge */
+  .auth-card,
+  .feature-card,
+  .explore-card,
+  .request-card {
+    border-radius: 12px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Ensure forms wrap comfortably on small screens (320px - 375px) */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS Safari */
+  }
+
+  /* Hero illustration scales down cleanly without overlapping */
+  .hero-illustration-svg {
+    width: 100%;
+    max-width: 340px;
+    height: auto;
+  }
+}
+
+/* Extra small devices (320px - 375px) */
+@media (max-width: 375px) {
+  .current-lang-text {
+    display: none; /* Icon-only on very compact phones to preserve spacing */
+  }
+
+  .site-header {
+    padding: 8px 12px;
+  }
+
+  .hero-title {
+    font-size: 2rem !important;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-cta-group .button {
+    width: 100%;
+  }
+
+  .landing-footer {
+    padding: 48px 0 24px 0;
   }
 }
