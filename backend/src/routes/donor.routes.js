@@ -9,6 +9,8 @@ import {
 } from "../controllers/donor.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { verifyCsrf } from "../utils/security.js";
+import { Organization } from "../models/Organization.js";
+import { CampService } from "../services/camp.service.js";
 
 const router = Router();
 
@@ -22,5 +24,83 @@ router.patch("/me", authenticate, verifyCsrf, updateMyDonorProfile);
 router.patch("/me/availability", authenticate, verifyCsrf, updateMyAvailability);
 router.patch("/me/consent", authenticate, verifyCsrf, updateMyConsent);
 
-export default router;
+// Public Blood Bank Directory & Donation Camps Endpoints
+router.get("/directory/blood-banks", async (req, res) => {
+  try {
+    const { city, state, search, page = 1, limit = 12 } = req.query;
+    const query = {
+      type: "BLOOD_BANK",
+      isVerified: true,
+      verificationStatus: "APPROVED"
+    };
 
+    if (city && typeof city === "string") {
+      query["address.city"] = new RegExp(`^${city.trim()}$`, "i");
+    }
+    if (state && typeof state === "string") {
+      query["address.state"] = new RegExp(`^${state.trim()}$`, "i");
+    }
+    if (search && typeof search === "string" && search.trim()) {
+      const sanitized = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      query.$or = [
+        { name: { $regex: sanitized, $options: "i" } },
+        { "address.city": { $regex: sanitized, $options: "i" } },
+        { "address.state": { $regex: sanitized, $options: "i" } },
+        { licenseNumber: { $regex: sanitized, $options: "i" } }
+      ];
+    }
+
+    const safePage = Math.max(1, parseInt(page, 10) || 1);
+    const safeLimit = Math.min(50, Math.max(1, parseInt(limit, 10) || 12));
+
+    const [banks, total] = await Promise.all([
+      Organization.find(query)
+        .sort({ name: 1 })
+        .skip((safePage - 1) * safeLimit)
+        .limit(safeLimit),
+      Organization.countDocuments(query)
+    ]);
+
+    const sanitizedBanks = banks.map((b) => b.toPublicProfile());
+
+    res.json({
+      success: true,
+      message: "Blood banks fetched successfully.",
+      data: {
+        bloodBanks: sanitizedBanks,
+        pagination: {
+          total,
+          page: safePage,
+          limit: safeLimit,
+          totalPages: Math.ceil(total / safeLimit)
+        }
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message || "Failed to fetch blood banks." });
+  }
+});
+
+router.get("/directory/camps", async (req, res) => {
+  try {
+    const { city, state, pinCode, status, page, limit } = req.query;
+    const result = await CampService.searchPublishedCamps({
+      city,
+      state,
+      pinCode,
+      status: status || "PUBLISHED",
+      page,
+      limit: limit || 12
+    });
+
+    res.json({
+      success: true,
+      message: "Donation camps fetched successfully.",
+      data: result
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message || "Failed to fetch camps." });
+  }
+});
+
+export default router;

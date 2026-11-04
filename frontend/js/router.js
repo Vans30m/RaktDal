@@ -19,6 +19,16 @@ import { donorViews } from "./donor.js";
 import { homeViews } from "./home.js";
 import { toast } from "./toast.js";
 
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Template for Google Login button SVG
 const GOOGLE_ICON_SVG = `
   <svg viewBox="0 0 24 24" style="width:20px; height:20px; flex-shrink:0;">
@@ -455,22 +465,10 @@ export class Router {
         this.renderAdminDashboard();
         break;
       case "/blood-banks":
-        this.renderPlaceholderPage(
-          t("pages.bloodBanksTitle"),
-          t("pages.bloodBanksDesc"),
-          "🏥",
-          t("hero.findDonorsBtn"),
-          "#/find-blood"
-        );
+        this.renderBloodBanksDirectory(params);
         break;
       case "/camps":
-        this.renderPlaceholderPage(
-          t("pages.campsTitle"),
-          t("pages.campsDesc"),
-          "⛺",
-          t("donor.registerAsDonorBtn"),
-          "#/donor/register"
-        );
+        this.renderDonationCamps(params);
         break;
       case "/about":
         this.renderPlaceholderPage(
@@ -2227,6 +2225,250 @@ export class Router {
     }
   }
 
+
+  async renderBloodBanksDirectory(params) {
+    this.renderLoader("Loading verified blood banks...");
+    try {
+      const city = params.get("city") || "";
+      const search = params.get("search") || "";
+      const queryObj = {};
+      if (city) queryObj.city = city;
+      if (search) queryObj.search = search;
+
+      const res = await api.getBloodBanks(queryObj);
+      const data = await res.json();
+      const banks = (data.success && data.data && data.data.bloodBanks) ? data.data.bloodBanks : [];
+
+      this.appContainer.innerHTML = `
+        <div class="requests-container" style="max-width: 1200px; margin: 0 auto; padding: 20px 16px;">
+          <div class="requests-header" style="text-align: center; margin-bottom: 24px;">
+            <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
+              ${t("explore.card3Title")}
+            </p>
+            <h1 style="font-size: 2.1rem; margin: 6px 0 10px;">${t("pages.bloodBanksTitle")}</h1>
+            <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto;">
+              ${t("pages.bloodBanksDesc")}
+            </p>
+          </div>
+
+          <div class="auth-card" style="max-width: 1200px; margin: 0 auto 24px; padding: 16px 20px; text-align: left;">
+            <form id="bloodBanksSearchForm" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+              <div class="form-group" style="flex: 2; min-width: 220px; margin: 0;">
+                <label class="form-label" for="bankSearchInput">Search Name / License / State</label>
+                <input type="text" id="bankSearchInput" class="form-input" placeholder="e.g. LifeStream, Red Cross, Maharashtra" value="${escapeHtml(search)}">
+              </div>
+              <div class="form-group" style="flex: 1; min-width: 180px; margin: 0;">
+                <label class="form-label" for="bankCityInput">${t("donor.cityLabel")}</label>
+                <input type="text" id="bankCityInput" class="form-input" placeholder="e.g. Mumbai, Delhi, Bengaluru" value="${escapeHtml(city)}">
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="submit" class="button" style="height: 42px; padding: 0 20px;">${t("common.search")}</button>
+                <button type="button" id="clearBankSearchBtn" class="button button-outline" style="height: 42px; padding: 0 14px;">${t("common.reset")}</button>
+              </div>
+            </form>
+          </div>
+
+          ${banks.length === 0 ? `
+            <div class="auth-card" style="text-align: center; padding: 40px 20px;">
+              <div style="font-size: 2.5rem; margin-bottom: 10px;">🏥</div>
+              <h3 style="margin: 0 0 8px;">No Blood Banks Found</h3>
+              <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 450px; margin: 0 auto 16px;">
+                No registered blood banks matched your search criteria. Try resetting filters.
+              </p>
+              <a href="#/blood-banks" class="button button-outline">Reset Search</a>
+            </div>
+          ` : `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                Showing <strong>${banks.length}</strong> licensed blood bank${banks.length === 1 ? "" : "s"}
+              </p>
+              <span class="badge badge-active" style="font-size: 0.78rem;">✓ Licensed & Verified</span>
+            </div>
+
+            <div class="directory-grid">
+              ${banks.map(b => `
+                <div class="directory-card">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px;">
+                      <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background: #fee2e2; color: #b91c1c; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700;">
+                          🏥
+                        </div>
+                        <div>
+                          <div style="font-weight: 600; font-size: 1rem; color: var(--text-main);">${escapeHtml(b.name)}</div>
+                          <div style="font-size: 0.78rem; color: var(--text-muted);">${b.address?.city || "India"}, ${b.address?.state || ""}</div>
+                        </div>
+                      </div>
+                      <span class="badge badge-active" style="font-size: 0.72rem; white-space: nowrap;">Verified</span>
+                    </div>
+
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6;">
+                      ${b.licenseNumber ? `<div>📋 <strong>License:</strong> ${escapeHtml(b.licenseNumber)}</div>` : ""}
+                      <div>📍 ${escapeHtml(b.address?.city || "")}, ${escapeHtml(b.address?.state || "")} ${b.address?.pincode ? `(${b.address.pincode})` : ""}</div>
+                      ${b.phoneNumber ? `<div>📞 <a href="tel:${escapeHtml(b.phoneNumber)}" style="color: inherit; text-decoration: none;">${escapeHtml(b.phoneNumber)}</a></div>` : ""}
+                      ${b.contactEmail ? `<div>✉️ <a href="mailto:${escapeHtml(b.contactEmail)}" style="color: inherit; text-decoration: none;">${escapeHtml(b.contactEmail)}</a></div>` : ""}
+                    </div>
+                  </div>
+
+                  <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <a href="tel:${escapeHtml(b.phoneNumber || '')}" class="button button-outline" style="font-size: 0.82rem; padding: 6px 14px; width: 100%; text-align: center;">
+                      📞 Call Blood Bank
+                    </a>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          `}
+        </div>
+      `;
+
+      const form = document.getElementById("bloodBanksSearchForm");
+      if (form) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const s = document.getElementById("bankSearchInput").value.trim();
+          const c = document.getElementById("bankCityInput").value.trim();
+          const q = new URLSearchParams();
+          if (s) q.set("search", s);
+          if (c) q.set("city", c);
+          window.location.hash = `#/blood-banks?${q.toString()}`;
+        });
+      }
+
+      const clearBtn = document.getElementById("clearBankSearchBtn");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          window.location.hash = "#/blood-banks";
+        });
+      }
+    } catch (err) {
+      this.appContainer.innerHTML = `
+        <div class="auth-card" style="text-align: center;">
+          <p style="color: #dc2626;">Failed to load blood banks: ${err.message}</p>
+          <a href="#/blood-banks" class="button">Retry</a>
+        </div>
+      `;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  async renderDonationCamps(params) {
+    this.renderLoader("Loading upcoming blood donation camps...");
+    try {
+      const city = params.get("city") || "";
+      const queryObj = {};
+      if (city) queryObj.city = city;
+
+      const res = await api.getDonationCamps(queryObj);
+      const data = await res.json();
+      const camps = (data.success && data.data && data.data.camps) ? data.data.camps : [];
+
+      this.appContainer.innerHTML = `
+        <div class="requests-container" style="max-width: 1200px; margin: 0 auto; padding: 20px 16px;">
+          <div class="requests-header" style="text-align: center; margin-bottom: 24px;">
+            <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
+              ${t("explore.card4Title")}
+            </p>
+            <h1 style="font-size: 2.1rem; margin: 6px 0 10px;">${t("pages.campsTitle")}</h1>
+            <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto;">
+              ${t("pages.campsDesc")}
+            </p>
+          </div>
+
+          <div class="auth-card" style="max-width: 1200px; margin: 0 auto 24px; padding: 16px 20px; text-align: left;">
+            <form id="campsSearchForm" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+              <div class="form-group" style="flex: 2; min-width: 220px; margin: 0;">
+                <label class="form-label" for="campCityInput">${t("donor.cityLabel")}</label>
+                <input type="text" id="campCityInput" class="form-input" placeholder="e.g. Mumbai, Delhi, Bengaluru" value="${escapeHtml(city)}">
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="submit" class="button" style="height: 42px; padding: 0 20px;">${t("common.search")}</button>
+                <button type="button" id="clearCampSearchBtn" class="button button-outline" style="height: 42px; padding: 0 14px;">${t("common.reset")}</button>
+              </div>
+            </form>
+          </div>
+
+          ${camps.length === 0 ? `
+            <div class="auth-card" style="text-align: center; padding: 40px 20px;">
+              <div style="font-size: 2.5rem; margin-bottom: 10px;">⛺</div>
+              <h3 style="margin: 0 0 8px;">No Donation Camps Found</h3>
+              <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 450px; margin: 0 auto 16px;">
+                No public donation drives currently scheduled in this area. Check back soon or register as an on-call donor.
+              </p>
+              <a href="#/donor/register" class="button">${t("donor.registerAsDonorBtn")}</a>
+            </div>
+          ` : `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                Showing <strong>${camps.length}</strong> upcoming donation drive${camps.length === 1 ? "" : "s"}
+              </p>
+              <span class="badge badge-active" style="font-size: 0.78rem;">Public Drives Open</span>
+            </div>
+
+            <div class="directory-grid">
+              ${camps.map(c => `
+                <div class="directory-card">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 8px;">
+                      <div>
+                        <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-main); margin-bottom: 4px;">${escapeHtml(c.title)}</div>
+                        <div style="font-size: 0.8rem; color: var(--red); font-weight: 600;">
+                          📅 ${new Date(c.startDate).toLocaleDateString()} (${new Date(c.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(c.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+                        </div>
+                      </div>
+                      <span class="badge badge-active" style="font-size: 0.72rem; white-space: nowrap;">Open</span>
+                    </div>
+
+                    <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 12px 0;">
+                      ${escapeHtml(c.description ? (c.description.length > 130 ? c.description.slice(0, 130) + '...' : c.description) : '')}
+                    </p>
+
+                    <div style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6;">
+                      <div>📍 <strong>Venue:</strong> ${escapeHtml(c.venueName)}</div>
+                      <div>🏢 ${escapeHtml(c.address || '')}, ${escapeHtml(c.location?.city || '')} (${c.location?.pinCode || ''})</div>
+                      <div>👥 <strong>Capacity:</strong> ${c.registrationCount || 0} / ${c.capacity} Registered</div>
+                    </div>
+                  </div>
+
+                  <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <a href="#/donor/register" class="button" style="font-size: 0.82rem; padding: 7px 14px; flex: 1; text-align: center;">
+                      Volunteer Here
+                    </a>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          `}
+        </div>
+      `;
+
+      const form = document.getElementById("campsSearchForm");
+      if (form) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const c = document.getElementById("campCityInput").value.trim();
+          const q = new URLSearchParams();
+          if (c) q.set("city", c);
+          window.location.hash = `#/camps?${q.toString()}`;
+        });
+      }
+
+      const clearBtn = document.getElementById("clearCampSearchBtn");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          window.location.hash = "#/camps";
+        });
+      }
+    } catch (err) {
+      this.appContainer.innerHTML = `
+        <div class="auth-card" style="text-align: center;">
+          <p style="color: #dc2626;">Failed to load donation camps: ${err.message}</p>
+          <a href="#/camps" class="button">Retry</a>
+        </div>
+      `;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
 
   renderPlaceholderPage(title, description, icon = "ℹ️", ctaText = "Back to Home", ctaLink = "#/") {
     this.appContainer.innerHTML = `

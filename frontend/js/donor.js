@@ -26,7 +26,7 @@ export const donorViews = {
       </section>
 
       <!-- Search Controls -->
-      <div class="auth-card" style="max-width: 900px; margin: 0 auto 24px; text-align: left;">
+      <div class="auth-card" style="max-width: 1200px; margin: 0 auto 24px; text-align: left;">
         <form id="donorSearchForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end;">
           <div class="form-group" style="margin: 0;">
             <label class="form-label" for="searchBloodGroup">${t("donor.bloodGroupLabel")}</label>
@@ -63,7 +63,7 @@ export const donorViews = {
       </div>
 
       <!-- Results Container -->
-      <div id="donorSearchResults" style="max-width: 900px; margin: 0 auto;">
+      <div id="donorSearchResults" style="max-width: 1200px; margin: 0 auto;">
         <div style="text-align: center; padding: 30px; color: var(--text-muted);">
           <div class="spinner" style="margin: 0 auto 10px;"></div>
           ${t("donor.searchingDonors")}
@@ -141,7 +141,7 @@ export const donorViews = {
           <span style="font-size: 0.8rem; color: var(--text-muted);">Self-reported availability · Confirm suitability</span>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px;">
+        <div class="donors-grid">
           ${donors.map((d) => renderDonorCard(d)).join("")}
         </div>
 
@@ -770,7 +770,7 @@ function renderDonorCard(d) {
   const initial = name.charAt(0).toUpperCase();
 
   return `
-    <div class="auth-card" style="text-align: left; padding: 18px; margin: 0; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+    <div class="donor-card">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
           <div style="display: flex; gap: 10px; align-items: center;">

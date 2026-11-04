@@ -248,6 +248,17 @@ export const api = {
     return this.request(query ? `/admin/audit-logs?${query}` : "/admin/audit-logs");
   },
 
+  // Public Blood Bank and Camp Directory APIs
+  getBloodBanks(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/donors/directory/blood-banks?${query}` : "/donors/directory/blood-banks");
+  },
+
+  getDonationCamps(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    return this.request(query ? `/donors/directory/camps?${query}` : "/donors/directory/camps");
+  },
+
   // Blood Request APIs
   getBloodRequests(params = {}) {
     const query = new URLSearchParams(params).toString();
