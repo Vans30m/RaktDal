@@ -3,12 +3,35 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { isDatabaseConnected } from "./config/database.js";
 import authRoutes from "./routes/auth.routes.js";
 import donorRoutes from "./routes/donor.routes.js";
 
 const app = express();
 
-app.use(helmet());
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const frontendDir = path.resolve(__dirname, "../../frontend");
+
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+      connectSrc: ["'self'", "https://accounts.google.com", "http://localhost:*", "http://127.0.0.1:*"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      frameSrc: ["'self'", "https://accounts.google.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: env.isProduction ? [] : null
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
 app.use(cookieParser());
 
 // Allow configured FRONTEND_URL and common dev origins (both localhost and 127.0.0.1 on ports 3000, 5000, 5173, 5500, 8080)
@@ -44,7 +67,14 @@ app.use(express.json());
 
 // API Routes
 app.get("/api/v1/health", (_req, res) => {
-  res.json({ success: true, message: "RaktDal API is running.", environment: env.nodeEnv });
+  const dbConnected = isDatabaseConnected();
+  res.status(dbConnected ? 200 : 503).json({
+    success: dbConnected,
+    message: dbConnected ? "RaktDal API is healthy." : "Database unavailable.",
+    database: dbConnected ? "connected" : "disconnected",
+    environment: env.nodeEnv,
+    uptime: process.uptime()
+  });
 });
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/donors", donorRoutes);
@@ -71,9 +101,22 @@ async function registerColleagueRoutes() {
 }
 registerColleagueRoutes();
 
-// Fallback error handlers
-app.use((_req, res) => {
+// Static Frontend Serving & SPA routing
+app.use(express.static(frontendDir));
+
+// Fallback error handler for API routes
+app.use("/api", (_req, res) => {
   res.status(404).json({ success: false, message: "Route not found." });
+});
+
+// SPA fallback: Return index.html for non-API GET requests
+app.get("*", (req, res, next) => {
+  if (req.method === "GET" && !req.path.startsWith("/api/")) {
+    return res.sendFile(path.join(frontendDir, "index.html"), (err) => {
+      if (err) next(err);
+    });
+  }
+  next();
 });
 
 app.use((err, _req, res, _next) => {

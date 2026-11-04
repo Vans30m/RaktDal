@@ -242,12 +242,18 @@ export const donorViews = {
     }
 
     container.innerHTML = `
-      <div class="auth-card" style="max-width: 620px; text-align: left;">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 12px; display: block; object-fit: contain;">
-          <h2 style="margin: 0 0 6px;">${t("donor.registerTitle")}</h2>
-          <p class="subtitle">${t("donor.registerSubtitle")}</p>
-        </div>
+      <div class="requests-container" style="max-width: 800px; margin: 0 auto; padding: 20px 16px;">
+        <section class="donor-search-header" style="text-align: center; margin-bottom: 28px;">
+          <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
+            ${t("donor.discoveryEyebrow")}
+          </p>
+          <h1 style="font-size: 2.2rem; margin: 4px 0 8px;">${t("donor.registerTitle")}</h1>
+          <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+            ${t("donor.registerSubtitle")}
+          </p>
+        </section>
+
+        <div class="auth-card" style="max-width: 800px; margin: 0 auto; text-align: left; padding: 32px 28px;">
 
         <div id="createDonorMsg"></div>
 
@@ -354,6 +360,7 @@ export const donorViews = {
           </button>
         </form>
       </div>
+      </div>
     `;
 
     document.getElementById("createDonorForm").addEventListener("submit", async (e) => {
@@ -413,14 +420,22 @@ export const donorViews = {
    */
   async renderEditProfile(container) {
     container.innerHTML = `
-      <div class="auth-card" style="max-width: 620px; text-align: left;">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="margin: 0 0 6px;">${t("donor.editProfileTitle")}</h2>
-          <p class="subtitle">${t("donor.editProfileSubtitle")}</p>
-        </div>
-        <div id="editDonorMsg"></div>
-        <div id="editDonorFormContainer">
-          <div style="text-align:center; padding:30px;"><div class="spinner"></div></div>
+      <div class="requests-container" style="max-width: 800px; margin: 0 auto; padding: 20px 16px;">
+        <section class="donor-search-header" style="text-align: center; margin-bottom: 28px;">
+          <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
+            ${t("donor.discoveryEyebrow")}
+          </p>
+          <h1 style="font-size: 2.2rem; margin: 4px 0 8px;">${t("donor.editProfileTitle")}</h1>
+          <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+            ${t("donor.editProfileSubtitle")}
+          </p>
+        </section>
+
+        <div class="auth-card" style="max-width: 800px; margin: 0 auto; text-align: left; padding: 32px 28px;">
+          <div id="editDonorMsg"></div>
+          <div id="editDonorFormContainer">
+            <div style="text-align:center; padding:30px;"><div class="spinner"></div></div>
+          </div>
         </div>
       </div>
     `;

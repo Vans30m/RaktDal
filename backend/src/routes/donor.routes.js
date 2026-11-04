@@ -11,11 +11,19 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { verifyCsrf } from "../utils/security.js";
 import { Organization } from "../models/Organization.js";
 import { CampService } from "../services/camp.service.js";
+import { createRateLimiter } from "../middleware/rateLimiter.js";
+
+const searchLimiter = createRateLimiter({
+  windowMs: 5 * 60 * 1000,
+  max: 60,
+  message: "Too many search requests. Please slow down.",
+  prefix: "search"
+});
 
 const router = Router();
 
 // Public Donor Discovery Endpoint (No authentication required)
-router.get("/search", searchDonors);
+router.get("/search", searchLimiter, searchDonors);
 
 // Authenticated Donor Profile Endpoints
 router.post("/profile", authenticate, verifyCsrf, createDonorProfile);
@@ -25,7 +33,7 @@ router.patch("/me/availability", authenticate, verifyCsrf, updateMyAvailability)
 router.patch("/me/consent", authenticate, verifyCsrf, updateMyConsent);
 
 // Public Blood Bank Directory & Donation Camps Endpoints
-router.get("/directory/blood-banks", async (req, res) => {
+router.get("/directory/blood-banks", searchLimiter, async (req, res) => {
   try {
     const { city, state, search, page = 1, limit = 12 } = req.query;
     const query = {
@@ -81,7 +89,7 @@ router.get("/directory/blood-banks", async (req, res) => {
   }
 });
 
-router.get("/directory/camps", async (req, res) => {
+router.get("/directory/camps", searchLimiter, async (req, res) => {
   try {
     const { city, state, pinCode, status, page, limit } = req.query;
     const result = await CampService.searchPublishedCamps({

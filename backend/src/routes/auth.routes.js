@@ -21,19 +21,34 @@ import {
   logAdminAction
 } from "../middleware/auth.middleware.js";
 import { verifyCsrf } from "../utils/security.js";
+import { createRateLimiter } from "../middleware/rateLimiter.js";
+
+const authLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: "Too many authentication attempts. Please try again after 15 minutes.",
+  prefix: "auth"
+});
+
+const passwordResetLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message: "Too many password reset requests. Please try again after an hour.",
+  prefix: "pwd_reset"
+});
 
 const router = Router();
 
 // Email & Password Authentication
-router.post("/register", verifyCsrf, register);
-router.post("/login", verifyCsrf, login);
+router.post("/register", authLimiter, verifyCsrf, register);
+router.post("/login", authLimiter, verifyCsrf, login);
 router.post("/refresh", verifyCsrf, refresh);
 router.post("/logout", verifyCsrf, logout);
 router.post("/logout-all", authenticate, verifyCsrf, logoutAll);
 
 // Password Reset Flow
-router.post("/forgot-password", verifyCsrf, forgotPassword);
-router.post("/reset-password", verifyCsrf, resetPassword);
+router.post("/forgot-password", passwordResetLimiter, verifyCsrf, forgotPassword);
+router.post("/reset-password", passwordResetLimiter, verifyCsrf, resetPassword);
 
 // Profile and Sessions
 router.get("/me", authenticate, getCurrentUser);

@@ -1776,11 +1776,18 @@ export class Router {
 
   renderCreateBloodRequest() {
     this.appContainer.innerHTML = `
-      <div class="auth-card" style="max-width:680px; text-align:left;">
-        <h2 style="margin:0 0 6px 0;">${t("requests.createRequestTitle")}</h2>
-        <p class="subtitle" style="margin-bottom:24px;">
-          Submit a new requirement for urgent or planned transfusion needs. All requests are verified for safety.
-        </p>
+      <div class="requests-container" style="max-width:800px; margin:0 auto; padding:20px 16px;">
+        <section class="donor-search-header" style="text-align: center; margin-bottom: 28px;">
+          <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
+            ${t("hero.eyebrow")}
+          </p>
+          <h1 style="font-size: 2.2rem; margin: 4px 0 8px;">${t("requests.createRequestTitle")}</h1>
+          <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+            Submit a new requirement for urgent or planned transfusion needs. All requests are verified for safety.
+          </p>
+        </section>
+
+        <div class="auth-card" style="max-width:800px; margin:0 auto; text-align:left; padding:32px 28px;">
 
         <form id="createRequestForm" style="display:flex; flex-direction:column; gap:16px;">
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
