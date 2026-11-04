@@ -1638,18 +1638,21 @@ export class Router {
       const requests = (data.success && data.data && data.data.requests) ? data.data.requests : [];
 
       this.appContainer.innerHTML = `
-        <div class="requests-container">
-          <div class="requests-header">
+        <div class="requests-container" style="max-width: 1200px; margin: 0 auto; padding: 20px 16px;">
+          <section class="donor-search-header" style="text-align: center; margin-bottom: 24px;">
+            <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
+              ${t("hero.eyebrow")}
+            </p>
+            <h1 style="font-size: 2rem; margin: 4px 0 8px;">${t("requests.title")}</h1>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 14px;">
+              ${t("requests.subtitle")}
+            </p>
             <div>
-              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">${t("requests.title")}</h1>
-              <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
-                ${t("requests.subtitle")}
-              </p>
+              <a href="#/requests/create" class="button" style="font-size: 0.9rem; padding: 8px 18px;">
+                ${t("requests.createBtn")}
+              </a>
             </div>
-            <a href="#/requests/create" class="button">
-              ${t("requests.createBtn")}
-            </a>
-          </div>
+          </section>
 
           <div class="filter-bar">
             <div class="filter-group">
@@ -2241,15 +2244,15 @@ export class Router {
 
       this.appContainer.innerHTML = `
         <div class="requests-container" style="max-width: 1200px; margin: 0 auto; padding: 20px 16px;">
-          <div class="requests-header" style="text-align: center; margin-bottom: 24px;">
+          <section class="donor-search-header" style="text-align: center; margin-bottom: 24px;">
             <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
               ${t("explore.card3Title")}
             </p>
-            <h1 style="font-size: 2.1rem; margin: 6px 0 10px;">${t("pages.bloodBanksTitle")}</h1>
-            <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto;">
+            <h1 style="font-size: 2rem; margin: 4px 0 8px;">${t("pages.bloodBanksTitle")}</h1>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
               ${t("pages.bloodBanksDesc")}
             </p>
-          </div>
+          </section>
 
           <div class="auth-card" style="max-width: 1200px; margin: 0 auto 24px; padding: 16px 20px; text-align: left;">
             <form id="bloodBanksSearchForm" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
@@ -2365,15 +2368,15 @@ export class Router {
 
       this.appContainer.innerHTML = `
         <div class="requests-container" style="max-width: 1200px; margin: 0 auto; padding: 20px 16px;">
-          <div class="requests-header" style="text-align: center; margin-bottom: 24px;">
+          <section class="donor-search-header" style="text-align: center; margin-bottom: 24px;">
             <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
               ${t("explore.card4Title")}
             </p>
-            <h1 style="font-size: 2.1rem; margin: 6px 0 10px;">${t("pages.campsTitle")}</h1>
-            <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto;">
+            <h1 style="font-size: 2rem; margin: 4px 0 8px;">${t("pages.campsTitle")}</h1>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
               ${t("pages.campsDesc")}
             </p>
-          </div>
+          </section>
 
           <div class="auth-card" style="max-width: 1200px; margin: 0 auto 24px; padding: 16px 20px; text-align: left;">
             <form id="campsSearchForm" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
