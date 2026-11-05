@@ -484,13 +484,7 @@ export class Router {
         this.renderAdminDashboard();
         break;
       case "/blood-banks":
-        this.renderPlaceholderPage(
-          "Blood Bank Directory",
-          "Directory listings for authorized regional blood banks and storage facilities across India. Real-time API integration with national portal coming soon.",
-          icons.organization(40, 'var(--red)'),
-          "Find Participating Donors",
-          "#/find-blood"
-        );
+        this.renderBloodBanks(params);
         break;
       case "/camps":
         this.renderCamps(params);
@@ -575,6 +569,10 @@ export class Router {
 
   renderAuthCallback(params) {
     return authViews.renderAuthCallback.call(this, params);
+  }
+
+  async renderBloodBanks(params) {
+    return campViews.renderBloodBanks.call(this, params);
   }
 
   async renderCamps(params) {

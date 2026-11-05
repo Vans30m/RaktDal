@@ -71,7 +71,7 @@ export const campViews = {
     try {
       const res = await api.getCamps({ city, state: stateVal, pinCode, status: statusVal });
       const data = await res.json();
-      const camps = data.data?.camps || [];
+      const camps = data.camps || data.data?.camps || [];
 
       if (camps.length === 0) {
         container.innerHTML = `
@@ -179,7 +179,7 @@ export const campViews = {
       ]);
 
       const campData = await campRes.json();
-      const camp = campData.data?.camp;
+      const camp = campData.camp || campData.data?.camp;
       if (!camp) throw new Error("Camp details could not be retrieved.");
 
       const myReg = myRegRes?.data?.registration;
