@@ -8,6 +8,8 @@ import { fileURLToPath } from "url";
 import { isDatabaseConnected } from "./config/database.js";
 import authRoutes from "./routes/auth.routes.js";
 import donorRoutes from "./routes/donor.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import campRoutes from "./routes/camp.routes.js";
 
 const app = express();
 
@@ -78,6 +80,8 @@ app.get("/api/v1/health", (_req, res) => {
 });
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/donors", donorRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/camps", campRoutes);
 
 // Dynamically load future colleague routes if available (Phase 11: bloodRequest, requestResponse, admin, reports)
 async function registerColleagueRoutes() {

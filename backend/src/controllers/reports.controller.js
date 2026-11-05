@@ -1,4 +1,5 @@
 import { ReportsService } from "../services/reports.service.js";
+import { sendSuccess, sendError } from "../utils/response.js";
 
 /**
  * Controller for Administrative, Organization, and Personal Reports
@@ -15,13 +16,9 @@ export const getAdminOverviewReport = async (req, res) => {
       endDate,
       excludeDemo: excludeDemo !== "false"
     });
-    res.json({
-      success: true,
-      message: "Platform overview reports retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Platform overview reports retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -37,13 +34,9 @@ export const getAdminRequestsReport = async (req, res) => {
       limit,
       excludeDemo: excludeDemo !== "false"
     });
-    res.json({
-      success: true,
-      message: "Requests analytics retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Requests analytics retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -56,7 +49,7 @@ export const exportAdminRequestsCsv = async (req, res) => {
       bloodGroup,
       status,
       page: 1,
-      limit: 1000, // Controlled safe export limit
+      limit: 1000,
       excludeDemo: excludeDemo !== "false"
     });
 
@@ -81,9 +74,9 @@ export const exportAdminRequestsCsv = async (req, res) => {
       "Content-Disposition",
       `attachment; filename="raktdal_requests_report_${Date.now()}.csv"`
     );
-    res.status(200).send(csvData);
+    return res.status(200).send(csvData);
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -98,13 +91,9 @@ export const getOrganizationReports = async (req, res) => {
       range,
       adminUser: req.user
     });
-    res.json({
-      success: true,
-      message: "Organization reports retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Organization reports retrieved successfully.");
   } catch (err) {
-    res.status(403).json({ success: false, message: err.message });
+    return sendError(res, err.message, 403);
   }
 };
 
@@ -117,12 +106,8 @@ export const getPersonalReports = async (req, res) => {
       userId: req.user._id,
       range
     });
-    res.json({
-      success: true,
-      message: "Personal activity report retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Personal activity report retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };

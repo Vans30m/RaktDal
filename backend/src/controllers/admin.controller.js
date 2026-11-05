@@ -1,4 +1,5 @@
 import { AdminService } from "../services/admin.service.js";
+import { sendSuccess, sendError } from "../utils/response.js";
 
 /**
  * Admin Controller for Platform Administration (Platform ADMIN only)
@@ -7,13 +8,9 @@ import { AdminService } from "../services/admin.service.js";
 export const getDashboardStats = async (req, res) => {
   try {
     const data = await AdminService.getPlatformStats();
-    res.json({
-      success: true,
-      message: "Platform statistics retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Platform statistics retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -21,13 +18,9 @@ export const getOrganizationsQueue = async (req, res) => {
   try {
     const { status, type, search, page, limit } = req.query;
     const data = await AdminService.getOrganizations({ status, type, search, page, limit });
-    res.json({
-      success: true,
-      message: "Organizations queue retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Organizations queue retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -47,13 +40,9 @@ export const verifyOrganization = async (req, res) => {
       userAgent
     });
 
-    res.json({
-      success: true,
-      message: `Organization ${status.toLowerCase()} successfully.`,
-      data: updatedOrg
-    });
+    return sendSuccess(res, { data: updatedOrg }, `Organization ${status.toLowerCase()} successfully.`);
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    return sendError(res, err.message, 400);
   }
 };
 
@@ -61,13 +50,9 @@ export const getUsersDirectory = async (req, res) => {
   try {
     const { accountStatus, role, search, page, limit } = req.query;
     const data = await AdminService.getUsers({ accountStatus, role, search, page, limit });
-    res.json({
-      success: true,
-      message: "Users directory retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Users directory retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -87,13 +72,9 @@ export const updateUserAccountStatus = async (req, res) => {
       userAgent
     });
 
-    res.json({
-      success: true,
-      message: `User account status updated to ${status}.`,
-      data: updatedUser
-    });
+    return sendSuccess(res, { data: updatedUser }, `User account status updated to ${status}.`);
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    return sendError(res, err.message, 400);
   }
 };
 
@@ -108,13 +89,9 @@ export const getAdminBloodRequests = async (req, res) => {
       page,
       limit
     });
-    res.json({
-      success: true,
-      message: "Blood requests retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Blood requests retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -122,13 +99,9 @@ export const getFraudAlerts = async (req, res) => {
   try {
     const { status, page, limit } = req.query;
     const data = await AdminService.getFraudAlerts({ status, page, limit });
-    res.json({
-      success: true,
-      message: "Fraud alerts retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Fraud alerts retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
 
@@ -148,13 +121,9 @@ export const resolveFraudAlert = async (req, res) => {
       userAgent
     });
 
-    res.json({
-      success: true,
-      message: "Fraud alert status updated successfully.",
-      data: alert
-    });
+    return sendSuccess(res, { data: alert }, "Fraud alert status updated successfully.");
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    return sendError(res, err.message, 400);
   }
 };
 
@@ -162,12 +131,8 @@ export const getAuditLogs = async (req, res) => {
   try {
     const { entityType, action, page, limit } = req.query;
     const data = await AdminService.getAuditLogs({ entityType, action, page, limit });
-    res.json({
-      success: true,
-      message: "Audit logs retrieved successfully.",
-      data
-    });
+    return sendSuccess(res, { data }, "Audit logs retrieved successfully.");
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return sendError(res, err.message, 500);
   }
 };
