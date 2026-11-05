@@ -1,6 +1,7 @@
 import { api } from "../api.js";
 import { authState } from "../auth.js";
 import { toast } from "../toast.js";
+import { icons } from "../icons.js";
 
 export const campViews = {
   async renderCamps(params = {}) {
@@ -75,7 +76,13 @@ export const campViews = {
       if (camps.length === 0) {
         container.innerHTML = `
           <div class="auth-card" style="padding: 48px 24px; text-align: center; max-width: 500px; margin: 40px auto;">
-            <p style="font-size: 2.2rem; margin: 0 0 12px;">⛺</p>
+            <div style="margin: 0 auto 14px; color: var(--red); display:flex; justify-content:center;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 21h18"></path>
+      <path d="M12 3l9 18H3l9-18z"></path>
+      <path d="M12 3v18"></path>
+      <path d="M9 14l3 3 3-3"></path>
+    </svg></div>
             <h3 style="margin: 0 0 6px; font-size: 1.2rem; color: var(--text-main);">No Donation Camps Found</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 20px;">Try adjusting your city, PIN code, or status filters.</p>
             <button class="button" onclick="document.getElementById('resetCampFilterBtn').click()">Clear Filters</button>
@@ -104,7 +111,11 @@ export const campViews = {
 
                   <h3 style="margin: 0 0 6px; font-size: 1.15rem; font-weight: 750; color: var(--text-main);">${camp.title}</h3>
                   <p style="margin: 0 0 12px; color: var(--text-muted); font-size: 0.86rem; line-height: 1.45;">
-                    📍 <strong>${camp.venueName}</strong>, ${camp.address}, ${camp.location.city} (${camp.location.pinCode})
+                    
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg> <strong>${camp.venueName}</strong>, ${camp.address}, ${camp.location.city} (${camp.location.pinCode})
                   </p>
 
                   <div style="background: #f8fafc; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 0.84rem; display: flex; flex-direction: column; gap: 6px;">
@@ -203,7 +214,11 @@ export const campViews = {
           <div id="campActionSection">
             ${isRegistered ? `
               <div class="alert alert-success" style="margin-bottom:16px;">
-                ✓ You are registered for this donation camp!
+                
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg> You are registered for this donation camp!
               </div>
               <button id="cancelCampRegBtn" class="button button-outline" style="width:100%; color:#dc2626; border-color:#dc2626;">
                 Cancel Registration
@@ -288,7 +303,13 @@ export const campViews = {
       if (regs.length === 0) {
         container.innerHTML = `
           <div class="auth-card" style="padding:48px 24px; text-align:center;">
-            <p style="font-size:2rem; margin:0 0 12px;">⛺</p>
+            <div style="margin: 0 auto 14px; color: var(--red); display:flex; justify-content:center;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 21h18"></path>
+      <path d="M12 3l9 18H3l9-18z"></path>
+      <path d="M12 3v18"></path>
+      <path d="M9 14l3 3 3-3"></path>
+    </svg></div>
             <h3 style="margin:0 0 6px;">No Active Camp Registrations</h3>
             <p style="color:var(--text-muted); margin:0 0 20px; font-size:0.9rem;">You haven't registered for any blood donation camps yet.</p>
             <a href="#/camps" class="button">Find Nearby Camps</a>
@@ -309,7 +330,11 @@ export const campViews = {
               <span style="font-size:0.8rem; color:var(--text-muted);">${new Date(reg.registeredAt).toLocaleDateString()}</span>
             </div>
             <h3 style="margin:0 0 6px; font-size:1.2rem;">${camp.title}</h3>
-            <p style="margin:0 0 10px; color:var(--text-muted); font-size:0.88rem;">📍 ${camp.venueName}, ${camp.address}, ${camp.location?.city}</p>
+            <p style="margin:0 0 10px; color:var(--text-muted); font-size:0.88rem;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg> ${camp.venueName}, ${camp.address}, ${camp.location?.city}</p>
             <p style="margin:0 0 16px; font-size:0.88rem;"><strong>Drive Time:</strong> ${dateStr}</p>
             <button class="button button-outline cancel-my-booking-btn" data-id="${camp._id}" style="color:#dc2626; border-color:#dc2626; font-size:0.85rem; padding:6px 14px;">
               Cancel Booking
@@ -334,6 +359,136 @@ export const campViews = {
     } catch (err) {
       container.innerHTML = `<div class="alert alert-error">${err.message || "Failed to load bookings."}</div>`;
     }
+  },
+
+  async renderBloodBanks(params = {}) {
+    const searchVal = params.search || "";
+    const cityVal = params.city || "";
+
+    this.appContainer.innerHTML = `
+      <div class="requests-container" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h1 style="margin: 0; font-size: 1.85rem; color: var(--text-main); font-weight: 850;">Licensed Blood Banks & Storage Centers</h1>
+            <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem;">Directory of verified government and community blood banks across India with component storage facilities.</p>
+          </div>
+        </div>
+
+        <form id="bankFilterForm" class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px;">
+          <div class="filter-group" style="flex: 2; min-width: 180px;">
+            <label class="filter-label">Search Center / Hospital</label>
+            <input type="text" id="bankSearchInput" class="filter-input" placeholder="e.g. Red Cross, PGIMER, Rotary" value="${searchVal}">
+          </div>
+          <div class="filter-group" style="flex: 1; min-width: 140px;">
+            <label class="filter-label">City</label>
+            <input type="text" id="bankCityInput" class="filter-input" placeholder="e.g. Mumbai, Delhi, Chandigarh" value="${cityVal}">
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 8px;">
+            <button type="submit" class="button" style="height: 38px; padding: 0 18px;">Search</button>
+            <button type="button" id="resetBankFilterBtn" class="button button-outline" style="height: 38px; padding: 0 14px;">Reset</button>
+          </div>
+        </form>
+
+        <div id="banksListContainer">
+          <div class="spinner" style="margin: 40px auto;"></div>
+        </div>
+      </div>
+    `;
+
+    const form = document.getElementById("bankFilterForm");
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const s = document.getElementById("bankSearchInput")?.value.trim();
+      const c = document.getElementById("bankCityInput")?.value.trim();
+      const q = new URLSearchParams();
+      if (s) q.set("search", s);
+      if (c) q.set("city", c);
+      window.location.hash = `#/blood-banks?${q.toString()}`;
+    });
+
+    document.getElementById("resetBankFilterBtn")?.addEventListener("click", () => {
+      window.location.hash = "#/blood-banks";
+    });
+
+    const container = document.getElementById("banksListContainer");
+    if (!container) return;
+
+    try {
+      const res = await api.getBloodBanks({ search: searchVal, city: cityVal });
+      const data = await res.json();
+      const banks = data.data?.bloodBanks || [];
+
+      if (banks.length === 0) {
+        container.innerHTML = `
+          <div class="auth-card" style="padding: 48px 24px; text-align: center; max-width: 500px; margin: 40px auto;">
+            <div style="margin: 0 auto 14px; color: var(--text-muted); display:flex; justify-content:center;">
+              ${icons.organization(40, 'var(--text-muted)')}
+            </div>
+            <h3 style="margin: 0 0 6px; font-size: 1.2rem; color: var(--text-main);">No Blood Banks Found</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 20px;">Try expanding your city search or filter criteria.</p>
+            <button class="button" onclick="document.getElementById('resetBankFilterBtn').click()">Reset Search</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="requests-grid" style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 20px;">
+          ${banks.map(bank => {
+            const cityName = bank.address?.city || "City Center";
+            const stateName = bank.address?.state || "State";
+            const pinCode = bank.address?.pincode ? `(${bank.address.pincode})` : "";
+
+            return `
+              <div class="request-card" style="display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid var(--red);">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+                    <span class="badge" style="font-size: 0.72rem; background: #dcfce7; color: #166534; display: inline-flex; align-items: center; gap: 4px;">
+                      ${icons.shieldCheck(13, '#166534')} Verified Blood Bank
+                    </span>
+                    ${bank.licenseNumber ? `<span style="font-size: 0.74rem; font-family: monospace; color: var(--text-muted);">Lic: ${bank.licenseNumber}</span>` : ""}
+                  </div>
+
+                  <h3 style="margin: 0 0 8px; font-size: 1.2rem; font-weight: 750; color: var(--text-main);">${bank.name}</h3>
+                  
+                  <div style="margin: 0 0 14px; color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; display: flex; align-items: flex-start; gap: 6px;">
+                    ${icons.mapPin(15, 'var(--text-muted)')}
+                    <span>${cityName}, ${stateName} ${pinCode}</span>
+                  </div>
+
+                  <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 0.84rem; display: flex; flex-direction: column; gap: 8px;">
+                    ${bank.phoneNumber ? `
+                      <div style="display: flex; align-items: center; gap: 8px; color: var(--text-main);">
+                        ${icons.phone(14, 'var(--text-muted)')}
+                        <strong>${bank.phoneNumber}</strong>
+                      </div>
+                    ` : ""}
+                    ${bank.contactEmail ? `
+                      <div style="display: flex; align-items: center; gap: 8px; color: var(--text-muted);">
+                        ${icons.mail(14, 'var(--text-muted)')}
+                        <span>${bank.contactEmail}</span>
+                      </div>
+                    ` : ""}
+                  </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border); padding-top: 14px; display: flex; gap: 10px;">
+                  ${bank.phoneNumber ? `
+                    <a href="tel:${bank.phoneNumber}" class="button button-outline" style="flex: 1; font-size: 0.85rem; padding: 7px 12px; text-align: center;">
+                      Call Center
+                    </a>
+                  ` : ""}
+                  <a href="#/find-blood?city=${encodeURIComponent(cityName)}" class="button" style="flex: 1; font-size: 0.85rem; padding: 7px 12px; text-align: center;">
+                    Find Donors
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `<div class="alert alert-error">${err.message || "Failed to load blood banks."}</div>`;
+    }
   }
 };
-

@@ -1,5 +1,6 @@
 import { api } from "../api.js";
 import { toast } from "../toast.js";
+import { icons } from "../icons.js";
 
 export const notificationViews = {
   async renderNotificationCenter() {
@@ -43,7 +44,11 @@ export const notificationViews = {
       if (items.length === 0) {
         container.innerHTML = `
           <div class="auth-card" style="padding: 40px 24px; text-align: center;">
-            <p style="font-size: 2rem; margin: 0 0 12px;">🔔</p>
+            <div style="margin: 0 auto 14px; color: var(--text-muted); display:flex; justify-content:center;">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg></div>
             <h3 style="margin: 0 0 6px; font-size: 1.15rem; color: var(--text-main);">No Notifications</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">You're all caught up! Important alerts and updates will appear here.</p>
           </div>

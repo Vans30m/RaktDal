@@ -1,5 +1,6 @@
 import { api } from "../api.js";
 import { toast } from "../toast.js";
+import { icons } from "../icons.js";
 
 export const adminViews = {
 async renderAdminDashboard(initialTab = "overview") {
@@ -24,34 +25,76 @@ async renderAdminDashboard(initialTab = "overview") {
             <aside class="admin-sidebar">
               <div class="admin-sidebar-header">
                 <div style="font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:8px;">
-                  <span style="color:var(--red);">🛡️</span> Admin Console
+                  
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg> <span>Admin Console</span>
                 </div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Platform Management</div>
               </div>
 
               <button class="admin-nav-item ${currentTab === "overview" ? "active" : ""}" data-tab="overview">
-                <span>📊</span> Overview
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
+      <rect x="14" y="3" width="7" height="5" rx="1.5"></rect>
+      <rect x="14" y="12" width="7" height="9" rx="1.5"></rect>
+      <rect x="3" y="16" width="7" height="5" rx="1.5"></rect>
+    </svg> <span>Overview</span>
               </button>
               <button class="admin-nav-item ${currentTab === "organizations" ? "active" : ""}" data-tab="organizations">
-                <span>🏥</span> Organizations Queue
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 21h18"></path>
+      <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+      <path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path>
+      <line x1="10" y1="9" x2="14" y2="9"></line>
+      <line x1="12" y1="7" x2="12" y2="11"></line>
+    </svg> <span>Organizations Queue</span>
                 ${overview.pendingOrgVerifications > 0 ? `<span class="badge" style="background:#fee2e2; color:#991b1b; margin-left:auto;">${overview.pendingOrgVerifications}</span>` : ""}
               </button>
               <button class="admin-nav-item ${currentTab === "users" ? "active" : ""}" data-tab="users">
-                <span>👥</span> Users Directory
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+      <circle cx="9" cy="7" r="4"></circle>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    </svg> <span>Users Directory</span>
               </button>
               <button class="admin-nav-item ${currentTab === "requests" ? "active" : ""}" data-tab="requests">
-                <span>🩸</span> Blood Requests
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+    </svg> <span>Blood Requests</span>
                 ${overview.pendingBloodRequests > 0 ? `<span class="badge" style="background:#fef9c3; color:#854d0e; margin-left:auto;">${overview.pendingBloodRequests}</span>` : ""}
               </button>
               <button class="admin-nav-item ${currentTab === "fraud" ? "active" : ""}" data-tab="fraud">
-                <span>⚠️</span> Fraud Alerts
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg> <span>Fraud Alerts</span>
                 ${overview.openFraudAlerts > 0 ? `<span class="badge" style="background:#fee2e2; color:#dc2626; margin-left:auto;">${overview.openFraudAlerts}</span>` : ""}
               </button>
               <button class="admin-nav-item ${currentTab === "audit" ? "active" : ""}" data-tab="audit">
-                <span>📜</span> Audit Logs
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+      <polyline points="10 9 9 9 8 9"></polyline>
+    </svg> <span>Audit Logs</span>
               </button>
               <button class="admin-nav-item ${currentTab === "analytics" ? "active" : ""}" data-tab="analytics">
-                <span>📈</span> Reports & Analytics
+                
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="18" y1="20" x2="18" y2="10"></line>
+      <line x1="12" y1="20" x2="12" y2="4"></line>
+      <line x1="6" y1="20" x2="6" y2="14"></line>
+    </svg> <span>Reports & Analytics</span>
               </button>
             </aside>
 
@@ -491,7 +534,12 @@ async renderAdminDashboard(initialTab = "overview") {
               </div>
               <div>
                 <button id="exportCsvBtn" class="button" style="padding:8px 16px; font-size:0.88rem;">
-                  <span>📥</span> Export Requests CSV
+                  
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg> <span>Export Requests CSV</span>
                 </button>
               </div>
             </div>
@@ -741,7 +789,11 @@ async renderAdminDashboard(initialTab = "overview") {
   renderForbidden() {
     this.appContainer.innerHTML = `
       <div class="auth-card" style="max-width:480px;">
-        <div style="font-size:2.4rem; margin-bottom:10px;">🚫</div>
+        <div style="margin-bottom:14px; color:var(--red); display:flex; justify-content:center;">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+    </svg></div>
         <h2>Access Denied</h2>
         <p class="subtitle" style="margin-bottom:20px;">
           You do not have administrative permissions to view this section.

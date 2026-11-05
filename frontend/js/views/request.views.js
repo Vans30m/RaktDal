@@ -1,6 +1,7 @@
 import { api } from "../api.js";
 import { authState } from "../auth.js";
 import { toast } from "../toast.js";
+import { icons } from "../icons.js";
 
 export const requestViews = {
 async renderBloodRequests(params) {
@@ -92,7 +93,11 @@ async renderBloodRequests(params) {
                   <div>
                     <h3 style="margin:0 0 6px 0; font-size:1.15rem;">${r.hospitalName}</h3>
                     <div class="request-meta-row">
-                      <span>📍</span>
+                      
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
                       <span>${r.location?.city || "Unknown City"}, ${r.location?.state || ""}</span>
                     </div>
                   </div>
@@ -334,7 +339,11 @@ async renderBloodRequests(params) {
 
             <h2 style="margin:0 0 10px 0;">${r.hospitalName}</h2>
             <div class="request-meta-row" style="margin-bottom:20px;">
-              <span>📍</span>
+              
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
               <span>${r.location?.city || "Unknown"}, ${r.location?.state || ""} — Pin: ${r.location?.pinCode || "N/A"}</span>
             </div>
 
@@ -376,7 +385,11 @@ async renderBloodRequests(params) {
               <div>
                 ${state.isAdmin ? `
                   <button id="adminVerifyBtn" class="button" style="background:#0369a1; border-color:#0369a1; font-size:0.88rem;">
-                    🛡️ Admin: Verify Request
+                    
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      <polyline points="9 12 11 14 15 10"></polyline>
+    </svg> Admin: Verify Request
                   </button>
                 ` : ""}
               </div>
@@ -543,7 +556,11 @@ async renderBloodRequests(params) {
 
           ${requests.length === 0 ? `
             <div class="auth-card" style="max-width:520px; margin:40px auto; text-align:center;">
-              <div style="font-size:2.2rem; margin-bottom:8px;">📋</div>
+              <div style="margin: 0 auto 12px; color: var(--text-muted); display:flex; justify-content:center;">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+    </svg></div>
               <h3>No Requests Created</h3>
               <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:20px;">
                 You haven't submitted any blood donation requests yet.
@@ -562,7 +579,11 @@ async renderBloodRequests(params) {
                   <div>
                     <h3 style="margin:0 0 4px 0;">${r.hospitalName}</h3>
                     <div class="request-meta-row">
-                      <span>📍</span>
+                      
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
                       <span>${r.location?.city || "Unknown City"}</span>
                     </div>
                   </div>

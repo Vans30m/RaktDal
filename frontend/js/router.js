@@ -17,7 +17,13 @@ import { authState } from "./auth.js";
 import { api } from "./api.js";
 import { donorViews } from "./donor.js";
 import { homeViews } from "./home.js";
+import { icons } from "./icons.js";
 import { toast } from "./toast.js";
+import { authViews } from "./views/auth.views.js";
+import { adminViews } from "./views/admin.views.js";
+import { campViews } from "./views/camp.views.js";
+import { notificationViews } from "./views/notification.views.js";
+import { requestViews } from "./views/request.views.js";
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -478,58 +484,64 @@ export class Router {
         this.renderAdminDashboard();
         break;
       case "/blood-banks":
-        this.renderBloodBanksDirectory(params);
+        this.renderPlaceholderPage(
+          "Blood Bank Directory",
+          "Directory listings for authorized regional blood banks and storage facilities across India. Real-time API integration with national portal coming soon.",
+          icons.organization(40, 'var(--red)'),
+          "Find Participating Donors",
+          "#/find-blood"
+        );
         break;
       case "/camps":
-        this.renderDonationCamps(params);
+        this.renderCamps(params);
         break;
       case "/about":
         this.renderPlaceholderPage(
           t("pages.aboutTitle"),
           t("pages.aboutDesc"),
-          "❤️"
+          icons.heart(40, 'var(--red)')
         );
         break;
       case "/how-it-works":
         this.renderPlaceholderPage(
           t("pages.howItWorksTitle"),
           t("pages.howItWorksDesc"),
-          "⚙️"
+          icons.settings(40, 'var(--text-muted)')
         );
         break;
       case "/contact":
         this.renderPlaceholderPage(
           t("pages.contactTitle"),
           t("pages.contactDesc"),
-          "✉️"
+          icons.mail(40, 'var(--text-muted)')
         );
         break;
       case "/privacy":
         this.renderPlaceholderPage(
           t("pages.privacyTitle"),
           t("pages.privacyDesc"),
-          "🛡️"
+          icons.shield(40, 'var(--red)')
         );
         break;
       case "/terms":
         this.renderPlaceholderPage(
           t("pages.termsTitle"),
           t("pages.termsDesc"),
-          "📜"
+          icons.auditLog(40, 'var(--text-muted)')
         );
         break;
       case "/disclaimer":
         this.renderPlaceholderPage(
           t("pages.disclaimerTitle"),
           t("pages.disclaimerDesc"),
-          "⚠️"
+          icons.alertTriangle(40, 'var(--warning)')
         );
         break;
       case "/help":
         this.renderPlaceholderPage(
           t("pages.helpTitle"),
           t("pages.helpDesc"),
-          "💡"
+          icons.info(40, 'var(--text-muted)')
         );
         break;
       default:
