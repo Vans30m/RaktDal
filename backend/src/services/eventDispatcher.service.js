@@ -3,8 +3,10 @@
  *
  * Provides a clean decoupled interface for emitting application domain events
  * (e.g. blood request creation, responses, status transitions, fulfillment)
- * without prematurely coupling or duplicating the upcoming Phase notification module.
+ * and dispatches notifications via NotificationService.
  */
+
+import { NotificationService } from "./notification.service.js";
 
 class EventDispatcher {
   constructor() {
@@ -37,13 +39,36 @@ class EventDispatcher {
       summary: eventData.summary || "Domain event triggered"
     });
 
-    const handlers = this.listeners.get(eventName) || [];
+    const handlers = [...(this.listeners.get(eventName) || [])];
     for (const handler of handlers) {
       try {
         await handler(eventData);
       } catch (err) {
         console.error(`Error in event listener for [${eventName}]:`, err.message);
       }
+    }
+
+    // Secondary Notification dispatch
+    try {
+      if (eventName === "blood_request.created" || eventName === "blood_request.approved") {
+        if (eventData.bloodRequest && eventData.bloodRequest.status === "ACTIVE") {
+          await NotificationService.notifyMatchingDonors(eventData.bloodRequest);
+        }
+      } else if (eventName === "request_response.submitted") {
+        if (eventData.requesterUserId && eventData.response) {
+          await NotificationService.notifyUser({
+            userId: eventData.requesterUserId,
+            type: "REQUEST_RESPONSE_RECEIVED",
+            title: "New Volunteer Response Received",
+            message: `A volunteer has responded to your blood request for ${eventData.bloodGroup || "blood"}.`,
+            relatedEntityType: "RequestResponse",
+            relatedEntityId: eventData.response._id,
+            priority: "HIGH"
+          });
+        }
+      }
+    } catch (notifErr) {
+      console.error("[EVENT NOTIFICATION DISPATCH ERROR]", notifErr.message);
     }
   }
 

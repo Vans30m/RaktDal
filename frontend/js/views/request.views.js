@@ -151,7 +151,7 @@ async renderBloodRequests(params) {
         </div>
       `;
     }
-  }
+  },
 
   renderCreateBloodRequest() {
     this.appContainer.innerHTML = `
@@ -297,7 +297,7 @@ async renderBloodRequests(params) {
         if (btn) btn.disabled = false;
       }
     });
-  }
+  },
 
   async renderBloodRequestDetail(requestId) {
     this.renderLoader("Loading request details...");
@@ -440,7 +440,7 @@ async renderBloodRequests(params) {
         </div>
       `;
     }
-  }
+  },
 
   openDonationModal(requestId, request) {
     const container = document.getElementById("responseModalContainer");
@@ -520,7 +520,7 @@ async renderBloodRequests(params) {
         if (submitBtn) submitBtn.disabled = false;
       }
     });
-  }
+  },
 
   async renderMyBloodRequests() {
     this.renderLoader("Loading your blood requests...");
