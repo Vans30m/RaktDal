@@ -132,7 +132,7 @@ renderLogin(params) {
         btn.innerHTML = '<span>Sign In</span>';
       }
     });
-  }
+  },
 
   renderRegister(params) {
     this.appContainer.innerHTML = `
@@ -222,7 +222,7 @@ renderLogin(params) {
         btn.innerHTML = '<span>Register Account</span>';
       }
     });
-  }
+  },
 
   async renderAuthCallback(params) {
     const status = params.get("status");
@@ -241,7 +241,7 @@ renderLogin(params) {
     } catch (err) {
       window.location.hash = "#/login?error=auth_failed";
     }
-  }
+  },
 
   async renderProfile() {
     const user = authState.getState().user;

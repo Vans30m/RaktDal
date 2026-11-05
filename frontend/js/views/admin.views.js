@@ -736,7 +736,7 @@ async renderAdminDashboard(initialTab = "overview") {
     } catch (err) {
       this.renderForbidden();
     }
-  }
+  },
 
   renderForbidden() {
     this.appContainer.innerHTML = `
