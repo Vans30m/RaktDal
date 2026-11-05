@@ -334,6 +334,62 @@ export const api = {
     return this.request(query ? `/reports/me/summary?${query}` : "/reports/me/summary");
   },
 
+  // Donation Camps (Phase 13)
+  getCamps(params = {}) {
+    const q = new URLSearchParams(params).toString();
+    return this.request(`/camps${q ? '?' + q : ''}`);
+  },
+
+  getCampById(campId) {
+    return this.request(`/camps/${campId}`);
+  },
+
+  registerForCamp(campId) {
+    return this.request(`/camps/${campId}/register`, { method: "POST" });
+  },
+
+  cancelCampRegistration(campId, reason = "") {
+    return this.request(`/camps/${campId}/register`, { method: "DELETE", body: { reason } });
+  },
+
+  getMyCampRegistration(campId) {
+    return this.request(`/camps/${campId}/registrations/me`);
+  },
+
+  getMyCampRegistrationsList() {
+    return this.request("/camps/my-registrations");
+  },
+
+  // Notifications (Phase 14)
+  getNotifications(page = 1, limit = 20, unreadOnly = false) {
+    const q = new URLSearchParams({ page, limit, unread: unreadOnly });
+    return this.request(`/notifications?${q.toString()}`);
+  },
+
+  getUnreadNotificationCount() {
+    return this.request("/notifications/unread-count");
+  },
+
+  markNotificationAsRead(notificationId) {
+    return this.request(`/notifications/${notificationId}/read`, { method: "PATCH" });
+  },
+
+  markAllNotificationsAsRead() {
+    return this.request("/notifications/read-all", { method: "PATCH" });
+  },
+
+  deleteNotification(notificationId) {
+    return this.request(`/notifications/${notificationId}`, { method: "DELETE" });
+  },
+
+  getNotificationPreferences() {
+    return this.request("/notifications/preferences");
+  },
+
+  updateNotificationPreferences(payload) {
+    return this.request("/notifications/preferences", { method: "PATCH", body: payload });
+  },
+
   getAdminExportCsvUrl(params = {}) {
     const query = new URLSearchParams(params).toString();
     const baseUrl = this.getBaseUrl();
