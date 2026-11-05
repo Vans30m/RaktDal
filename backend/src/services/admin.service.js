@@ -1,3 +1,4 @@
+import { NotificationService } from "./notification.service.js";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import Organization from "../models/Organization.js";

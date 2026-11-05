@@ -68,3 +68,4 @@ campRegistrationSchema.index({ campId: 1, registrationStatus: 1, attendanceStatu
 
 export const CampRegistration = mongoose.model("CampRegistration", campRegistrationSchema);
 export default CampRegistration;
+

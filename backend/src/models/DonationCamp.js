@@ -162,3 +162,4 @@ donationCampSchema.methods.toPublicProfile = function () {
 
 export const DonationCamp = mongoose.model("DonationCamp", donationCampSchema);
 export default DonationCamp;
+
