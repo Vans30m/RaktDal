@@ -9,9 +9,9 @@ import { Session } from "../models/Session.js";
 export function getCookieOptions({ maxAge } = {}) {
   const options = {
     httpOnly: true,
-    // If not production, we allow lax over http://127.0.0.1 and localhost
+    // Cross-site cookie (frontend on raktdal-frontend.onrender.com, backend on raktdal.onrender.com)
     secure: env.isProduction,
-    sameSite: "lax",
+    sameSite: env.isProduction ? "none" : "lax",
     path: "/"
   };
   if (maxAge) options.maxAge = maxAge;
