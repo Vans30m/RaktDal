@@ -11,6 +11,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
+  <script>
+    // Automatically use production backend on Render, fallback to local when testing locally
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      window.RAKTDAL_API_URL = "https://raktdal-backend.onrender.com/api/v1";
+    }
+  </script>
 </head>
 <body>
   <header class="site-header" id="siteHeader">
