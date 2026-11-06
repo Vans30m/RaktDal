@@ -186,6 +186,7 @@ export const campViews = {
       const isRegistered = myReg && myReg.registrationStatus === "REGISTERED";
       const startStr = new Date(camp.startDate).toLocaleString();
       const endStr = new Date(camp.endDate).toLocaleString();
+      const user = authState.getState().user;
 
       modal.innerHTML = `
         <div class="modal-content" style="max-width: 560px; padding: 28px; text-align: left;">
@@ -226,9 +227,61 @@ export const campViews = {
             ` : (camp.availableSlots <= 0 ? `
               <button class="button" disabled style="width:100%;">Camp Capacity Full</button>
             ` : `
-              <button id="registerCampBtn" class="button" style="width:100%;">
-                ${authState.isAuthenticated ? "Confirm Registration" : "Sign in to Register"}
-              </button>
+              <form id="campRegistrationForm" style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
+                <div style="border-top:1px solid var(--border); padding-top:14px; margin-bottom:2px;">
+                  <h4 style="margin:0 0 4px; font-size:1.05rem; font-weight:700; color:var(--text-main);">Donor Registration Form</h4>
+                  <p style="margin:0; font-size:0.84rem; color:var(--text-muted);">Complete the form below to register for this donation drive.</p>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                  <div>
+                    <label class="filter-label">Full Name *</label>
+                    <input type="text" id="regDonorName" class="filter-input" required value="${user?.name || ''}" placeholder="Your Name">
+                  </div>
+                  <div>
+                    <label class="filter-label">Phone Number *</label>
+                    <input type="tel" id="regDonorPhone" class="filter-input" required value="${user?.phoneNumber || ''}" placeholder="+91 98765 43210">
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                  <div>
+                    <label class="filter-label">Blood Group *</label>
+                    <select id="regDonorBloodGroup" class="filter-select" required>
+                      <option value="">Select Group</option>
+                      <option value="A+" ${user?.bloodGroup === 'A+' ? 'selected' : ''}>A+</option>
+                      <option value="A-" ${user?.bloodGroup === 'A-' ? 'selected' : ''}>A-</option>
+                      <option value="B+" ${user?.bloodGroup === 'B+' ? 'selected' : ''}>B+</option>
+                      <option value="B-" ${user?.bloodGroup === 'B-' ? 'selected' : ''}>B-</option>
+                      <option value="AB+" ${user?.bloodGroup === 'AB+' ? 'selected' : ''}>AB+</option>
+                      <option value="AB-" ${user?.bloodGroup === 'AB-' ? 'selected' : ''}>AB-</option>
+                      <option value="O+" ${user?.bloodGroup === 'O+' ? 'selected' : ''}>O+</option>
+                      <option value="O-" ${user?.bloodGroup === 'O-' ? 'selected' : ''}>O-</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="filter-label">Preferred Arrival Slot *</label>
+                    <select id="regDonorSlot" class="filter-select" required>
+                      <option value="morning">Morning (09:00 AM - 12:00 PM)</option>
+                      <option value="afternoon">Afternoon (12:00 PM - 03:00 PM)</option>
+                      <option value="evening">Evening (03:00 PM - 06:00 PM)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label style="display:flex; align-items:flex-start; gap:8px; font-size:0.83rem; color:var(--text-muted); cursor:pointer;">
+                    <input type="checkbox" id="regDonorConsent" required style="margin-top:3px;">
+                    <span>I confirm I am aged 18-65, weight > 45kg, and have not donated whole blood in the last 90 days.</span>
+                  </label>
+                </div>
+
+                <div id="campRegErrorMsg"></div>
+
+                <button type="submit" id="registerCampSubmitBtn" class="button" style="width:100%; margin-top:4px;">
+                  ${authState.isAuthenticated ? 'Submit Registration' : 'Sign in & Confirm Registration'}
+                </button>
+              </form>
             `)}
           </div>
         </div>
@@ -238,20 +291,41 @@ export const campViews = {
         modal.style.display = "none";
       });
 
-      document.getElementById("registerCampBtn")?.addEventListener("click", async () => {
+      const regForm = document.getElementById("campRegistrationForm");
+      regForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const errEl = document.getElementById("campRegErrorMsg");
+        if (errEl) errEl.innerHTML = "";
+
         if (!authState.isAuthenticated) {
           modal.style.display = "none";
+          toast.show("Please sign in with Google to register for this donation camp.", "info");
           window.location.hash = "#/login";
           return;
         }
 
+        const btn = document.getElementById("registerCampSubmitBtn");
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<div class="btn-spinner"></div><span>Registering...</span>';
+        }
+
         try {
           await api.registerForCamp(campId);
-          toast.show("Registration confirmed! See you at the camp.", "success");
+          toast.show("Registration submitted successfully! You are booked for this donation camp.", "success");
           modal.style.display = "none";
           this.renderCamps();
         } catch (err) {
-          toast.show(err.message || "Failed to register.", "error");
+          if (errEl) {
+            errEl.innerHTML = '<div class="alert alert-error" style="margin-top:8px;">' + (err.message || "Registration failed.") + '</div>';
+          } else {
+            toast.show(err.message || "Registration failed.", "error");
+          }
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = "Submit Registration";
+          }
         }
       });
 

@@ -1,4 +1,13 @@
-import { i18n, t, SUPPORTED_LANGUAGES } from "./i18n/i18n.js";
+export const SUPPORTED_LANGUAGES = [
+  { code: "en", name: "English", nativeName: "English" },
+  { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
+  { code: "bn", name: "Bengali", nativeName: "বাংলা" },
+  { code: "mr", name: "Marathi", nativeName: "मराठी" },
+  { code: "te", name: "Telugu", nativeName: "తెలుగు" },
+  { code: "ta", name: "Tamil", nativeName: "தமிழ்" },
+  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ" },
+  { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી" }
+];
 /**
  * Centralized Hash Router and Route Protection for RaktDal
  *
@@ -89,12 +98,6 @@ export class Router {
     // Setup mobile nav hamburger toggle
     this.setupMobileNav();
 
-    // Subscribe to i18n language changes to re-render dynamic views & navbar immediately
-    i18n.subscribe(() => {
-      this.updateNavbarTranslations();
-      this.renderLanguageSelector();
-      this.handleRoute();
-    });
 
     // Setup language dropdown in navbar
     this.setupLanguageSelector();
@@ -156,13 +159,38 @@ export class Router {
     if (btn) btn.setAttribute("aria-expanded", "false");
   }
 
+  getCurrentLang() {
+    const match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
+    if (match) {
+      const parts = decodeURIComponent(match[1]).split("/");
+      return parts[parts.length - 1] || "en";
+    }
+    return localStorage.getItem("raktdal_lang") || "en";
+  }
+
+  setWebsiteLanguage(langCode) {
+    localStorage.setItem("raktdal_lang", langCode);
+    const hostname = window.location.hostname;
+    const domainPart = hostname === "localhost" || hostname === "127.0.0.1" ? "" : `; domain=${hostname}`;
+    if (langCode === "en") {
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${domainPart}`;
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+    } else {
+      const transVal = `/en/${langCode}`;
+      document.cookie = `googtrans=${transVal}; path=/;${domainPart}`;
+      document.cookie = `googtrans=${transVal}; path=/`;
+    }
+    window.location.reload();
+  }
+
   renderLanguageSelector() {
     const dropdown = document.getElementById("langDropdown");
     const currentLabel = document.getElementById("currentLangLabel");
     const triggerBtn = document.getElementById("langSelectorBtn");
     if (!dropdown) return;
 
-    const currentMeta = i18n.getCurrentLanguageMeta();
+    const curLang = this.getCurrentLang();
+    const currentMeta = SUPPORTED_LANGUAGES.find(l => l.code === curLang) || SUPPORTED_LANGUAGES[0];
     if (currentLabel) {
       currentLabel.textContent = currentMeta.nativeName;
     }
@@ -185,33 +213,13 @@ export class Router {
     }
 
     dropdown.querySelectorAll(".lang-option-item").forEach(item => {
-      item.onclick = async (e) => {
+      item.onclick = (e) => {
         e.stopPropagation();
         const code = item.getAttribute("data-lang");
         this.closeLanguageSelector();
-        await i18n.setLanguage(code);
+        this.setWebsiteLanguage(code);
       };
     });
-  }
-
-  updateNavbarTranslations() {
-    // Translate static nav links
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
-      const translated = t(key);
-      if (translated) {
-        el.textContent = translated;
-      }
-    });
-
-    // Re-render auth navigation with current language
-    this.renderNav(authState.getState());
-
-    // Update global footer text if rendered
-    const globalFooter = document.getElementById("globalSiteFooter");
-    if (globalFooter) {
-      globalFooter.innerHTML = homeViews.getFooterHtml();
-    }
   }
 
   closeMobileNav() {
@@ -257,7 +265,7 @@ export class Router {
 
     if (state.loading && !state.initialized) {
       this.navContainer.innerHTML = `
-        <div style="font-size:0.85rem; color:var(--text-muted);">${t("navbar.checkingSession")}</div>
+        <div style="font-size:0.85rem; color:var(--text-muted);">Checking session...</div>
       `;
       return;
     }
@@ -491,50 +499,50 @@ export class Router {
         break;
       case "/about":
         this.renderPlaceholderPage(
-          t("pages.aboutTitle"),
-          t("pages.aboutDesc"),
+          "About RaktDal",
+          "RaktDal is a Pan-India blood donor coordination and emergency request platform built to streamline the voluntary blood donation network with strict privacy controls.",
           icons.heart(40, 'var(--red)')
         );
         break;
       case "/how-it-works":
         this.renderPlaceholderPage(
-          t("pages.howItWorksTitle"),
-          t("pages.howItWorksDesc"),
+          "How RaktDal Works",
+          "RaktDal connects donors and healthcare coordinators using verified profiles, location-indexed discovery, and direct request-response communication.",
           icons.settings(40, 'var(--text-muted)')
         );
         break;
       case "/contact":
         this.renderPlaceholderPage(
-          t("pages.contactTitle"),
-          t("pages.contactDesc"),
+          "Contact RaktDal",
+          "For technical assistance, organization onboarding, or general queries, please reach out to our platform support team.",
           icons.mail(40, 'var(--text-muted)')
         );
         break;
       case "/privacy":
         this.renderPlaceholderPage(
-          t("pages.privacyTitle"),
-          t("pages.privacyDesc"),
+          "Privacy Policy",
+          "RaktDal strictly protects donor personal data. Phone numbers, emails, and last donation history are never revealed without explicit donor consent.",
           icons.shield(40, 'var(--red)')
         );
         break;
       case "/terms":
         this.renderPlaceholderPage(
-          t("pages.termsTitle"),
-          t("pages.termsDesc"),
+          "Terms and Conditions",
+          "RaktDal is a voluntary coordination platform. Users agree to provide truthful information and adhere to responsible community standards.",
           icons.auditLog(40, 'var(--text-muted)')
         );
         break;
       case "/disclaimer":
         this.renderPlaceholderPage(
-          t("pages.disclaimerTitle"),
-          t("pages.disclaimerDesc"),
+          "Medical Disclaimer",
+          "RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified medical professionals. RaktDal does not verify blood suitability.",
           icons.alertTriangle(40, 'var(--warning)')
         );
         break;
       case "/help":
         this.renderPlaceholderPage(
-          t("pages.helpTitle"),
-          t("pages.helpDesc"),
+          "Help & Support",
+          "Frequently asked questions, donor guides, and instructions for posting emergency blood requests.",
           icons.info(40, 'var(--text-muted)')
         );
         break;

@@ -1,7 +1,6 @@
 /**
  * Main Application Bootstrap with i18n
  */
-import { i18n } from "./i18n/i18n.js";
 import { authState } from "./auth.js";
 import { Router } from "./router.js";
 
@@ -13,8 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // 1. Initialize internationalization before rendering any UI
-  await i18n.init();
-
+  
   // 2. Initialize router
   const router = new Router("app", "authNavContainer");
 

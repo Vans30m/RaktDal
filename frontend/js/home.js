@@ -2,7 +2,6 @@
  * Homepage Multi-Section Component for RaktDal
  * Modern, responsive healthcare landing page with complete i18n support
  */
-import { t } from "./i18n/i18n.js";
 
 export const homeViews = {
   getHeroIllustrationSvg() {
@@ -52,8 +51,8 @@ export const homeViews = {
           <rect width="170" height="56" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
           <circle cx="28" cy="28" r="15" fill="#fef2f2"/>
           <path class="anim-pulse-emergency" d="M28 20 L28 29 M28 34 L28 36" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
-          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${t("hero.emergencyNeedsBadge")}</text>
-          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">${t("hero.instantCoordination")}</text>
+          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Emergency Needs</text>
+          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">Instant Coordination</text>
         </g>
 
         <!-- Floating Badge TOP LEFT: Verified Donors -->
@@ -61,8 +60,8 @@ export const homeViews = {
           <rect width="170" height="56" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
           <circle cx="28" cy="28" r="15" fill="#f0fdf4"/>
           <path d="M22 28 L27 33 L35 23" stroke="#15803d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">${t("hero.verifiedDonorsBadge")}</text>
-          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">${t("hero.panIndiaSupport")}</text>
+          <text x="52" y="24" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Verified Donors</text>
+          <text x="52" y="40" font-family="Inter, sans-serif" font-size="10" font-weight="500" fill="#64748b">Pan-India Support</text>
         </g>
 
         <!-- Center Glowing Blood Drop Icon -->
@@ -101,7 +100,7 @@ export const homeViews = {
 
           <g class="anim-chip-item">
             <rect x="232" y="0" width="58" height="32" rx="9" fill="#f1f5f9" stroke="#e2e8f0"/>
-            <text x="261" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">${t("hero.moreBloodGroups")}</text>
+            <text x="261" y="20" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle">+4 more</text>
           </g>
         </g>
       </svg>
@@ -117,13 +116,13 @@ export const homeViews = {
             <div class="hero-content-col scroll-reveal">
               <span class="landing-eyebrow">
                 <span class="eyebrow-dot"></span>
-                ${t("hero.eyebrow")}
+                BLOOD DONATION & DONOR COORDINATION
               </span>
               <h1 id="heroHeadline" class="hero-title">
-                ${t("hero.title")} <span class="text-accent">${t("hero.titleAccent")}</span>
+                Every connection can <span class="text-accent">save a life.</span>
               </h1>
               <p class="hero-supporting-text">
-                ${t("hero.subtitle")}
+                Discover blood donation resources and connect with participating donors and verified organizations across India.
               </p>
               <div class="hero-cta-group">
                 <a href="#/find-blood" class="button button-lg button-primary shadow-hover">
@@ -131,13 +130,13 @@ export const homeViews = {
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
-                  ${t("hero.findDonorsBtn")}
+                  Find Blood Donors
                 </a>
                 <a href="#/donor/register" class="button button-lg button-secondary shadow-hover">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                   </svg>
-                  ${t("hero.becomeDonorBtn")}
+                  Become a Donor
                 </a>
               </div>
               <div class="hero-disclaimer-card">
@@ -147,7 +146,7 @@ export const homeViews = {
                   <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
                 <span>
-                  <strong>${t("hero.noticeTitle")}</strong> ${t("hero.noticeText")}
+                  <strong>Medical Coordination Notice:</strong> RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified professionals.
                 </span>
               </div>
             </div>
@@ -162,10 +161,10 @@ export const homeViews = {
         <section class="landing-section section-how-it-works bg-surface-alt" aria-labelledby="howItWorksHeading">
           <div class="landing-container">
             <div class="section-header-center scroll-reveal">
-              <span class="section-badge">${t("howItWorks.tag")}</span>
-              <h2 id="howItWorksHeading" class="section-heading">${t("howItWorks.heading")}</h2>
+              <span class="section-badge">How RaktDal Works</span>
+              <h2 id="howItWorksHeading" class="section-heading">Making Blood Donation Connections Easier</h2>
               <p class="section-subheading">
-                ${t("howItWorks.subtitle")}
+                A transparent, volunteer-driven coordination flow designed for patients, donors, and healthcare centers.
               </p>
             </div>
 
@@ -179,9 +178,9 @@ export const homeViews = {
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
                 </div>
-                <h3 class="card-title">${t("howItWorks.step1Title")}</h3>
+                <h3 class="card-title">Find Blood Donors</h3>
                 <p class="card-text">
-                  ${t("howItWorks.step1Desc")}
+                  Search opted-in voluntary donors by blood group, city, or PIN code with granular privacy controls.
                 </p>
               </div>
 
@@ -196,9 +195,9 @@ export const homeViews = {
                     <line x1="9" y1="15" x2="15" y2="15"></line>
                   </svg>
                 </div>
-                <h3 class="card-title">${t("howItWorks.step2Title")}</h3>
+                <h3 class="card-title">Create Blood Requests</h3>
                 <p class="card-text">
-                  ${t("howItWorks.step2Desc")}
+                  Post urgent or scheduled blood requirements with hospital details and verified medical contacts.
                 </p>
               </div>
 
@@ -213,9 +212,9 @@ export const homeViews = {
                     <path d="M22 11h-6"></path>
                   </svg>
                 </div>
-                <h3 class="card-title">${t("howItWorks.step3Title")}</h3>
+                <h3 class="card-title">Become a Donor</h3>
                 <p class="card-text">
-                  ${t("howItWorks.step3Desc")}
+                  Register your blood type, set your availability schedule, and choose your preferred contact methods.
                 </p>
               </div>
 
@@ -230,9 +229,9 @@ export const homeViews = {
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                   </svg>
                 </div>
-                <h3 class="card-title">${t("howItWorks.step4Title")}</h3>
+                <h3 class="card-title">Organize Donation Camps</h3>
                 <p class="card-text">
-                  ${t("howItWorks.step4Desc")}
+                  Coordinate community blood drives, partner with recognized blood banks, and notify nearby donors.
                 </p>
               </div>
             </div>
@@ -243,10 +242,10 @@ export const homeViews = {
         <section class="landing-section section-explore" aria-labelledby="exploreHeading">
           <div class="landing-container">
             <div class="section-header-center scroll-reveal">
-              <span class="section-badge">${t("explore.tag")}</span>
-              <h2 id="exploreHeading" class="section-heading">${t("explore.heading")}</h2>
+              <span class="section-badge">Explore RaktDal</span>
+              <h2 id="exploreHeading" class="section-heading">One Platform. Multiple Ways to Help.</h2>
               <p class="section-subheading">
-                ${t("explore.subtitle")}
+                Designed to support every participant in the voluntary healthcare ecosystem.
               </p>
             </div>
 
@@ -260,13 +259,13 @@ export const homeViews = {
                       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                   </div>
-                  <h3 class="explore-title">${t("explore.card1Title")}</h3>
+                  <h3 class="explore-title">Donor Discovery</h3>
                 </div>
                 <p class="explore-desc">
-                  ${t("explore.card1Desc")}
+                  Filter donors by verified blood groups, geographic location, and real-time availability status.
                 </p>
                 <a href="#/find-blood" class="explore-link">
-                  <span>${t("explore.card1Link")}</span>
+                  <span>Search Donors</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -285,13 +284,13 @@ export const homeViews = {
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                     </svg>
                   </div>
-                  <h3 class="explore-title">${t("explore.card2Title")}</h3>
+                  <h3 class="explore-title">Blood Requests</h3>
                 </div>
                 <p class="explore-desc">
-                  ${t("explore.card2Desc")}
+                  Browse active patient needs across verified clinics, medical colleges, and regional hospitals.
                 </p>
                 <a href="#/requests" class="explore-link">
-                  <span>${t("explore.card2Link")}</span>
+                  <span>Browse Requests</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -308,13 +307,13 @@ export const homeViews = {
                       <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                   </div>
-                  <h3 class="explore-title">${t("explore.card3Title")}</h3>
+                  <h3 class="explore-title">Blood Bank Inventory</h3>
                 </div>
                 <p class="explore-desc">
-                  ${t("explore.card3Desc")}
+                  Directory of licensed regional blood centers and storage banks across participating states.
                 </p>
                 <a href="#/blood-banks" class="explore-link">
-                  <span>${t("explore.card3Link")}</span>
+                  <span>View Directory</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -333,13 +332,13 @@ export const homeViews = {
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
                   </div>
-                  <h3 class="explore-title">${t("explore.card4Title")}</h3>
+                  <h3 class="explore-title">Donation Camps</h3>
                 </div>
                 <p class="explore-desc">
-                  ${t("explore.card4Desc")}
+                  Find upcoming voluntary donation camps organized by authorized community and hospital partners.
                 </p>
                 <a href="#/camps" class="explore-link">
-                  <span>${t("explore.card4Link")}</span>
+                  <span>Explore Camps</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
@@ -358,17 +357,17 @@ export const homeViews = {
               <div class="cta-decorative-circle circle-2"></div>
               
               <div class="cta-inner-content">
-                <span class="cta-tag">${t("cta.tag")}</span>
-                <h2 id="ctaHeadline" class="cta-heading">${t("cta.heading")}</h2>
+                <span class="cta-tag">Join Our Community Network</span>
+                <h2 id="ctaHeadline" class="cta-heading">Be Someone's Reason to Smile.</h2>
                 <p class="cta-supporting-text">
-                  ${t("cta.subtitle")}
+                  Your willingness to help can make a meaningful difference. Join RaktDal and support responsible blood donation coordination.
                 </p>
                 <div class="cta-buttons-row">
                   <a href="#/donor/register" class="button button-lg button-white shadow-hover">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                     </svg>
-                    ${t("cta.becomeDonorBtn")}
+                    Become a Donor
                   </a>
                   <a href="#/requests" class="button button-lg button-outline-white shadow-hover">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -377,7 +376,7 @@ export const homeViews = {
                       <line x1="16" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                     </svg>
-                    ${t("cta.exploreRequestsBtn")}
+                    Explore Blood Requests
                   </a>
                 </div>
               </div>
@@ -403,45 +402,45 @@ export const homeViews = {
                 <span class="brand-text">RaktDal</span>
               </a>
               <p class="footer-about-text">
-                ${t("footer.aboutText")}
+                Connecting people, donors, and verified organizations for responsible blood donation coordination across India.
               </p>
               <div class="footer-badge-box">
-                <span class="footer-mini-badge">${t("footer.panIndiaNetwork")}</span>
-                <span class="footer-mini-badge">${t("footer.privacyFirst")}</span>
+                <span class="footer-mini-badge">Pan-India Network</span>
+                <span class="footer-mini-badge">Privacy First</span>
               </div>
             </div>
 
             <!-- Column 2: Quick Links -->
             <div class="footer-col">
-              <h4 class="footer-col-title">${t("footer.quickLinks")}</h4>
+              <h4 class="footer-col-title">Quick Links</h4>
               <ul class="footer-nav-list">
-                <li><a href="#/">${t("footer.home")}</a></li>
-                <li><a href="#/find-blood">${t("footer.findDonors")}</a></li>
-                <li><a href="#/requests">${t("footer.bloodRequests")}</a></li>
-                <li><a href="#/camps">${t("footer.donationCamps")}</a></li>
-                <li><a href="#/donor/register">${t("footer.becomeDonor")}</a></li>
+                <li><a href="#/">Home</a></li>
+                <li><a href="#/find-blood">Find Donors</a></li>
+                <li><a href="#/requests">Blood Requests</a></li>
+                <li><a href="#/camps">Donation Camps</a></li>
+                <li><a href="#/donor/register">Become a Donor</a></li>
               </ul>
             </div>
 
             <!-- Column 3: Platform -->
             <div class="footer-col">
-              <h4 class="footer-col-title">${t("footer.platform")}</h4>
+              <h4 class="footer-col-title">Platform</h4>
               <ul class="footer-nav-list">
-                <li><a href="#/about">${t("footer.aboutRaktDal")}</a></li>
-                <li><a href="#/how-it-works">${t("footer.howItWorks")}</a></li>
-                <li><a href="#/blood-banks">${t("footer.bloodBankInventory")}</a></li>
-                <li><a href="#/contact">${t("footer.contactUs")}</a></li>
+                <li><a href="#/about">About RaktDal</a></li>
+                <li><a href="#/how-it-works">How It Works</a></li>
+                <li><a href="#/blood-banks">Blood Bank Inventory</a></li>
+                <li><a href="#/contact">Contact Us</a></li>
               </ul>
             </div>
 
             <!-- Column 4: Important Information -->
             <div class="footer-col">
-              <h4 class="footer-col-title">${t("footer.importantInfo")}</h4>
+              <h4 class="footer-col-title">Important Information</h4>
               <ul class="footer-nav-list">
-                <li><a href="#/privacy">${t("footer.privacyPolicy")}</a></li>
-                <li><a href="#/terms">${t("footer.termsAndConditions")}</a></li>
-                <li><a href="#/disclaimer">${t("footer.medicalDisclaimer")}</a></li>
-                <li><a href="#/help">${t("footer.helpAndSupport")}</a></li>
+                <li><a href="#/privacy">Privacy Policy</a></li>
+                <li><a href="#/terms">Terms and Conditions</a></li>
+                <li><a href="#/disclaimer">Medical Disclaimer</a></li>
+                <li><a href="#/help">Help and Support</a></li>
               </ul>
             </div>
           </div>
@@ -449,17 +448,17 @@ export const homeViews = {
           <!-- Footer Medical Disclaimer Notice -->
           <div class="footer-disclaimer-banner">
             <p>
-              <strong>${t("footer.medicalDisclaimer")}:</strong> ${t("footer.disclaimerNotice")}
+              <strong>Medical Disclaimer:</strong> Medical Disclaimer: RaktDal facilitates coordination and does not independently verify real-time blood availability or determine medical suitability. Blood transfusion compatibility and recipient eligibility must strictly be confirmed by authorized medical professionals and certified blood bank staff.
             </p>
           </div>
 
           <!-- Footer Bottom Bar -->
           <div class="footer-bottom-bar">
             <div class="footer-copyright">
-              ${t("footer.copyright")}
+              © 2026 RaktDal. All rights reserved.
             </div>
             <div class="footer-tagline">
-              ${t("footer.tagline")}
+              Built for responsible blood donation coordination.
             </div>
           </div>
         </div>
