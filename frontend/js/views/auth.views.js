@@ -216,7 +216,7 @@ renderLogin(params) {
           msgEl.innerHTML = `<div class="alert alert-success">${data.message || "Registration successful!"}</div>`;
           setTimeout(() => {
             localStorage.setItem("raktdal_pending_email", email);
-          window.location.href = "pages/verify-email.html?email=" + encodeURIComponent(email);
+          window.location.hash = "#/verify-email?email=" + encodeURIComponent(email);
           }, 1200);
         } else {
           msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Registration failed."}</div>`;
