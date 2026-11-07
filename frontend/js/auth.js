@@ -52,8 +52,11 @@ class AuthStateManager {
    * Fetches current authenticated user profile from backend
    */
   async init() {
-    this.loading = true;
-    this.notify();
+    // If already initialized and not force-fetching, do not set loading to true
+    if (!this.initialized) {
+      this.loading = true;
+      this.notify();
+    }
 
     try {
       const res = await api.getMe();
@@ -61,7 +64,6 @@ class AuthStateManager {
         const body = await res.json();
         this.user = body.data?.user || null;
       } else {
-        // If we don't have a verified user in memory or storage, nullify
         const saved = sessionStorage.getItem("raktdal_auth_user");
         if (saved) {
           try { this.user = JSON.parse(saved); } catch (e) { this.user = null; }
