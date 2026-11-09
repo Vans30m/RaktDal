@@ -236,7 +236,12 @@ export class Router {
     const navLinks = document.querySelectorAll("#mainNav a");
     navLinks.forEach(link => {
       const route = link.getAttribute("data-route");
-      if (route === path || (route !== "/" && path.startsWith(route))) {
+      // Match active nav: if route equals path, or if on /donor/* highlight Donate Blood (/donor/register)
+      const isMatch = (route === path) || 
+                      (route !== "/" && path.startsWith(route)) ||
+                      (route === "/donor/register" && path.startsWith("/donor"));
+
+      if (isMatch) {
         link.classList.add("active");
         link.setAttribute("aria-current", "page");
       } else {
@@ -476,6 +481,9 @@ export class Router {
       case "/register":
         this.renderRegister(params);
         break;
+      case "/verify-email":
+        this.renderVerifyEmail(params);
+        break;
       case "/auth/callback":
         this.renderAuthCallback(params);
         break;
@@ -573,6 +581,10 @@ export class Router {
 
   renderRegister(params) {
     return authViews.renderRegister.call(this, params);
+  }
+
+  renderVerifyEmail(params) {
+    return authViews.renderVerifyEmail.call(this, params);
   }
 
   renderAuthCallback(params) {

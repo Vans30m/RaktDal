@@ -402,6 +402,14 @@ export const api = {
     return `${baseUrl}/admin/reports/export?${query}`;
   },
 
+  // Send In-App Alert to a Volunteer Donor
+  sendDonorAlert(donorProfileId, data) {
+    return this.request(`/donors/${donorProfileId}/alert`, {
+      method: "POST",
+      body: data
+    });
+  },
+
   // Location Autocomplete / Lookup
   lookupCity(city) {
     return this.request(`/location/city/${encodeURIComponent(city)}`);

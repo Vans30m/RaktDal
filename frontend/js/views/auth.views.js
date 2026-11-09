@@ -213,11 +213,11 @@ renderLogin(params) {
         const data = await res.json();
 
         if (res.ok) {
-          msgEl.innerHTML = `<div class="alert alert-success">${data.message || "Registration successful!"}</div>`;
+          msgEl.innerHTML = `<div class="alert alert-success">${data.message || "Registration successful! Redirecting to email verification..."}</div>`;
+          localStorage.setItem("raktdal_pending_email", email);
           setTimeout(() => {
-            localStorage.setItem("raktdal_pending_email", email);
-          window.location.hash = "#/verify-email?email=" + encodeURIComponent(email);
-          }, 1200);
+            window.location.hash = "#/verify-email?email=" + encodeURIComponent(email);
+          }, 300);
         } else {
           msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Registration failed."}</div>`;
         }
@@ -226,6 +226,102 @@ renderLogin(params) {
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>Register Account</span>';
+      }
+    });
+  },
+
+  renderVerifyEmail(params) {
+    const emailParam = params.get("email") || localStorage.getItem("raktdal_pending_email") || "";
+
+    this.appContainer.innerHTML = `
+      <div class="auth-card" style="max-width: 440px;">
+        <img src="assets/logo-removebg.png" alt="RaktDal Logo" class="brand-logo" style="width: 48px; height: 48px; margin: 0 auto 16px; display: block; object-fit: contain;">
+        <h2>Verify Your Email</h2>
+        <p class="subtitle">Enter the 6-digit OTP code sent to <strong>${emailParam || "your email"}</strong>.</p>
+
+        <div id="verifyMsg"></div>
+
+        <form id="verifyOtpForm" style="margin-top: 20px; text-align: left;">
+          <div class="form-group">
+            <label class="form-label" for="verifyEmailInput">Email Address</label>
+            <input type="email" id="verifyEmailInput" class="form-input" value="${emailParam}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="verifyOtpInput">6-Digit Verification Code</label>
+            <input type="text" id="verifyOtpInput" class="form-input" maxlength="6" pattern="[0-9]{6}" placeholder="123456" required style="letter-spacing: 4px; font-size: 1.25rem; text-align: center; font-weight: 700;">
+          </div>
+
+          <button type="submit" id="verifySubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
+            Verify Email
+          </button>
+        </form>
+
+        <div style="margin-top: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
+          <button id="resendOtpBtn" class="button button-outline" style="font-size: 0.8rem; padding: 5px 12px;">
+            Resend OTP
+          </button>
+          <a href="#/login" style="color: var(--primary); font-weight: 600;">Back to Sign In</a>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("verifyOtpForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("verifyEmailInput")?.value?.trim();
+      const otp = document.getElementById("verifyOtpInput")?.value?.trim();
+      const msgEl = document.getElementById("verifyMsg");
+      const btn = document.getElementById("verifySubmitBtn");
+
+      if (!email || !otp || otp.length !== 6) {
+        msgEl.innerHTML = '<div class="alert alert-error">Please enter the 6-digit OTP code.</div>';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="btn-spinner"></div><span>Verifying...</span>';
+        const res = await api.verifyEmail({ email, otp });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          msgEl.innerHTML = `<div class="alert alert-success">${data.message || "Email verified successfully!"}</div>`;
+          toast.success("Email verified! Signing you in...");
+          localStorage.removeItem("raktdal_pending_email");
+          await authState.init();
+          this.renderNav(authState.getState());
+          setTimeout(() => {
+            window.location.hash = "#/";
+          }, 800);
+        } else {
+          msgEl.innerHTML = `<div class="alert alert-error">${data.message || "Invalid or expired OTP code."}</div>`;
+        }
+      } catch (err) {
+        msgEl.innerHTML = `<div class="alert alert-error">Network error. Please try again.</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Verify Email</span>';
+      }
+    });
+
+    document.getElementById("resendOtpBtn")?.addEventListener("click", async () => {
+      const email = document.getElementById("verifyEmailInput")?.value?.trim();
+      const msgEl = document.getElementById("verifyMsg");
+      if (!email) {
+        msgEl.innerHTML = '<div class="alert alert-error">Please specify your email address.</div>';
+        return;
+      }
+      try {
+        toast.info("Resending OTP code...");
+        const res = await api.resendOtp({ email });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          toast.success(data.message || "A fresh OTP code has been sent!");
+        } else {
+          toast.error(data.message || "Failed to resend OTP.");
+        }
+      } catch (err) {
+        toast.error("Network error.");
       }
     });
   },

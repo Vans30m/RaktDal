@@ -32,6 +32,55 @@ router.patch("/me", authenticate, verifyCsrf, updateMyDonorProfile);
 router.patch("/me/availability", authenticate, verifyCsrf, updateMyAvailability);
 router.patch("/me/consent", authenticate, verifyCsrf, updateMyConsent);
 
+// Direct In-App Alert to a Volunteer Donor
+router.post("/:donorProfileId/alert", authenticate, verifyCsrf, async (req, res) => {
+  try {
+    const { donorProfileId } = req.params;
+    const { hospitalName, city, bloodGroup, message, contactNumber } = req.body || {};
+    const requester = req.user;
+
+    const { DonorProfile } = await import("../models/DonorProfile.js");
+    const { NotificationService } = await import("../services/notification.service.js");
+
+    const profile = await DonorProfile.findById(donorProfileId).populate("userId", "fullName email");
+    if (!profile || !profile.userId) {
+      return res.status(404).json({ success: false, message: "Donor profile not found." });
+    }
+
+    if (String(profile.userId._id) === String(requester._id)) {
+      return res.status(400).json({ success: false, message: "You cannot send an emergency donation alert to yourself." });
+    }
+
+    const alertTitle = `🚨 Urgent Blood Requirement: ${bloodGroup || profile.bloodGroup}`;
+    const alertMessage = `${requester.fullName} has requested blood donation at ${hospitalName || "local hospital"} (${city || profile.location.city}). Contact: ${contactNumber || requester.phoneNumber || requester.email}. Note: ${message || "Immediate transfusion needed."}`;
+
+    await NotificationService.notifyUser({
+      userId: profile.userId._id,
+      type: "REQUEST_CREATED",
+      title: alertTitle,
+      message: alertMessage,
+      priority: "URGENT",
+      relatedEntityType: "User",
+      relatedEntityId: requester._id,
+      metadata: {
+        requesterName: requester.fullName,
+        requesterContact: contactNumber || requester.phoneNumber || requester.email,
+        hospitalName,
+        bloodGroup: bloodGroup || profile.bloodGroup,
+        city: city || profile.location.city
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: `In-app alert successfully sent to ${profile.userId.fullName}!`
+    });
+  } catch (err) {
+    console.error("Donor alert error:", err);
+    return res.status(500).json({ success: false, message: err.message || "Failed to send in-app alert to donor." });
+  }
+});
+
 // Public Blood Bank Directory & Donation Camps Endpoints
 router.get("/directory/blood-banks", searchLimiter, async (req, res) => {
   try {

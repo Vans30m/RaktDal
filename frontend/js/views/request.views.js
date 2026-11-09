@@ -416,8 +416,39 @@ async renderBloodRequests(params) {
       const creatorId = r.createdByUserId?._id || r.createdByUserId;
       const isOwner = currentUserId && creatorId && String(currentUserId) === String(creatorId);
 
+      // Check if current user has already submitted a donation offer
+      let myExistingResponse = null;
+      let incomingResponses = [];
+
+      if (isOwner) {
+        try {
+          const respRes = await api.getRequestResponses(requestId);
+          if (respRes.ok) {
+            const respData = await respRes.json();
+            incomingResponses = respData.data?.responses || [];
+          }
+        } catch (e) {
+          console.warn("Could not load incoming responses", e);
+        }
+      } else if (state.isAuthenticated) {
+        // Find if user already submitted an offer
+        try {
+          const respRes = await api.getRequestResponses(requestId);
+          if (respRes.ok) {
+            const respData = await respRes.json();
+            const list = respData.data?.responses || [];
+            myExistingResponse = list.find(resItem => {
+              const resUserId = resItem.donorUserId?._id || resItem.donorUserId;
+              return String(resUserId) === String(currentUserId) && resItem.status !== "WITHDRAWN";
+            });
+          }
+        } catch (e) {
+          // If 403, we check if user has local confirmation or we handle in error
+        }
+      }
+
       this.appContainer.innerHTML = `
-        <div class="requests-container" style="max-width:800px;">
+        <div class="requests-container" style="max-width:840px;">
           <div style="margin-bottom:16px;">
             <a href="#/requests" style="color:var(--text-muted); font-size:0.88rem;">← Back to Blood Requests</a>
           </div>
@@ -437,11 +468,10 @@ async renderBloodRequests(params) {
 
             <h2 style="margin:0 0 10px 0;">${r.hospitalName}</h2>
             <div class="request-meta-row" style="margin-bottom:20px;">
-              
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-      <circle cx="12" cy="10" r="3"></circle>
-    </svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
               <span>${r.location?.city || "Unknown"}, ${r.location?.state || ""} — Pin: ${r.location?.pinCode || "N/A"}</span>
             </div>
 
@@ -479,26 +509,108 @@ async renderBloodRequests(params) {
               </div>
             ` : ""}
 
-            <div style="border-top:1px solid var(--border); padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            ${isOwner ? `
+              <!-- Requester Panel: Incoming Donor Offers -->
+              <div style="margin-top:24px; border-top:1px solid var(--border); padding-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                  <h3 style="margin:0; font-size:1.15rem; display:flex; align-items:center; gap:8px;">
+                    <span>📥 Incoming Donor Offers</span>
+                    <span class="badge ${incomingResponses.length > 0 ? "badge-active" : ""}" style="font-size:0.8rem;">
+                      ${incomingResponses.length} Offer${incomingResponses.length === 1 ? "" : "s"}
+                    </span>
+                  </h3>
+                </div>
+
+                ${incomingResponses.length === 0 ? `
+                  <div style="background:#f8fafc; border:1px dashed var(--border); border-radius:8px; padding:18px; text-align:center; color:var(--text-muted); font-size:0.88rem;">
+                    No donors have submitted donation offers yet. Matching donors in your city will be notified.
+                  </div>
+                ` : `
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    ${incomingResponses.map(resp => {
+                      const donorName = resp.sharedContactInfo?.fullName || resp.donorUserId?.fullName || "Volunteer Donor";
+                      const donorPhone = resp.sharedContactInfo?.phone || "";
+                      const donorEmail = resp.sharedContactInfo?.email || "";
+                      return `
+                        <div style="background:#ffffff; border:1px solid var(--border); border-left:4px solid var(--primary); border-radius:8px; padding:14px;">
+                          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                            <div>
+                              <div style="font-weight:700; font-size:1rem; color:var(--text-main);">${donorName}</div>
+                              <div style="font-size:0.86rem; color:var(--primary); font-weight:600; margin-top:2px;">
+                                🩸 Offered ${resp.unitsOffered} Unit(s)
+                              </div>
+                            </div>
+                            <span class="badge badge-active" style="font-size:0.75rem;">Status: ${resp.status}</span>
+                          </div>
+
+                          ${resp.notes ? `
+                            <div style="margin:10px 0; font-size:0.88rem; background:#f8fafc; padding:8px 12px; border-radius:6px; color:#334155;">
+                              "${resp.notes}"
+                            </div>
+                          ` : ""}
+
+                          <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:16px; font-size:0.85rem; color:var(--text-muted);">
+                            ${donorPhone ? `
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <a href="tel:${donorPhone}" style="color:var(--primary); font-weight:600; text-decoration:none;">${donorPhone}</a>
+                              </div>
+                            ` : `<span style="font-size:0.8rem; color:var(--text-muted);">(Phone not shared)</span>`}
+
+                            ${donorEmail ? `
+                              <div style="display:flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <a href="mailto:${donorEmail}" style="color:var(--text-main); text-decoration:none;">${donorEmail}</a>
+                              </div>
+                            ` : ""}
+                          </div>
+
+                          <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+                            ${donorPhone ? `
+                              <a href="tel:${donorPhone}" class="button" style="padding:5px 12px; font-size:0.82rem; background:#16a34a; border-color:#16a34a;">
+                                📞 Call Donor
+                              </a>
+                            ` : ""}
+                            ${donorEmail ? `
+                              <a href="mailto:${donorEmail}?subject=Blood%20Donation%20Coordination%20-%20${encodeURIComponent(r.hospitalName)}" class="button button-outline" style="padding:5px 12px; font-size:0.82rem;">
+                                ✉️ Email Donor
+                              </a>
+                            ` : ""}
+                            <button class="button mark-fulfilled-btn" style="padding:5px 12px; font-size:0.82rem;">
+                              Mark Fulfilled
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    }).join("")}
+                  </div>
+                `}
+              </div>
+            ` : ""}
+
+            <div style="border-top:1px solid var(--border); margin-top:24px; padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
               <div>
                 ${state.isAdmin ? `
                   <button id="adminVerifyBtn" class="button" style="background:#0369a1; border-color:#0369a1; font-size:0.88rem;">
-                    
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-      <polyline points="9 12 11 14 15 10"></polyline>
-    </svg> Admin: Verify Request
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg> Admin: Verify Request
                   </button>
                 ` : ""}
               </div>
 
-              <div style="display:flex; gap:12px;">
+              <div style="display:flex; gap:12px; align-items:center;">
                 ${isOwner ? `
                   <button id="markFulfilledBtn" class="button button-outline" style="font-size:0.88rem;">Mark Fulfilled</button>
                   <button id="cancelRequestBtn" class="button button-outline" style="color:#d97706; border-color:#fde68a; font-size:0.88rem;">Cancel Request</button>
                   <button id="deleteRequestBtn" class="button button-outline" style="color:#dc2626; border-color:#fecaca; font-size:0.88rem;">🗑️ Delete Request</button>
                 ` : `
-                  ${r.status === "ACTIVE" || r.status === "RESPONSES_RECEIVED" ? `
+                  ${myExistingResponse ? `
+                    <button class="button" disabled style="background:#16a34a; border-color:#16a34a; cursor:default; opacity:0.95;">
+                      ✓ You have offered to donate (${myExistingResponse.unitsOffered} unit)
+                    </button>
+                  ` : (r.status === "ACTIVE" || r.status === "RESPONSES_RECEIVED") ? `
                     <button id="respondDonationBtn" class="button">Offer to Donate</button>
                   ` : `
                     <span style="color:var(--text-muted); font-size:0.88rem;">This request is ${r.status.toLowerCase()}.</span>
@@ -522,11 +634,13 @@ async renderBloodRequests(params) {
       });
 
       // Handle requester actions
-      document.getElementById("markFulfilledBtn")?.addEventListener("click", async () => {
-        if (confirm("Mark this blood request as fulfilled?")) {
-          await api.updateRequestStatus(requestId, "FULFILLED", "Fulfilled by user");
-          this.renderBloodRequestDetail(requestId);
-        }
+      document.querySelectorAll(".mark-fulfilled-btn, #markFulfilledBtn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          if (confirm("Mark this blood request as fulfilled?")) {
+            await api.updateRequestStatus(requestId, "FULFILLED", "Fulfilled by user");
+            this.renderBloodRequestDetail(requestId);
+          }
+        });
       });
 
       document.getElementById("cancelRequestBtn")?.addEventListener("click", async () => {
@@ -643,7 +757,7 @@ async renderBloodRequests(params) {
         const data = await res.json();
 
         if (res.ok && data.success) {
-          alert("Thank you! Your donation response has been transmitted to the requester.");
+          toast.success("Thank you! Your donation offer has been sent to the requester.");
           close();
           this.renderBloodRequestDetail(requestId);
         } else {

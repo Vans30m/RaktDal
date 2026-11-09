@@ -158,6 +158,24 @@ export const donorViews = {
           window.location.hash = `#/find-blood?${q.toString()}`;
         });
       });
+
+      // Attach In-App Alert handlers
+      resultsEl.querySelectorAll(".send-donor-alert-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const state = authState.getState();
+          if (!state.isAuthenticated) {
+            window.location.hash = "#/login?error=auth_required";
+            return;
+          }
+
+          const donorId = btn.getAttribute("data-id");
+          const donorName = btn.getAttribute("data-name");
+          const donorBg = btn.getAttribute("data-bg");
+          const donorCity = btn.getAttribute("data-city");
+
+          openDonorAlertModal(donorId, donorName, donorBg, donorCity);
+        });
+      });
     } catch (err) {
       const resultsEl = document.getElementById("donorSearchResults");
       if (resultsEl) {
@@ -916,9 +934,15 @@ function renderDonorCard(d) {
           ${isAvailable ? "● Available" : "Unavailable"}
         </span>
 
-        <span style="font-size: 0.75rem; color: var(--text-muted);">
-          Joined ${new Date(d.createdAt).toLocaleDateString()}
-        </span>
+        ${isAvailable ? `
+          <button class="button button-outline send-donor-alert-btn" data-id="${d.id || d._id}" data-name="${escapeHtml(name)}" data-bg="${d.bloodGroup}" data-city="${escapeHtml(d.location.city)}" style="font-size: 0.78rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">
+            🔔 In-App Alert
+          </button>
+        ` : `
+          <span style="font-size: 0.75rem; color: var(--text-muted);">
+            Joined ${new Date(d.createdAt).toLocaleDateString()}
+          </span>
+        `}
       </div>
     </div>
   `;
@@ -936,93 +960,81 @@ function renderActiveDashboard(container, donor) {
     <div class="auth-card" style="padding: 24px; margin-bottom: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div style="display:flex; gap:16px; align-items:center;">
-          <div style="font-size: 2.2rem; font-weight: 800; color: white; background: var(--primary); width: 68px; height: 68px; border-radius: 12px; display:flex; align-items:center; justify-content:center;">
+          <div style="font-size: 2.2rem; font-weight: 800; color: white; background: var(--primary); width: 68px; height: 68px; border-radius: 12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(220,38,38,0.25);">
             ${donor.bloodGroup}
           </div>
           <div>
-            <h2 style="margin: 0 0 4px; font-size: 1.35rem;">${escapeHtml(user.fullName || "Donor")}</h2>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.88rem;">
-              ${donor.age} yrs · ${donor.location.city}, ${donor.location.state} (${donor.location.pinCode})
+            <h2 style="margin: 0 0 4px; font-size: 1.4rem; color: var(--text-main); font-weight: 800;">${escapeHtml(user.fullName || "Donor")}</h2>
+            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+              ${donor.age} yrs · ${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.state)} (${donor.location.pinCode})
             </p>
           </div>
         </div>
 
-        <div style="display:flex; gap:8px;">
-          <span class="badge ${isAvailable ? "badge-active" : ""}" style="font-size: 0.85rem; padding: 6px 12px;">
-            ${isAvailable ? "● Available to Donate" : "○ Currently Unavailable"}
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="badge ${isAvailable ? "badge-active" : ""}" style="font-size: 0.82rem; padding: 6px 14px; font-weight: 600;">
+            ${isAvailable ? "● AVAILABLE TO DONATE" : "○ CURRENTLY UNAVAILABLE"}
           </span>
-          <span class="badge ${donor.publicDiscoveryConsent ? "badge-active" : ""}" style="font-size: 0.85rem; padding: 6px 12px;">
-            ${donor.publicDiscoveryConsent ? "Publicly Discoverable" : "Hidden"}
+          <span class="badge ${donor.publicDiscoveryConsent ? "badge-active" : ""}" style="font-size: 0.82rem; padding: 6px 14px; font-weight: 600;">
+            ${donor.publicDiscoveryConsent ? "PUBLICLY DISCOVERABLE" : "HIDDEN FROM SEARCH"}
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Quick Action Navigation Tiles -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px;">
-      <a href="#/donor/availability" class="auth-card" style="padding: 16px; text-decoration:none; color:inherit; border:1px solid var(--border); transition: transform 0.15s ease;">
-        <div style="font-size: 1.5rem; margin-bottom: 6px;">⏱️</div>
-        <div style="font-weight: 700; margin-bottom: 4px;">Availability Toggle</div>
-        <div style="font-size: 0.82rem; color: var(--text-muted);">Quickly switch between Available and Unavailable status.</div>
+    <!-- Quick Action Navigation Tiles in Clean 3-Column Grid -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+      <a href="#/donor/edit" class="auth-card" style="padding: 20px; text-decoration:none; color:inherit; border:1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; align-items:center; text-align:center; transition: all 0.2s ease;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">✏️</div>
+        <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; color: var(--text-main);">Edit Profile</div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">Update city, state, pin code, age, and preferred channel.</div>
       </a>
 
-      <a href="#/donor/consent" class="auth-card" style="padding: 16px; text-decoration:none; color:inherit; border:1px solid var(--border); transition: transform 0.15s ease;">
-        <div style="margin-bottom: 8px; color: var(--red); display:flex; justify-content:center;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-      <polyline points="9 12 11 14 15 10"></polyline>
-    </svg></div>
-        <div style="font-weight: 700; margin-bottom: 4px;">Privacy & Consents</div>
-        <div style="font-size: 0.82rem; color: var(--text-muted);">Manage public discovery, notifications, and contact sharing.</div>
+      <a href="#/donor/availability" class="auth-card" style="padding: 20px; text-decoration:none; color:inherit; border:1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; align-items:center; text-align:center; transition: all 0.2s ease;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">⏱️</div>
+        <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; color: var(--text-main);">Availability Toggle</div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">Instantly switch between Available and Unavailable status.</div>
       </a>
 
-      <a href="#/donor/edit" class="auth-card" style="padding: 16px; text-decoration:none; color:inherit; border:1px solid var(--border); transition: transform 0.15s ease;">
-        <div style="margin-bottom: 8px; color: var(--red); display:flex; justify-content:center;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-    </svg></div>
-        <div style="font-weight: 700; margin-bottom: 4px;">Edit Profile</div>
-        <div style="font-size: 0.82rem; color: var(--text-muted);">Update residential location, age, and preferred channel.</div>
+      <a href="#/donor/consent" class="auth-card" style="padding: 20px; text-decoration:none; color:inherit; border:1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; align-items:center; text-align:center; transition: all 0.2s ease;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
+        <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; color: var(--text-main);">Privacy & Consents</div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">Manage public directory visibility and notification rules.</div>
       </a>
     </div>
 
     <!-- Detailed Profile View -->
-    <div class="auth-card" style="padding: 20px;">
-      <h3 style="margin: 0 0 16px; font-size: 1.05rem; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+    <div class="auth-card" style="padding: 24px; border-radius: 12px;">
+      <h3 style="margin: 0 0 18px; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 12px; color: var(--text-main); font-weight: 700;">
         Profile & Privacy Summary
       </h3>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 0.88rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; font-size: 0.9rem;">
         <div>
-          <span style="color:var(--text-muted);">Blood Group:</span>
-          <div style="font-weight:600; font-size:1.1rem; color:var(--primary);">${donor.bloodGroup}</div>
+          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Blood Group</span>
+          <div style="font-weight:700; font-size:1.2rem; color:var(--primary); margin-top:2px;">${donor.bloodGroup}</div>
         </div>
 
         <div>
-          <span style="color:var(--text-muted);">Location:</span>
-          <div style="font-weight:600;">${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district)}</div>
-          <div style="color:var(--text-muted); font-size:0.8rem;">${escapeHtml(donor.location.state)} · ${donor.location.pinCode}</div>
+          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Location</span>
+          <div style="font-weight:600; margin-top:2px;">${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district)}</div>
+          <div style="color:var(--text-muted); font-size:0.82rem;">${escapeHtml(donor.location.state)} · ${donor.location.pinCode}</div>
         </div>
 
         <div>
-          <span style="color:var(--text-muted);">Contact Preference:</span>
-          <div style="font-weight:600;">${donor.preferredContactMethod}</div>
-          <div style="color:var(--text-muted); font-size:0.8rem;">
-            Contact Sharing: ${donor.contactSharingConsent ? "Enabled" : "Disabled (Protected)"}
+          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Contact Preference</span>
+          <div style="font-weight:600; margin-top:2px;">${donor.preferredContactMethod}</div>
+          <div style="color:var(--text-muted); font-size:0.82rem;">
+            Sharing: ${donor.contactSharingConsent ? "Enabled (Public)" : "Protected (In-App only)"}
           </div>
         </div>
 
         <div>
-          <span style="color:var(--text-muted);">Last Donation Date:</span>
-          <div style="font-weight:600;">
+          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Last Donation Date</span>
+          <div style="font-weight:600; margin-top:2px;">
             ${donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : "Not specified"}
           </div>
-          <div style="color:var(--text-muted); font-size:0.78rem;">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-    </svg> Private to you only</div>
+          <div style="color:var(--text-muted); font-size:0.78rem;">🔒 Private to you only</div>
         </div>
       </div>
     </div>
@@ -1063,5 +1075,108 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function openDonorAlertModal(donorId, donorName, donorBg, donorCity) {
+  let modal = document.getElementById("donorAlertModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "donorAlertModal";
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="modal-backdrop" id="alertModalBackdrop" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;">
+      <div class="modal-content auth-card" onclick="event.stopPropagation()" style="max-width:480px; width:90%; padding:24px; text-align:left; background:#fff; border-radius:12px;">
+        <h3 style="margin:0 0 6px 0; font-size:1.25rem;">🔔 Send In-App Alert to ${donorName}</h3>
+        <p style="color:var(--text-muted); font-size:0.88rem; margin:0 0 16px 0;">
+          This will trigger an urgent in-app notification directly into the donor's alert center.
+        </p>
+
+        <form id="sendDonorAlertForm" style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <label class="form-label" for="alertHospital" style="font-size:0.85rem; font-weight:600;">Hospital / Facility *</label>
+            <input type="text" id="alertHospital" class="form-input" placeholder="e.g. AIIMS Delhi" required style="width:100%;">
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+              <label class="form-label" for="alertBloodGroup" style="font-size:0.85rem; font-weight:600;">Blood Group</label>
+              <input type="text" id="alertBloodGroup" class="form-input" value="${donorBg}" readonly style="width:100%; background:#f1f5f9;">
+            </div>
+            <div>
+              <label class="form-label" for="alertContact" style="font-size:0.85rem; font-weight:600;">Your Phone / Contact *</label>
+              <input type="text" id="alertContact" class="form-input" placeholder="e.g. 9876543210" required style="width:100%;">
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label" for="alertMessage" style="font-size:0.85rem; font-weight:600;">Requirement Note</label>
+            <textarea id="alertMessage" class="form-input" placeholder="Briefly specify patient condition or ward..." style="width:100%; height:65px;"></textarea>
+          </div>
+
+          <div id="alertModalMsg" style="font-size:0.85rem; display:none;"></div>
+
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+            <button type="button" id="closeAlertModalBtn" class="button button-outline" style="font-size:0.86rem; padding:6px 14px;">Cancel</button>
+            <button type="submit" id="submitAlertModalBtn" class="button" style="font-size:0.86rem; padding:6px 16px;">Send Emergency Alert</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const close = () => { modal.innerHTML = ""; };
+  document.getElementById("closeAlertModalBtn")?.addEventListener("click", close);
+  document.getElementById("alertModalBackdrop")?.addEventListener("click", close);
+
+  document.getElementById("sendDonorAlertForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msgEl = document.getElementById("alertModalMsg");
+    const submitBtn = document.getElementById("submitAlertModalBtn");
+
+    if (msgEl) msgEl.style.display = "none";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
+    }
+
+    try {
+      const payload = {
+        hospitalName: document.getElementById("alertHospital")?.value?.trim(),
+        bloodGroup: donorBg,
+        city: donorCity,
+        contactNumber: document.getElementById("alertContact")?.value?.trim(),
+        message: document.getElementById("alertMessage")?.value?.trim()
+      };
+
+      const res = await api.sendDonorAlert(donorId, payload);
+      const data = await res.json();
+
+      if (res.status === 401) {
+        window.location.hash = "#/login?error=auth_required";
+        close();
+        return;
+      }
+
+      if (res.ok && data.success) {
+        alert(data.message || "Alert sent to donor!");
+        close();
+      } else {
+        throw new Error(data.message || "Failed to dispatch alert.");
+      }
+    } catch (err) {
+      if (msgEl) {
+        msgEl.textContent = err.message;
+        msgEl.style.color = "#dc2626";
+        msgEl.style.display = "block";
+      }
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send Emergency Alert";
+      }
+    }
+  });
 }
 
