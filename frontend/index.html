@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,9 @@
   <title>RaktDal | Blood Donation & Donor Coordination</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
   <script>
     // Automatically use same origin in production, or localhost:5000 in local development
@@ -18,12 +21,15 @@
     }
   </script>
 </head>
+
 <body>
   <header class="site-header" id="siteHeader">
-    <a class="brand" href="#/" aria-label="RaktDal home"><img src="assets/logo-removebg.png" style="height: 40px;" alt="RaktDal Logo"> RaktDal</a>
-    
+    <a class="brand" href="#/" aria-label="RaktDal home"><img src="assets/logo-removebg.png" style="height: 40px;"
+        alt="RaktDal Logo"> RaktDal</a>
+
     <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -41,14 +47,17 @@
     <div class="nav-actions-group">
       <!-- Language Selector Dropdown -->
       <div class="lang-selector-wrapper" id="langSelectorWrapper">
-        <button id="langSelectorBtn" class="lang-selector-btn" aria-haspopup="true" aria-expanded="false" aria-label="Select Language" title="Select Language">
-          <svg class="lang-globe-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="langSelectorBtn" class="lang-selector-btn" aria-haspopup="true" aria-expanded="false"
+          aria-label="Select Language" title="Select Language">
+          <svg class="lang-globe-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
           </svg>
           <span id="currentLangLabel" class="current-lang-text">English</span>
-          <svg class="lang-arrow-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="lang-arrow-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
@@ -67,12 +76,12 @@
       </div>
     </div>
   </header>
-  
+
   <main id="app" class="main-content" aria-live="polite"><!-- Dynamic SPA Views --></main>
-  
+
   <div id="globalSiteFooter"></div>
-  
-    <!-- Automatic Full-Page Google Translation Service (Zero JSON overhead) -->
+
+  <!-- Automatic Full-Page Google Translation Service (Zero JSON overhead) -->
   <div id="google_translate_element" style="display:none !important;" aria-hidden="true"></div>
   <script type="text/javascript">
     function googleTranslateElementInit() {
@@ -83,8 +92,10 @@
       }, 'google_translate_element');
     }
   </script>
-  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script type="text/javascript"
+    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <script type="module" src="./js/app.js"></script>
 </body>
+
 </html>

@@ -295,6 +295,12 @@ export const api = {
     });
   },
 
+  deleteBloodRequest(requestId) {
+    return this.request(`/requests/${requestId}`, {
+      method: "DELETE"
+    });
+  },
+
   submitDonationResponse(requestId, data) {
     return this.request(`/requests/${requestId}/responses`, {
       method: "POST",
@@ -394,6 +400,15 @@ export const api = {
     const query = new URLSearchParams(params).toString();
     const baseUrl = this.getBaseUrl();
     return `${baseUrl}/admin/reports/export?${query}`;
+  },
+
+  // Location Autocomplete / Lookup
+  lookupCity(city) {
+    return this.request(`/location/city/${encodeURIComponent(city)}`);
+  },
+
+  lookupPinCode(pin) {
+    return this.request(`/location/pincode/${encodeURIComponent(pin)}`);
   }
 };
 

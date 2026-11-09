@@ -64,8 +64,11 @@ export async function createBloodRequest(req, res) {
     if (!hospitalName || typeof hospitalName !== "string") {
       return res.status(400).json({ success: false, message: "Hospital name is required." });
     }
-    if (!location || !location.city || !location.district || !location.state || !location.pinCode) {
-      return res.status(400).json({ success: false, message: "Complete location (city, district, state, pinCode) is required." });
+    if (!location || !location.city || !location.state || !location.pinCode) {
+      return res.status(400).json({ success: false, message: "Complete location (city, state, pinCode) is required." });
+    }
+    if (!location.district) {
+      location.district = location.city;
     }
     if (!requiredBy || isNaN(new Date(requiredBy).getTime())) {
       return res.status(400).json({ success: false, message: "Valid deadline date (requiredBy) is required." });
@@ -80,8 +83,8 @@ export async function createBloodRequest(req, res) {
     const expiresAt = new Date(Math.min(requiredDate.getTime() + 24 * 60 * 60 * 1000, Date.now() + 7 * 24 * 60 * 60 * 1000));
 
     let assignedOrgId = null;
-    let initialVerificationStatus = "PENDING";
-    let initialStatus = "PENDING_VERIFICATION";
+    let initialVerificationStatus = "APPROVED";
+    let initialStatus = "ACTIVE";
 
     // Organizational Request Authorization
     if (requesterType === "ORGANIZATION") {
@@ -121,6 +124,17 @@ export async function createBloodRequest(req, res) {
 
     const requestNumber = generateRequestNumber();
 
+    // Normalize urgency value
+    const urgencyMap = {
+      CRITICAL: "CRITICAL",
+      HIGH: "URGENT",
+      URGENT: "URGENT",
+      MEDIUM: "STANDARD",
+      STANDARD: "STANDARD",
+      LOW: "LOW"
+    };
+    const normalizedUrgency = urgencyMap[String(urgency).toUpperCase()] || "STANDARD";
+
     const bloodRequest = await BloodRequest.create({
       requestNumber,
       createdByUserId: userId,
@@ -139,7 +153,7 @@ export async function createBloodRequest(req, res) {
         pinCode: location.pinCode.trim()
       },
       requiredBy: requiredDate,
-      urgency,
+      urgency: normalizedUrgency,
       description: description ? description.trim() : "",
       supportingDocuments,
       status: initialStatus,
@@ -169,9 +183,7 @@ export async function createBloodRequest(req, res) {
 
     return res.status(201).json({
       success: true,
-      message: initialStatus === "ACTIVE"
-        ? "Organizational request published successfully."
-        : "Blood request submitted successfully and is pending administrator review.",
+      message: "Blood request published successfully.",
       data: { request: bloodRequest.toPublicView() }
     });
   } catch (err) {
@@ -199,12 +211,10 @@ export async function getBloodRequests(req, res) {
       order = "desc"
     } = req.query;
 
-    const filter = {
-      expiresAt: { $gt: new Date() }
-    };
+    const filter = {};
 
     // By default, public feeds only show ACTIVE or RESPONSES_RECEIVED requests
-    if (status && ["ACTIVE", "RESPONSES_RECEIVED", "FULFILLED", "EXPIRED"].includes(status)) {
+    if (status && ["ACTIVE", "RESPONSES_RECEIVED", "FULFILLED", "EXPIRED", "PENDING_VERIFICATION"].includes(status)) {
       filter.status = status;
     } else {
       filter.status = { $in: ["ACTIVE", "RESPONSES_RECEIVED"] };
@@ -268,6 +278,10 @@ export async function getBloodRequests(req, res) {
 export async function getBloodRequestById(req, res) {
   try {
     const { requestId } = req.params;
+    if (!requestId || !/^[0-9a-fA-F]{24}$/.test(requestId)) {
+      return res.status(404).json({ success: false, message: "Blood request not found." });
+    }
+
     const request = await BloodRequest.findById(requestId);
 
     if (!request) {
@@ -435,5 +449,42 @@ export async function verifyBloodRequest(req, res) {
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: "Failed to verify blood request." });
+  }
+}
+
+/**
+ * 7. Delete Blood Request (Only requester or Platform Admin)
+ * DELETE /api/v1/requests/:requestId
+ */
+export async function deleteBloodRequest(req, res) {
+  try {
+    const { requestId } = req.params;
+    if (!requestId || !/^[0-9a-fA-F]{24}$/.test(requestId)) {
+      return res.status(404).json({ success: false, message: "Blood request not found." });
+    }
+
+    const request = await BloodRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ success: false, message: "Blood request not found." });
+    }
+
+    const isOwner = req.user && request.createdByUserId.toString() === req.user._id.toString();
+    const isPlatformAdmin = req.user && req.user.platformRoles?.includes("ADMIN");
+
+    if (!isOwner && !isPlatformAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this blood request. You can only delete your own requests."
+      });
+    }
+
+    await BloodRequest.findByIdAndDelete(requestId);
+
+    return res.json({
+      success: true,
+      message: "Blood request successfully deleted."
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Failed to delete blood request." });
   }
 }

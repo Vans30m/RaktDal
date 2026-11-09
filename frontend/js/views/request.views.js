@@ -10,15 +10,18 @@ async renderBloodRequests(params) {
       const city = params.get("city") || "";
       const bloodGroup = params.get("bloodGroup") || "";
       const urgency = params.get("urgency") || "";
+      const statusFilter = params.get("status") || "";
 
       const queryObj = {};
       if (city) queryObj.city = city;
       if (bloodGroup) queryObj.bloodGroup = bloodGroup;
       if (urgency) queryObj.urgency = urgency;
+      if (statusFilter) queryObj.status = statusFilter;
 
       const res = await api.getBloodRequests(queryObj);
       const data = await res.json();
       const requests = (data.success && data.data && data.data.requests) ? data.data.requests : [];
+      const state = authState.getState();
 
       this.appContainer.innerHTML = `
         <div class="requests-container">
@@ -29,9 +32,14 @@ async renderBloodRequests(params) {
                 Browse emergency and scheduled blood requirements across hospitals and healthcare centers.
               </p>
             </div>
-            <a href="#/requests/create" class="button">
-              <span>+</span> Create Request
-            </a>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <a href="#/requests/my" class="button button-outline" style="font-size:0.88rem;">
+                My Requests
+              </a>
+              <a href="#/requests/create" class="button">
+                <span>+</span> Create Request
+              </a>
+            </div>
           </div>
 
           <div class="filter-bar">
@@ -216,17 +224,18 @@ async renderBloodRequests(params) {
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-            <div>
+            <div style="position:relative;">
               <label class="filter-label" for="reqCity">City *</label>
-              <input type="text" id="reqCity" class="filter-input" style="width:100%; margin-top:4px;" placeholder="Delhi" required>
+              <input type="text" id="reqCity" class="filter-input" style="width:100%; margin-top:4px;" placeholder="e.g. Chandigarh, Delhi" autocomplete="off" required>
+              <div id="citySuggestions" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border, #cbd5e1); border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:200px; overflow-y:auto; z-index:99; display:none;"></div>
             </div>
             <div>
               <label class="filter-label" for="reqState">State *</label>
-              <input type="text" id="reqState" class="filter-input" style="width:100%; margin-top:4px;" placeholder="Delhi" required>
+              <input type="text" id="reqState" class="filter-input" style="width:100%; margin-top:4px;" placeholder="State" required>
             </div>
             <div>
               <label class="filter-label" for="reqPin">Pin Code *</label>
-              <input type="text" id="reqPin" class="filter-input" style="width:100%; margin-top:4px;" placeholder="110001" required>
+              <input type="text" id="reqPin" class="filter-input" style="width:100%; margin-top:4px;" placeholder="6-digit PIN" maxlength="6" required>
             </div>
           </div>
 
@@ -261,6 +270,87 @@ async renderBloodRequests(params) {
     const deadlineInput = document.getElementById("reqDeadline");
     if (deadlineInput) deadlineInput.value = defaultDate;
 
+    // Location API: Auto-fetch State & PIN Code on City or PIN Code input
+    const cityInput = document.getElementById("reqCity");
+    const stateInput = document.getElementById("reqState");
+    const pinInput = document.getElementById("reqPin");
+    const suggestionsBox = document.getElementById("citySuggestions");
+
+    let debounceTimer = null;
+
+    if (cityInput) {
+      cityInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        const query = cityInput.value.trim();
+        if (query.length < 3) {
+          if (suggestionsBox) suggestionsBox.style.display = "none";
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            const res = await api.lookupCity(query);
+            const data = await res.json();
+            if (data.success && data.data && data.data.length > 0) {
+              suggestionsBox.innerHTML = data.data.map(item => `
+                <div class="city-option" style="padding:10px 14px; cursor:pointer; font-size:0.88rem; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"
+                  data-city="${item.city || query}"
+                  data-state="${item.state}"
+                  data-district="${item.district}"
+                  data-pin="${item.pinCode}">
+                  <div>
+                    <div style="font-weight:600; color:#1e293b;">${item.name || item.city}</div>
+                    <div style="font-size:0.78rem; color:#64748b;">${item.district ? item.district + ', ' : ''}${item.state}</div>
+                  </div>
+                  <div style="font-size:0.85rem; font-weight:500; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:4px;">
+                    ${item.pinCode}
+                  </div>
+                </div>
+              `).join("");
+              suggestionsBox.style.display = "block";
+
+              suggestionsBox.querySelectorAll(".city-option").forEach(el => {
+                el.addEventListener("mouseenter", () => { el.style.background = "#f8fafc"; });
+                el.addEventListener("mouseleave", () => { el.style.background = "#fff"; });
+                el.addEventListener("click", () => {
+                  cityInput.value = el.getAttribute("data-city");
+                  stateInput.value = el.getAttribute("data-state") || "";
+                  pinInput.value = el.getAttribute("data-pin") || "";
+                  suggestionsBox.style.display = "none";
+                });
+              });
+            } else {
+              suggestionsBox.style.display = "none";
+            }
+          } catch (err) {
+            suggestionsBox.style.display = "none";
+          }
+        }, 250);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!cityInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+          suggestionsBox.style.display = "none";
+        }
+      });
+    }
+
+    if (pinInput) {
+      pinInput.addEventListener("input", async () => {
+        const pin = pinInput.value.trim();
+        if (/^\d{6}$/.test(pin)) {
+          try {
+            const res = await api.lookupPinCode(pin);
+            const data = await res.json();
+            if (data.success && data.data) {
+              if (data.data.state && !stateInput.value) stateInput.value = data.data.state;
+              if (data.data.city && !cityInput.value) cityInput.value = data.data.city;
+            }
+          } catch (e) {}
+        }
+      });
+    }
+
     document.getElementById("createRequestForm")?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const errBox = document.getElementById("requestFormError");
@@ -289,7 +379,13 @@ async renderBloodRequests(params) {
         const data = await res.json();
 
         if (res.ok && data.success) {
-          window.location.hash = `#/requests/${data.data._id || data.data.id}`;
+          const createdReq = data.data?.request || data.data;
+          const reqId = createdReq?._id || createdReq?.id;
+          if (reqId) {
+            window.location.hash = `#/requests/${reqId}`;
+          } else {
+            window.location.hash = `#/requests`;
+          }
         } else {
           throw new Error(data.message || "Failed to create request");
         }
@@ -314,9 +410,11 @@ async renderBloodRequests(params) {
         throw new Error(data.message || "Blood request not found");
       }
 
-      const r = data.data;
+      const r = data.data?.request || data.data;
       const state = authState.getState();
-      const isOwner = state.user && (r.createdByUserId === state.user.id || r.createdByUserId?._id === state.user.id);
+      const currentUserId = state.user?.id || state.user?._id;
+      const creatorId = r.createdByUserId?._id || r.createdByUserId;
+      const isOwner = currentUserId && creatorId && String(currentUserId) === String(creatorId);
 
       this.appContainer.innerHTML = `
         <div class="requests-container" style="max-width:800px;">
@@ -397,7 +495,8 @@ async renderBloodRequests(params) {
               <div style="display:flex; gap:12px;">
                 ${isOwner ? `
                   <button id="markFulfilledBtn" class="button button-outline" style="font-size:0.88rem;">Mark Fulfilled</button>
-                  <button id="cancelRequestBtn" class="button button-outline" style="color:#dc2626; border-color:#fecaca; font-size:0.88rem;">Cancel Request</button>
+                  <button id="cancelRequestBtn" class="button button-outline" style="color:#d97706; border-color:#fde68a; font-size:0.88rem;">Cancel Request</button>
+                  <button id="deleteRequestBtn" class="button button-outline" style="color:#dc2626; border-color:#fecaca; font-size:0.88rem;">🗑️ Delete Request</button>
                 ` : `
                   ${r.status === "ACTIVE" || r.status === "RESPONSES_RECEIVED" ? `
                     <button id="respondDonationBtn" class="button">Offer to Donate</button>
@@ -437,12 +536,38 @@ async renderBloodRequests(params) {
         }
       });
 
+      document.getElementById("deleteRequestBtn")?.addEventListener("click", async () => {
+        if (confirm("Permanently delete this blood request? This action cannot be undone.")) {
+          try {
+            const res = await api.deleteBloodRequest(requestId);
+            const data = await res.json();
+            if (res.ok && data.success) {
+              toast.success("Request permanently deleted.");
+              window.location.hash = "#/requests/my";
+            } else {
+              toast.error(data.message || "Failed to delete request.");
+            }
+          } catch (e) {
+            toast.error(e.message || "Failed to delete request.");
+          }
+        }
+      });
+
       // Platform admin verification
       document.getElementById("adminVerifyBtn")?.addEventListener("click", async () => {
-        const approved = confirm("Approve and verify this blood request?");
-        const status = approved ? "VERIFIED" : "REJECTED";
-        const note = prompt("Administrative note:", "Verified authentic hospital requirement") || "";
-        await api.verifyBloodRequest(requestId, status, note);
+        const approved = confirm("Approve and activate this blood request?\nClick OK to Approve, or Cancel to Reject.");
+        const status = approved ? "APPROVED" : "REJECTED";
+        const note = prompt(
+          approved ? "Approval / Verification note:" : "Reason for rejection:",
+          approved ? "Verified authentic hospital requirement" : "Incomplete or unverifiable hospital details"
+        ) || "";
+        const res = await api.verifyBloodRequest(requestId, status, note);
+        if (res.ok) {
+          toast.success(`Request marked as ${status}`);
+        } else {
+          const d = await res.json().catch(() => ({}));
+          toast.error(d.message || "Failed to update request verification status.");
+        }
         this.renderBloodRequestDetail(requestId);
       });
     } catch (err) {
@@ -540,7 +665,9 @@ async renderBloodRequests(params) {
     try {
       const res = await api.getMyBloodRequests();
       const data = await res.json();
-      const requests = (data.success && data.data) ? data.data : [];
+      const requests = Array.isArray(data.data)
+        ? data.data
+        : (data.data?.requests || []);
 
       this.appContainer.innerHTML = `
         <div class="requests-container">
@@ -551,7 +678,9 @@ async renderBloodRequests(params) {
                 Manage your active and completed blood requirements, review donor responses, and update statuses.
               </p>
             </div>
-            <a href="#/requests/create" class="button">+ Create Request</a>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <a href="#/requests/create" class="button">+ Create Request</a>
+            </div>
           </div>
 
           ${requests.length === 0 ? `
@@ -602,8 +731,8 @@ async renderBloodRequests(params) {
                       <span class="urgency-badge urgency-${r.urgency}">${r.urgency}</span>
                     </div>
                     <div>
-                      <div class="filter-label">Verification</div>
-                      <span>${r.verificationStatus?.status || "PENDING"}</span>
+                      <div class="filter-label">Required By</div>
+                      <span>${r.requiredBy ? new Date(r.requiredBy).toLocaleDateString() : "Flexible"}</span>
                     </div>
                   </div>
 
@@ -611,6 +740,9 @@ async renderBloodRequests(params) {
                     <a href="#/requests/${r.id || r._id}" class="button" style="padding:6px 14px; font-size:0.86rem;">
                       Manage & Responses →
                     </a>
+                    <button class="delete-my-req-btn button button-outline" data-id="${r.id || r._id}" style="color:#dc2626; border-color:#fecaca; padding:5px 10px; font-size:0.8rem;">
+                      Delete
+                    </button>
                   </div>
                 </div>
               `).join("")}
@@ -618,6 +750,27 @@ async renderBloodRequests(params) {
           `}
         </div>
       `;
+
+      document.querySelectorAll(".delete-my-req-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const reqId = btn.getAttribute("data-id");
+          if (confirm("Are you sure you want to delete this blood request?")) {
+            try {
+              const res = await api.deleteBloodRequest(reqId);
+              const data = await res.json();
+              if (res.ok && data.success) {
+                toast.success("Request deleted successfully.");
+                this.renderMyBloodRequests();
+              } else {
+                toast.error(data.message || "Failed to delete request.");
+              }
+            } catch (err) {
+              toast.error(err.message || "Network error.");
+            }
+          }
+        });
+      });
     } catch (err) {
       this.appContainer.innerHTML = `
         <div class="auth-card">

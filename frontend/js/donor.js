@@ -277,9 +277,10 @@ export const donorViews = {
             <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Residential Location</h4>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-              <div class="form-group">
+              <div class="form-group" style="position:relative;">
                 <label class="form-label" for="donorCity">City *</label>
-                <input type="text" id="donorCity" class="form-input" placeholder="e.g. Pune" required>
+                <input type="text" id="donorCity" class="form-input" placeholder="e.g. Pune, Chandigarh" autocomplete="off" required>
+                <div id="donorCitySuggestions" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:180px; overflow-y:auto; z-index:99; display:none;"></div>
               </div>
 
               <div class="form-group">
@@ -362,6 +363,89 @@ export const donorViews = {
       </div>
       </div>
     `;
+
+    // Setup City / PIN Code Auto-lookup
+    const donorCityInput = document.getElementById("donorCity");
+    const donorDistrictInput = document.getElementById("donorDistrict");
+    const donorStateInput = document.getElementById("donorState");
+    const donorPinInput = document.getElementById("donorPinCode");
+    const donorCitySuggs = document.getElementById("donorCitySuggestions");
+
+    let donorCityDebounce = null;
+    if (donorCityInput) {
+      donorCityInput.addEventListener("input", () => {
+        clearTimeout(donorCityDebounce);
+        const query = donorCityInput.value.trim();
+        if (query.length < 3) {
+          if (donorCitySuggs) donorCitySuggs.style.display = "none";
+          return;
+        }
+
+        donorCityDebounce = setTimeout(async () => {
+          try {
+            const res = await api.lookupCity(query);
+            const data = await res.json();
+            if (data.success && data.data && data.data.length > 0) {
+              donorCitySuggs.innerHTML = data.data.map(item => `
+                <div class="donor-city-opt" style="padding:10px 14px; cursor:pointer; font-size:0.85rem; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;"
+                  data-city="${item.city || query}"
+                  data-district="${item.district}"
+                  data-state="${item.state}"
+                  data-pin="${item.pinCode}">
+                  <div>
+                    <div style="font-weight:600; color:#1e293b;">${item.name || item.city}</div>
+                    <div style="font-size:0.75rem; color:#64748b;">${item.district ? item.district + ', ' : ''}${item.state}</div>
+                  </div>
+                  <div style="font-size:0.82rem; font-weight:500; color:#0284c7; background:#e0f2fe; padding:2px 8px; border-radius:4px;">
+                    ${item.pinCode}
+                  </div>
+                </div>
+              `).join("");
+              donorCitySuggs.style.display = "block";
+
+              donorCitySuggs.querySelectorAll(".donor-city-opt").forEach(el => {
+                el.addEventListener("mouseenter", () => { el.style.background = "#f8fafc"; });
+                el.addEventListener("mouseleave", () => { el.style.background = "#fff"; });
+                el.addEventListener("click", () => {
+                  donorCityInput.value = el.getAttribute("data-city");
+                  donorDistrictInput.value = el.getAttribute("data-district") || "";
+                  donorStateInput.value = el.getAttribute("data-state") || "";
+                  donorPinInput.value = el.getAttribute("data-pin") || "";
+                  donorCitySuggs.style.display = "none";
+                });
+              });
+            } else {
+              donorCitySuggs.style.display = "none";
+            }
+          } catch (e) {
+            donorCitySuggs.style.display = "none";
+          }
+        }, 300);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!donorCityInput.contains(e.target) && !donorCitySuggs.contains(e.target)) {
+          donorCitySuggs.style.display = "none";
+        }
+      });
+    }
+
+    if (donorPinInput) {
+      donorPinInput.addEventListener("input", async () => {
+        const pin = donorPinInput.value.trim();
+        if (/^\d{6}$/.test(pin)) {
+          try {
+            const res = await api.lookupPinCode(pin);
+            const data = await res.json();
+            if (data.success && data.data) {
+              if (data.data.state && !donorStateInput.value) donorStateInput.value = data.data.state;
+              if (data.data.district && !donorDistrictInput.value) donorDistrictInput.value = data.data.district;
+              if (data.data.city && !donorCityInput.value) donorCityInput.value = data.data.city;
+            }
+          } catch (e) {}
+        }
+      });
+    }
 
     document.getElementById("createDonorForm").addEventListener("submit", async (e) => {
       e.preventDefault();
