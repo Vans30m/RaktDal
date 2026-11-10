@@ -24,59 +24,69 @@ async renderBloodRequests(params) {
       const state = authState.getState();
 
       this.appContainer.innerHTML = `
-        <div class="requests-container">
-          <div class="requests-header">
-            <div>
-              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">Blood Requests</h1>
-              <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
-                Browse emergency and scheduled blood requirements across hospitals and healthcare centers.
+        <div class="find-donors-hero-section">
+          <div class="find-donors-hero-inner">
+            <div class="find-donors-hero-text">
+              <div class="find-donors-badge">
+                <span class="find-donors-badge-dot" aria-hidden="true"></span>
+                <span>EMERGENCY &amp; SCHEDULED REQUIREMENTS</span>
+              </div>
+              <h1 class="find-donors-hero-title">
+                Blood <span class="accent-text">Requests</span>
+              </h1>
+              <p class="find-donors-hero-sub">
+                Browse emergency and scheduled blood requirements across verified hospitals and healthcare centers.
               </p>
-            </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-              <a href="#/requests/my" class="button button-outline" style="font-size:0.88rem;">
-                My Requests
-              </a>
-              <a href="#/requests/create" class="button">
-                <span>+</span> Create Request
-              </a>
+              <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:14px;">
+                <a href="#/requests/my" class="button button-outline" style="padding: 7px 18px; font-size: 0.88rem; border-radius: 9999px;">
+                  My Requests
+                </a>
+                <a href="#/requests/create" class="button" style="padding: 7px 20px; font-size: 0.88rem; border-radius: 9999px;">
+                  + Create Request
+                </a>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="filter-bar">
-            <div class="filter-group">
-              <label class="filter-label" for="filterBloodGroup">Blood Group</label>
-              <select id="filterBloodGroup" class="filter-select">
-                <option value="">All Groups</option>
-                <option value="A+" ${bloodGroup === "A+" ? "selected" : ""}>A+</option>
-                <option value="A-" ${bloodGroup === "A-" ? "selected" : ""}>A-</option>
-                <option value="B+" ${bloodGroup === "B+" ? "selected" : ""}>B+</option>
-                <option value="B-" ${bloodGroup === "B-" ? "selected" : ""}>B-</option>
-                <option value="AB+" ${bloodGroup === "AB+" ? "selected" : ""}>AB+</option>
-                <option value="AB-" ${bloodGroup === "AB-" ? "selected" : ""}>AB-</option>
-                <option value="O+" ${bloodGroup === "O+" ? "selected" : ""}>O+</option>
-                <option value="O-" ${bloodGroup === "O-" ? "selected" : ""}>O-</option>
-              </select>
-            </div>
+        <div class="find-donors-body-wrapper">
+          <div class="find-donors-search-card" style="padding: 20px 24px; margin-bottom: 24px; border-radius: 18px;">
+            <div class="find-donors-search-form" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 160px; gap: 14px; align-items: end;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="find-donors-search-form form-label" for="filterBloodGroup" style="font-size:0.78rem; margin-bottom:5px;">Blood Group</label>
+                <select id="filterBloodGroup" class="form-input" style="height:42px; font-size:0.88rem;">
+                  <option value="">All Groups</option>
+                  <option value="A+" ${bloodGroup === "A+" ? "selected" : ""}>A+</option>
+                  <option value="A-" ${bloodGroup === "A-" ? "selected" : ""}>A-</option>
+                  <option value="B+" ${bloodGroup === "B+" ? "selected" : ""}>B+</option>
+                  <option value="B-" ${bloodGroup === "B-" ? "selected" : ""}>B-</option>
+                  <option value="AB+" ${bloodGroup === "AB+" ? "selected" : ""}>AB+</option>
+                  <option value="AB-" ${bloodGroup === "AB-" ? "selected" : ""}>AB-</option>
+                  <option value="O+" ${bloodGroup === "O+" ? "selected" : ""}>O+</option>
+                  <option value="O-" ${bloodGroup === "O-" ? "selected" : ""}>O-</option>
+                </select>
+              </div>
 
-            <div class="filter-group">
-              <label class="filter-label" for="filterCity">City</label>
-              <input type="text" id="filterCity" class="filter-input" placeholder="e.g. Delhi, Mumbai" value="${city}">
-            </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="find-donors-search-form form-label" for="filterCity" style="font-size:0.78rem; margin-bottom:5px;">City</label>
+                <input type="text" id="filterCity" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Delhi, Mumbai" value="${city}">
+              </div>
 
-            <div class="filter-group">
-              <label class="filter-label" for="filterUrgency">Urgency</label>
-              <select id="filterUrgency" class="filter-select">
-                <option value="">All Urgencies</option>
-                <option value="CRITICAL" ${urgency === "CRITICAL" ? "selected" : ""}>Critical</option>
-                <option value="HIGH" ${urgency === "HIGH" ? "selected" : ""}>High</option>
-                <option value="MEDIUM" ${urgency === "MEDIUM" ? "selected" : ""}>Medium</option>
-                <option value="LOW" ${urgency === "LOW" ? "selected" : ""}>Low</option>
-              </select>
-            </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="find-donors-search-form form-label" for="filterUrgency" style="font-size:0.78rem; margin-bottom:5px;">Urgency</label>
+                <select id="filterUrgency" class="form-input" style="height:42px; font-size:0.88rem;">
+                  <option value="">All Urgencies</option>
+                  <option value="CRITICAL" ${urgency === "CRITICAL" ? "selected" : ""}>Critical</option>
+                  <option value="HIGH" ${urgency === "HIGH" ? "selected" : ""}>High</option>
+                  <option value="MEDIUM" ${urgency === "MEDIUM" ? "selected" : ""}>Medium</option>
+                  <option value="LOW" ${urgency === "LOW" ? "selected" : ""}>Low</option>
+                </select>
+              </div>
 
-            <div style="display:flex; align-items:flex-end; gap:8px;">
-              <button id="applyFiltersBtn" class="button" style="padding:8px 16px;">Filter</button>
-              <button id="resetFiltersBtn" class="button button-outline" style="padding:8px 14px;">Reset</button>
+              <div class="find-donors-btn-group" style="gap:8px;">
+                <button id="applyFiltersBtn" class="button button-primary" style="height:42px; padding: 0 18px; font-size:0.88rem; flex:1;">Filter</button>
+                <button id="resetFiltersBtn" class="button button-outline" style="height:42px; padding: 0 14px; font-size:0.88rem;">Reset</button>
+              </div>
             </div>
           </div>
 

@@ -19,77 +19,19 @@ export const donorViews = {
 
     container.innerHTML = `
       <div class="find-donors-container">
-        <!-- 1. Privacy-Themed Split 2-Column Hero Section -->
+        <!-- 1. Compact Header Section -->
         <section class="find-donors-hero-section" aria-labelledby="findDonorsHeading">
           <div class="find-donors-hero-inner">
-            <div class="find-donors-hero-text">
-              <span class="find-donors-badge">
-                <span class="find-donors-badge-dot" aria-hidden="true"></span>
-                Direct Volunteer Coordination
-              </span>
-              <h1 id="findDonorsHeading" class="find-donors-hero-title">
-                Find Opted-In <span class="accent-text">Blood Donors</span>
-              </h1>
-              <p class="find-donors-hero-sub">
-                Search verified, voluntary blood donors by blood group, city, or 6-digit postal PIN code across India with zero-spam privacy protection.
-              </p>
-              <div class="find-donors-metadata-pill">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
-                <span>Pan-India Donor Directory · Direct In-App Alert Triage</span>
-              </div>
-              <div class="find-donors-hero-ctas">
-                <a href="#donorSearchCard" class="button button-primary">
-                  Filter Donors
-                </a>
-                <a href="#/donor/register" class="button button-outline">
-                  Become a Donor
-                </a>
-              </div>
-            </div>
-
-            <div class="find-donors-hero-visual">
-              <svg class="find-donors-illustration-svg" viewBox="0 0 480 380" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Volunteer donor discovery and location proximity illustration">
-                <defs>
-                  <linearGradient id="findGradRed" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#C51F26"/>
-                    <stop offset="100%" stop-color="#991B1B"/>
-                  </linearGradient>
-                  <linearGradient id="findGradCard" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#ffffff"/>
-                    <stop offset="100%" stop-color="#f8fafc"/>
-                  </linearGradient>
-                </defs>
-                <circle cx="240" cy="190" r="140" fill="#fef2f2" opacity="0.8"/>
-
-                <!-- Main Shield / Outer Border -->
-                <path d="M240 70 L340 120 V210 C340 275 295 325 240 340 C185 325 140 275 140 210 V120 Z" fill="url(#findGradCard)" stroke="#e2e8f0" stroke-width="2.5"/>
-
-                <!-- Inner Soft Red Frame -->
-                <path d="M240 95 L315 132 V205 C315 255 280 295 240 310 C200 295 165 255 165 205 V132 Z" fill="#fee2e2" opacity="0.5"/>
-
-                <!-- Central Blood Drop & User Silhouette Badge -->
-                <circle cx="240" cy="190" r="32" fill="url(#findGradRed)"/>
-                <!-- Blood Drop / Donor Symbol -->
-                <path d="M240 174 C240 174 231 187 231 193 C231 198 235 202 240 202 C245 202 249 198 249 193 C249 187 240 174 240 174 Z" fill="#ffffff"/>
-
-                <!-- Floating Location Pin Badge (Left) -->
-                <g transform="translate(90, 110)">
-                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-                  <circle cx="24" cy="24" r="18" fill="#ecfdf5"/>
-                  <path d="M24 16 C21 16 19 18 19 21 C19 25 24 30 24 30 C24 30 29 25 29 21 C29 18 27 16 24 16 Z" stroke="#059669" stroke-width="2" fill="none"/>
-                  <circle cx="24" cy="21" r="1.5" fill="#059669"/>
-                </g>
-
-                <!-- Floating Contact Shield Badge (Right) -->
-                <g transform="translate(340, 220)">
-                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-                  <circle cx="24" cy="24" r="18" fill="#eff6ff"/>
-                  <path d="M18 24 H30 M24 18 V30" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
-                </g>
-              </svg>
-            </div>
+            <span class="find-donors-badge">
+              <span class="find-donors-badge-dot" aria-hidden="true"></span>
+              Direct Volunteer Coordination
+            </span>
+            <h1 id="findDonorsHeading" class="find-donors-hero-title">
+              Find Opted-In <span class="accent-text">Blood Donors</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Search verified, voluntary blood donors by blood group, city, or 6-digit postal PIN code.
+            </p>
           </div>
         </section>
 
@@ -274,77 +216,19 @@ export const donorViews = {
   async renderDonorDashboard(container) {
     container.innerHTML = `
       <div class="donor-dashboard-page-container">
-        <!-- 1. Hero Section -->
+        <!-- 1. Compact Header Section -->
         <section class="donor-dashboard-hero-section" aria-labelledby="donorDashHeading">
           <div class="donor-dashboard-hero-inner">
-            <div class="donor-dashboard-hero-text">
-              <span class="donor-dashboard-badge">
-                <span class="donor-dashboard-badge-dot" aria-hidden="true"></span>
-                Donor Hub &amp; Management
-              </span>
-              <h1 id="donorDashHeading" class="donor-dashboard-hero-title">
-                My Voluntary <span class="accent-text">Donor Profile</span>
-              </h1>
-              <p class="donor-dashboard-hero-sub">
-                Manage your voluntary blood group availability, consent permissions, and view verified emergency hospital alerts.
-              </p>
-              <div class="donor-dashboard-metadata-pill">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                </svg>
-                <span>Live Verification Active · Privacy-Preserving Direct Sync</span>
-              </div>
-              <div class="donor-dashboard-hero-ctas">
-                <a href="#/donor/edit" class="button button-primary">
-                  Edit Profile
-                </a>
-                <a href="#/donor/consent" class="button button-outline">
-                  Privacy Settings
-                </a>
-              </div>
-            </div>
-
-            <div class="donor-dashboard-hero-visual">
-              <svg class="donor-dashboard-illustration-svg" viewBox="0 0 480 380" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Donor profile management and blood health badge illustration">
-                <defs>
-                  <linearGradient id="dashGradRed" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#C51F26"/>
-                    <stop offset="100%" stop-color="#991B1B"/>
-                  </linearGradient>
-                  <linearGradient id="dashGradCard" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#ffffff"/>
-                    <stop offset="100%" stop-color="#f8fafc"/>
-                  </linearGradient>
-                </defs>
-                <circle cx="240" cy="190" r="140" fill="#fef2f2" opacity="0.8"/>
-
-                <!-- Main Shield / Outer Border -->
-                <path d="M240 70 L340 120 V210 C340 275 295 325 240 340 C185 325 140 275 140 210 V120 Z" fill="url(#dashGradCard)" stroke="#e2e8f0" stroke-width="2.5"/>
-
-                <!-- Inner Soft Red Frame -->
-                <path d="M240 95 L315 132 V205 C315 255 280 295 240 310 C200 295 165 255 165 205 V132 Z" fill="#fee2e2" opacity="0.5"/>
-
-                <!-- Central Blood Group Badge -->
-                <circle cx="240" cy="190" r="32" fill="url(#dashGradRed)"/>
-                <!-- User Profile / Lifeline Emblem -->
-                <path d="M232 201 C232 195 235 192 240 192 C245 192 248 195 248 201" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round"/>
-                <circle cx="240" cy="183" r="4.5" fill="#ffffff"/>
-
-                <!-- Floating Available Check Badge (Left) -->
-                <g transform="translate(90, 110)">
-                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-                  <circle cx="24" cy="24" r="18" fill="#ecfdf5"/>
-                  <path d="M18 24 L22 28 L30 20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </g>
-
-                <!-- Floating Privacy Shield Badge (Right) -->
-                <g transform="translate(340, 220)">
-                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
-                  <circle cx="24" cy="24" r="18" fill="#eff6ff"/>
-                  <path d="M18 24 H30 M24 18 V30" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
-                </g>
-              </svg>
-            </div>
+            <span class="donor-dashboard-badge">
+              <span class="donor-dashboard-badge-dot" aria-hidden="true"></span>
+              Donor Hub &amp; Management
+            </span>
+            <h1 id="donorDashHeading" class="donor-dashboard-hero-title">
+              My Voluntary <span class="accent-text">Donor Profile</span>
+            </h1>
+            <p class="donor-dashboard-hero-sub">
+              Manage your voluntary blood group availability, consent permissions, and view verified emergency hospital alerts.
+            </p>
           </div>
         </section>
 

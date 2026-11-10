@@ -11,40 +11,56 @@ export const campViews = {
     const statusVal = params.status || "ALL";
 
     this.appContainer.innerHTML = `
-      <div class="requests-container" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
-          <div>
-            <h1 style="margin: 0; font-size: 1.85rem; color: var(--text-main); font-weight: 850;">Blood Donation Camps</h1>
-            <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem;">Join public blood drives organized by verified community centers, colleges, and hospitals.</p>
+      <div class="find-donors-hero-section">
+        <div class="find-donors-hero-inner">
+          <div class="find-donors-hero-text">
+            <div class="find-donors-badge">
+              <span class="find-donors-badge-dot" aria-hidden="true"></span>
+              <span>COMMUNITY BLOOD DRIVES</span>
+            </div>
+            <h1 class="find-donors-hero-title">
+              Blood Donation <span class="accent-text">Camps</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Join public blood drives organized by verified community centers, colleges, and hospitals.
+            </p>
+            ${authState.isAuthenticated ? `
+              <div style="margin-top: 14px;">
+                <a href="#/camps/my-registrations" class="button button-outline" style="padding: 7px 18px; font-size: 0.88rem; border-radius: 9999px;">
+                  My Registered Camps
+                </a>
+              </div>
+            ` : ""}
           </div>
-          ${authState.isAuthenticated ? `
-            <a href="#/camps/my-registrations" class="button button-outline" style="font-size: 0.88rem; padding: 8px 16px;">My Registered Camps</a>
-          ` : ""}
         </div>
+      </div>
 
-        <form id="campFilterForm" class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px;">
-          <div class="filter-group" style="flex: 1; min-width: 140px;">
-            <label class="filter-label">City</label>
-            <input type="text" id="campFilterCity" class="filter-input" placeholder="e.g. Delhi, Mumbai" value="${city}">
-          </div>
-          <div class="filter-group" style="flex: 1; min-width: 120px;">
-            <label class="filter-label">PIN Code</label>
-            <input type="text" id="campFilterPin" class="filter-input" placeholder="6-digit PIN" maxlength="6" value="${pinCode}">
-          </div>
-          <div class="filter-group" style="flex: 1; min-width: 140px;">
-            <label class="filter-label">Status</label>
-            <select id="campFilterStatus" class="filter-select">
-              <option value="ALL" ${statusVal === "ALL" ? "selected" : ""}>All Camps</option>
-              <option value="PUBLISHED" ${statusVal === "PUBLISHED" ? "selected" : ""}>Upcoming</option>
-              <option value="ONGOING" ${statusVal === "ONGOING" ? "selected" : ""}>Ongoing Today</option>
-              <option value="COMPLETED" ${statusVal === "COMPLETED" ? "selected" : ""}>Completed</option>
-            </select>
-          </div>
-          <div style="display: flex; align-items: flex-end; gap: 8px;">
-            <button type="submit" class="button" style="height: 38px; padding: 0 18px;">Filter</button>
-            <button type="button" id="resetCampFilterBtn" class="button button-outline" style="height: 38px; padding: 0 14px;">Reset</button>
-          </div>
-        </form>
+      <div class="find-donors-body-wrapper">
+        <div class="find-donors-search-card" style="padding: 20px 24px; margin-bottom: 24px; border-radius: 18px;">
+          <form id="campFilterForm" class="find-donors-search-form" style="grid-template-columns: 1.5fr 1fr 1.2fr 160px; gap: 14px; align-items: end;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="find-donors-search-form form-label" for="campFilterCity" style="font-size:0.78rem; margin-bottom:5px;">City</label>
+              <input type="text" id="campFilterCity" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Delhi, Mumbai" value="${city}">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="find-donors-search-form form-label" for="campFilterPin" style="font-size:0.78rem; margin-bottom:5px;">PIN Code</label>
+              <input type="text" id="campFilterPin" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="6-digit PIN" maxlength="6" value="${pinCode}">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="find-donors-search-form form-label" for="campFilterStatus" style="font-size:0.78rem; margin-bottom:5px;">Status</label>
+              <select id="campFilterStatus" class="form-input" style="height:42px; font-size:0.88rem;">
+                <option value="ALL" ${statusVal === "ALL" ? "selected" : ""}>All Camps</option>
+                <option value="PUBLISHED" ${statusVal === "PUBLISHED" ? "selected" : ""}>Upcoming</option>
+                <option value="ONGOING" ${statusVal === "ONGOING" ? "selected" : ""}>Ongoing Today</option>
+                <option value="COMPLETED" ${statusVal === "COMPLETED" ? "selected" : ""}>Completed</option>
+              </select>
+            </div>
+            <div class="find-donors-btn-group" style="gap:8px;">
+              <button type="submit" class="button button-primary" style="height:42px; padding: 0 18px; font-size:0.88rem; flex:1;">Filter</button>
+              <button type="button" id="resetCampFilterBtn" class="button button-outline" style="height:42px; padding: 0 14px; font-size:0.88rem;">Reset</button>
+            </div>
+          </form>
+        </div>
 
         <div id="campsListContainer">
           <div class="spinner" style="margin: 40px auto;"></div>
@@ -440,28 +456,40 @@ export const campViews = {
     const cityVal = params.city || "";
 
     this.appContainer.innerHTML = `
-      <div class="requests-container" style="max-width: 1100px; margin: 0 auto; padding: 24px 16px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
-          <div>
-            <h1 style="margin: 0; font-size: 1.85rem; color: var(--text-main); font-weight: 850;">Licensed Blood Banks & Storage Centers</h1>
-            <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem;">Directory of verified government and community blood banks across India with component storage facilities.</p>
+      <div class="find-donors-hero-section">
+        <div class="find-donors-hero-inner">
+          <div class="find-donors-hero-text">
+            <div class="find-donors-badge">
+              <span class="find-donors-badge-dot" aria-hidden="true"></span>
+              <span>VERIFIED HEALTHCARE NETWORK</span>
+            </div>
+            <h1 class="find-donors-hero-title">
+              Licensed Blood Banks <span class="accent-text">&amp; Storage Centers</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Directory of verified government and community blood banks across India with component storage facilities.
+            </p>
           </div>
         </div>
+      </div>
 
-        <form id="bankFilterForm" class="filter-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px;">
-          <div class="filter-group" style="flex: 2; min-width: 180px;">
-            <label class="filter-label">Search Center / Hospital</label>
-            <input type="text" id="bankSearchInput" class="filter-input" placeholder="e.g. Red Cross, PGIMER, Rotary" value="${searchVal}">
-          </div>
-          <div class="filter-group" style="flex: 1; min-width: 140px;">
-            <label class="filter-label">City</label>
-            <input type="text" id="bankCityInput" class="filter-input" placeholder="e.g. Mumbai, Delhi, Chandigarh" value="${cityVal}">
-          </div>
-          <div style="display: flex; align-items: flex-end; gap: 8px;">
-            <button type="submit" class="button" style="height: 38px; padding: 0 18px;">Search</button>
-            <button type="button" id="resetBankFilterBtn" class="button button-outline" style="height: 38px; padding: 0 14px;">Reset</button>
-          </div>
-        </form>
+      <div class="find-donors-body-wrapper">
+        <div class="find-donors-search-card" style="padding: 20px 24px; margin-bottom: 24px; border-radius: 18px;">
+          <form id="bankFilterForm" class="find-donors-search-form" style="grid-template-columns: 2fr 1fr 160px; gap: 14px; align-items: end;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="find-donors-search-form form-label" for="bankSearchInput" style="font-size:0.78rem; margin-bottom:5px;">Search Center / Hospital</label>
+              <input type="text" id="bankSearchInput" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Red Cross, PGIMER, Rotary" value="${searchVal}">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="find-donors-search-form form-label" for="bankCityInput" style="font-size:0.78rem; margin-bottom:5px;">City</label>
+              <input type="text" id="bankCityInput" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Mumbai, Delhi, Chandigarh" value="${cityVal}">
+            </div>
+            <div class="find-donors-btn-group" style="gap:8px;">
+              <button type="submit" class="button button-primary" style="height:42px; padding: 0 18px; font-size:0.88rem; flex:1;">Search</button>
+              <button type="button" id="resetBankFilterBtn" class="button button-outline" style="height:42px; padding: 0 14px; font-size:0.88rem;">Reset</button>
+            </div>
+          </form>
+        </div>
 
         <div id="banksListContainer">
           <div class="spinner" style="margin: 40px auto;"></div>
