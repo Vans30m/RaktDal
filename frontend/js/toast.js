@@ -16,7 +16,24 @@ class ToastService {
     return this.container;
   }
 
-  show({ title, message, type = "info", duration = 4000 }) {
+  show(messageOrOptions, typeFallback = "info", durationFallback = 4000) {
+    let title = "";
+    let message = "";
+    let type = "info";
+    let duration = 4000;
+
+    if (typeof messageOrOptions === "string") {
+      message = messageOrOptions;
+      type = typeFallback;
+      duration = durationFallback;
+      title = type === "success" ? "Success" : type === "error" ? "Alert" : "Notice";
+    } else if (messageOrOptions && typeof messageOrOptions === "object") {
+      title = messageOrOptions.title || "";
+      message = messageOrOptions.message || "";
+      type = messageOrOptions.type || "info";
+      duration = messageOrOptions.duration ?? 4000;
+    }
+
     const container = this.ensureContainer();
 
     const toast = document.createElement("div");
@@ -25,7 +42,9 @@ class ToastService {
     const iconMap = {
       success: "✅",
       error: "⚠️",
-      info: "ℹ️"
+      warning: "🚨",
+      urgent: "🚨",
+      info: "🔔"
     };
 
     toast.innerHTML = `

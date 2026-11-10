@@ -15,7 +15,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // 2. Initialize router
   const router = new Router("app", "authNavContainer");
+  window.router = router;
 
   // 3. Fetch initial auth session
   await authState.init();
+
+  // 4. Start background notification polling with real-time pop-up toast alerts
+  router.startNotificationPolling();
 });

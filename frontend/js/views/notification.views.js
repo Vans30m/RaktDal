@@ -38,8 +38,17 @@ export const notificationViews = {
 
     try {
       const res = await api.getNotifications(1, 40);
+      if (!res.ok) {
+        throw new Error(`Failed to load notifications (HTTP ${res.status})`);
+      }
       const data = await res.json();
-      const items = data.data?.items || [];
+      console.log("[NOTIFICATIONS RESPONSE]", data);
+      const items = data.data?.items || data.items || [];
+
+      // Update badge if available
+      if (window.router?.refreshNotificationBadge) {
+        window.router.refreshNotificationBadge();
+      }
 
       if (items.length === 0) {
         container.innerHTML = `
@@ -76,11 +85,21 @@ export const notificationViews = {
 
       container.querySelectorAll(".mark-single-read-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {
-          const id = e.target.dataset.id;
+          const target = e.currentTarget;
+          const id = target.dataset.id;
+          target.disabled = true;
+          target.textContent = "Updating...";
           try {
-            await api.markNotificationAsRead(id);
+            const res = await api.markNotificationAsRead(id);
+            if (!res.ok) {
+              const errData = await res.json().catch(() => ({}));
+              throw new Error(errData.message || `Failed with status ${res.status}`);
+            }
+            toast.show("Notification marked as read.", "success");
             this.renderNotificationCenter();
           } catch (err) {
+            target.disabled = false;
+            target.textContent = "Mark Read";
             toast.show(err.message || "Failed to mark as read.", "error");
           }
         });

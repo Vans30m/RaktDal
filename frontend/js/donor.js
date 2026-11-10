@@ -1,6 +1,7 @@
 import { icons } from "./icons.js";
 import { api } from "./api.js";
 import { authState } from "./auth.js";
+import { toast } from "./toast.js";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -1160,7 +1161,7 @@ function openDonorAlertModal(donorId, donorName, donorBg, donorCity) {
       }
 
       if (res.ok && data.success) {
-        alert(data.message || "Alert sent to donor!");
+        toast.show(data.message || "Alert successfully sent to donor!", "success");
         close();
       } else {
         throw new Error(data.message || "Failed to dispatch alert.");

@@ -281,64 +281,77 @@ export class Router {
       const initial = (u.fullName || "User").charAt(0).toUpperCase();
 
       this.navContainer.innerHTML = `
-        <div class="user-menu-wrapper">
-          <button id="userMenuTrigger" class="user-menu-trigger" aria-haspopup="true" aria-expanded="${this.isMenuOpen}">
-            ${u.profileImage ? `<img src="${u.profileImage}" class="user-nav-avatar" alt="">` : `<div class="user-nav-avatar">${initial}</div>`}
-            <span>${u.fullName.split(" ")[0]}</span>
-            <span style="font-size:0.7rem; color:var(--text-muted);">▼</span>
-          </button>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <a href="#/notifications" class="notif-bell-btn" id="navNotifBell" title="Notifications" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span id="navNotifBadge" class="notif-bell-badge" style="display: none;">0</span>
+          </a>
 
-          <div id="userMenuDropdown" class="user-menu-dropdown ${this.isMenuOpen ? "show" : ""}" role="menu">
-            <div class="user-menu-header">
-              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <div class="user-menu-name">${u.fullName}</div>
-                <span class="badge ${u.accountStatus === "ACTIVE" ? "badge-active" : ""}" style="font-size:0.68rem; padding:2px 6px;">${u.accountStatus}</span>
-                ${state.isAdmin ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.68rem; padding:2px 6px;">ADMIN</span>` : ""}
+          <div class="user-menu-wrapper">
+            <button id="userMenuTrigger" class="user-menu-trigger" aria-haspopup="true" aria-expanded="${this.isMenuOpen}">
+              ${u.profileImage ? `<img src="${u.profileImage}" class="user-nav-avatar" alt="">` : `<div class="user-nav-avatar">${initial}</div>`}
+              <span>${u.fullName.split(" ")[0]}</span>
+              <span style="font-size:0.7rem; color:var(--text-muted);">▼</span>
+            </button>
+
+            <div id="userMenuDropdown" class="user-menu-dropdown ${this.isMenuOpen ? "show" : ""}" role="menu">
+              <div class="user-menu-header">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <div class="user-menu-name">${u.fullName}</div>
+                  <span class="badge ${u.accountStatus === "ACTIVE" ? "badge-active" : ""}" style="font-size:0.68rem; padding:2px 6px;">${u.accountStatus}</span>
+                  ${state.isAdmin ? `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.68rem; padding:2px 6px;">ADMIN</span>` : ""}
+                </div>
+                <div class="user-menu-email" style="margin-top:2px;">${u.email}</div>
               </div>
-              <div class="user-menu-email" style="margin-top:2px;">${u.email}</div>
-            </div>
 
-            <div class="user-menu-items">
-              <a href="#/notifications" class="user-menu-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                Notifications
-              </a>
-              <a href="#/profile" class="user-menu-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                Profile & Sessions
-              </a>
-              <a href="#/requests/my" class="user-menu-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2c-4 6-6.5 9-6.5 12a6.5 6.5 0 0 0 13 0c0-3-2.5-6-6.5-12z"></path>
-                </svg>
-                My Blood Requests
-              </a>
-              ${state.isAdmin ? `
-                <a href="#/admin" class="user-menu-item" style="color:#0369a1; font-weight:600;">
+              <div class="user-menu-items">
+                <a href="#/notifications" class="user-menu-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                   </svg>
-                  Admin Dashboard
+                  Notifications
                 </a>
-              ` : ""}
-              <button id="userMenuLogoutBtn" class="user-menu-item logout">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-                Sign Out
-              </button>
+                <a href="#/profile" class="user-menu-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Profile & Sessions
+                </a>
+                <a href="#/requests/my" class="user-menu-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2c-4 6-6.5 9-6.5 12a6.5 6.5 0 0 0 13 0c0-3-2.5-6-6.5-12z"></path>
+                  </svg>
+                  My Blood Requests
+                </a>
+                ${state.isAdmin ? `
+                  <a href="#/admin" class="user-menu-item" style="color:#0369a1; font-weight:600;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    Admin Dashboard
+                  </a>
+                ` : ""}
+                <button id="userMenuLogoutBtn" class="user-menu-item logout">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
             </div>
           </div>
         </div>
       `;
+
+      // Update unread notification count
+      this.refreshNotificationBadge();
 
       document.getElementById("userMenuTrigger")?.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -363,7 +376,58 @@ export class Router {
     }
   }
 
-    toggleUserMenu() {
+  async refreshNotificationBadge(checkIncomingAlerts = false) {
+    try {
+      const badge = document.getElementById("navNotifBadge");
+      const res = await api.getUnreadNotificationCount();
+      const data = await res.json();
+      const count = data.data?.unreadCount || 0;
+
+      if (badge) {
+        if (count > 0) {
+          badge.textContent = count > 99 ? "99+" : count;
+          badge.style.display = "flex";
+        } else {
+          badge.style.display = "none";
+        }
+      }
+
+      // If new unread notifications arrived and polling is active, toast the newest alert!
+      if (checkIncomingAlerts && typeof this.previousUnreadCount === "number" && count > this.previousUnreadCount) {
+        const notifRes = await api.getNotifications(1, 1, true);
+        const notifData = await notifRes.json();
+        const latest = notifData.data?.items?.[0];
+        if (latest) {
+          toast.show({
+            title: latest.title || "New Emergency Blood Alert",
+            message: latest.message || "You have received an urgent blood request notification.",
+            type: "urgent",
+            duration: 8000
+          });
+          // If the user is currently on the notifications page, re-render it
+          if (window.location.hash.startsWith("#/notifications")) {
+            notificationViews.renderNotificationCenter.call(this);
+          }
+        }
+      }
+      this.previousUnreadCount = count;
+    } catch (e) {
+      // Graceful fallback if unauthenticated or offline
+    }
+  }
+
+  startNotificationPolling() {
+    if (this._notifPollTimer) clearInterval(this._notifPollTimer);
+    // Poll every 8 seconds for real-time background notification toast alerts
+    this._notifPollTimer = setInterval(() => {
+      const state = authState.getState();
+      if (state.isAuthenticated) {
+        this.refreshNotificationBadge(true);
+      }
+    }, 8000);
+  }
+
+  toggleUserMenu() {
     this.isMenuOpen = !this.isMenuOpen;
     const dropdown = document.getElementById("userMenuDropdown");
     const trigger = document.getElementById("userMenuTrigger");
@@ -396,6 +460,7 @@ export class Router {
     }
 
     this.updateActiveNav();
+    this.refreshNotificationBadge();
     const state = authState.getState();
 
     // Wait for initial auth inspection to complete before running guards
@@ -405,7 +470,7 @@ export class Router {
     }
 
     // Route Guards
-    if ((path === "/profile" || path === "/requests/create" || path === "/requests/my" || path === "/donor/dashboard" || path === "/donor/register" || path === "/donor/edit" || path === "/donor/availability" || path === "/donor/consent") && !state.isAuthenticated) {
+    if ((path === "/profile" || path === "/notifications" || path === "/notifications/settings" || path === "/requests/create" || path === "/requests/my" || path === "/donor/dashboard" || path === "/donor/register" || path === "/donor/edit" || path === "/donor/availability" || path === "/donor/consent") && !state.isAuthenticated) {
       window.location.hash = "#/login";
       return;
     }
