@@ -352,7 +352,7 @@ renderLogin(params) {
       return;
     }
 
-    this.renderLoader("Loading donor profile & sessions...");
+    this.renderLoader("Loading user profile & account settings...");
 
     let sessions = [];
     try {
@@ -365,86 +365,458 @@ renderLogin(params) {
       console.warn("Could not retrieve sessions:", e);
     }
 
+    let donorProfile = null;
+    try {
+      const dRes = await api.getMyDonorProfile();
+      if (dRes.ok) {
+        const dBody = await dRes.json();
+        donorProfile = dBody.data?.donor || null;
+      }
+    } catch (e) {}
+
     const initial = (user.fullName || "User").charAt(0).toUpperCase();
+    const isEmailVerified = Boolean(user.emailVerifiedAt || user.googleSubject);
+    const memberSince = user.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : "N/A";
+    const lastSignIn = user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : "Recently";
+
+    // Profile completion calc
+    let completionScore = 40; // baseline email + name
+    if (user.phoneNumber) completionScore += 20;
+    if (user.preferredLanguage) completionScore += 10;
+    if (donorProfile) completionScore += 30;
 
     this.appContainer.innerHTML = `
-      <div class="auth-card" style="max-width: 580px; text-align: left;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          ${user.profileImage ? `<img src="${user.profileImage}" class="profile-avatar" alt="">` : `<div class="user-nav-avatar" style="width:72px; height:72px; font-size:1.8rem; margin:0 auto 12px;">${initial}</div>`}
-          <h2 style="margin: 0;">${user.fullName}</h2>
-          <p style="color: var(--text-muted); margin: 6px 0 14px;">${user.email}</p>
-          <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:6px;">
-            <span class="badge ${user.accountStatus === "ACTIVE" ? "badge-active" : ""}">${user.accountStatus}</span>
-            <span class="badge badge-active" style="display:inline-flex; align-items:center; gap:4px;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg> Google Verified</span>
-            ${user.platformRoles.map((r) => `<span class="badge" style="background:#e0f2fe; color:#0369a1;">${r}</span>`).join("")}
+      <div class="find-donors-hero-section">
+        <div class="find-donors-hero-inner">
+          <div class="find-donors-hero-text">
+            <div class="find-donors-badge">
+              <span class="find-donors-badge-dot" aria-hidden="true"></span>
+              <span>ACCOUNT &amp; IDENTITY DASHBOARD</span>
+            </div>
+            <h1 class="find-donors-hero-title">
+              User <span class="accent-text">Profile</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Manage personal identity, verified credentials, security settings, and active device sessions.
+            </p>
           </div>
         </div>
+      </div>
 
-        <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-bottom: 16px;">
-          <h3 style="font-size: 1rem; margin: 0 0 12px; color: var(--text-main);">Active Sessions (${sessions.length})</h3>
-          <div class="session-list" style="max-height: 200px; overflow-y: auto;">
-            ${sessions.map((s) => `
-              <div class="session-item ${s.isCurrent ? "current" : ""}">
-                <div>
-                  <div style="font-weight: 600;">${s.isCurrent ? "★ This Device" : "Other Browser / Device"}</div>
-                  <div style="color: var(--text-muted); font-size: 0.75rem;">IP: ${s.ipAddress} · Last Active: ${new Date(s.lastActiveAt).toLocaleString()}</div>
-                </div>
-                ${s.isCurrent ? `<span style="color: var(--success); font-weight: 700; font-size: 0.75rem;">CURRENT</span>` : ""}
+      <div class="user-profile-dashboard">
+        <div class="profile-dashboard-grid">
+          <!-- Left Column: User Summary & Identity Card -->
+          <div>
+            <div class="profile-card" style="text-align: center;">
+              ${user.profileImage ? `
+                <img src="${user.profileImage}" class="profile-avatar-img" alt="${user.fullName}">
+              ` : `
+                <div class="profile-avatar-large">${initial}</div>
+              `}
+              <h2 style="margin: 0 0 4px; font-size: 1.35rem; color: var(--navy); font-weight: 800;">${user.fullName}</h2>
+              <p style="margin: 0 0 14px; font-size: 0.88rem; color: var(--text-muted); word-break: break-all;">${user.email}</p>
+
+              <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:6px; margin-bottom: 20px;">
+                <span class="badge ${user.accountStatus === "ACTIVE" ? "badge-active" : ""}" style="font-size:0.75rem;">
+                  ${user.accountStatus || "ACTIVE"}
+                </span>
+                ${user.googleSubject ? `
+                  <span class="badge badge-active" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg> Google Verified
+                  </span>
+                ` : ""}
+                ${(user.platformRoles || ["USER"]).map((r) => `
+                  <span class="badge" style="background:#eaf4ff; color:#0369a1; font-weight:700; font-size:0.75rem;">${r}</span>
+                `).join("")}
               </div>
-            `).join("")}
+
+              <!-- Profile Completion Indicator -->
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; text-align: left; margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                  <span style="font-size: 0.78rem; font-weight: 700; color: var(--navy);">Profile Health</span>
+                  <span style="font-size: 0.8rem; font-weight: 800; color: var(--primary);">${completionScore}%</span>
+                </div>
+                <div style="background: #e2e8f0; height: 6px; border-radius: 9999px; overflow: hidden;">
+                  <div style="background: var(--primary); height: 100%; width: ${completionScore}%; border-radius: 9999px;"></div>
+                </div>
+                <div style="font-size: 0.73rem; color: var(--text-muted); margin-top: 6px;">
+                  ${completionScore === 100 ? "Profile fully completed &amp; verified." : "Complete phone &amp; donor history to reach 100%."}
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="profileEditModalBtn" class="button button-primary" style="width: 100%; border-radius: 10px; font-size: 0.88rem; padding: 10px;">
+                  ${icons.edit(15, "#ffffff")} Edit Profile
+                </button>
+                <button id="profileSignOutBtn" class="button button-outline" style="width: 100%; border-radius: 10px; font-size: 0.88rem; padding: 9px;">
+                  Sign Out (This Device)
+                </button>
+              </div>
+            </div>
+
+            <!-- Account Activity Card -->
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h3 class="profile-card-title">
+                  ${icons.auditLog(16, "var(--primary)")} Account Activity
+                </h3>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); display:flex; flex-direction:column; gap: 10px;">
+                <div>
+                  <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px;">Member Since</div>
+                  <div style="color: var(--navy); font-weight: 600;">${memberSince}</div>
+                </div>
+                <div>
+                  <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px;">Last Sign In</div>
+                  <div style="color: var(--navy); font-weight: 600;">${lastSignIn}</div>
+                </div>
+                <div>
+                  <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px;">Authentication Mode</div>
+                  <div style="color: var(--navy); font-weight: 600;">${user.googleSubject ? "Google OAuth 2.0 (SSO)" : "Password &amp; OTP Authentication"}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Personal Info, Donor Profile, Verification & Security -->
+          <div>
+            <!-- Section 1: Personal Information -->
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h3 class="profile-card-title">
+                  ${icons.users(18, "var(--primary)")} Personal Information
+                </h3>
+                <span class="badge" style="background:#fcebec; color:var(--primary); font-size:0.75rem;">VERIFIED RECORD</span>
+              </div>
+              <div class="profile-info-grid">
+                <div class="profile-info-item">
+                  <div class="profile-info-label">${icons.users(13, "var(--text-muted)")} Full Name</div>
+                  <div class="profile-info-value">${user.fullName || "—"}</div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">${icons.mail(13, "var(--text-muted)")} Email Address</div>
+                  <div class="profile-info-value">${user.email}</div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">${icons.phone(13, "var(--text-muted)")} Phone Number</div>
+                  <div class="profile-info-value">${user.phoneNumber || "Not provided"}</div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">${icons.bloodDrop(13, "var(--primary)")} Blood Group</div>
+                  <div class="profile-info-value" style="color: var(--primary); font-weight:750;">
+                    ${donorProfile ? donorProfile.bloodGroup : "Not registered"}
+                  </div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">${icons.mapPin(13, "var(--text-muted)")} Location</div>
+                  <div class="profile-info-value">
+                    ${donorProfile?.location?.city ? `${donorProfile.location.city}, ${donorProfile.location.state || "IN"}` : "Pan-India"}
+                  </div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">${icons.shieldCheck(13, "var(--text-muted)")} Preferred Language</div>
+                  <div class="profile-info-value" style="text-transform: capitalize;">
+                    ${user.preferredLanguage || "English"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Blood Donation Profile (If registered or prompted) -->
+            <div class="profile-card" style="border-left: 4px solid var(--primary);">
+              <div class="profile-card-header">
+                <h3 class="profile-card-title">
+                  ${icons.bloodDrop(18, "var(--primary)")} Donation Profile
+                </h3>
+                ${donorProfile ? `
+                  <a href="#/donor/dashboard" class="button button-outline" style="padding: 4px 12px; font-size: 0.8rem; border-radius: 9999px;">
+                    Open Donor Hub
+                  </a>
+                ` : `
+                  <a href="#/donor/register" class="button button-primary" style="padding: 4px 12px; font-size: 0.8rem; border-radius: 9999px;">
+                    Register as Donor
+                  </a>
+                `}
+              </div>
+              ${donorProfile ? `
+                <div class="profile-info-grid">
+                  <div class="profile-info-item">
+                    <div class="profile-info-label">Blood Group</div>
+                    <div class="profile-info-value" style="color:var(--primary); font-size:1.15rem; font-weight:800;">${donorProfile.bloodGroup}</div>
+                  </div>
+                  <div class="profile-info-item">
+                    <div class="profile-info-label">Availability Status</div>
+                    <div class="profile-info-value" style="color: #00a477; font-weight:700;">
+                      ● ${donorProfile.availabilityStatus || "AVAILABLE"}
+                    </div>
+                  </div>
+                  <div class="profile-info-item">
+                    <div class="profile-info-label">Last Donation</div>
+                    <div class="profile-info-value">
+                      ${donorProfile.lastDonationDate ? new Date(donorProfile.lastDonationDate).toLocaleDateString() : "Never reported"}
+                    </div>
+                  </div>
+                  <div class="profile-info-item">
+                    <div class="profile-info-label">Discovery Mode</div>
+                    <div class="profile-info-value">
+                      ${donorProfile.consents?.discoverable ? "Public in Directory" : "Private / Hospital Alert Only"}
+                    </div>
+                  </div>
+                </div>
+              ` : `
+                <div style="background:#fff7f7; border:1px solid #fee2e2; border-radius:12px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                  <div>
+                    <div style="font-weight:700; color:var(--navy); font-size:0.92rem; margin-bottom:2px;">Opt in as a Voluntary Blood Donor</div>
+                    <div style="font-size:0.82rem; color:var(--text-muted);">Receive verified emergency blood requests and help save lives in your city.</div>
+                  </div>
+                  <a href="#/donor/register" class="button button-primary" style="font-size:0.85rem; padding:7px 16px; border-radius:9999px;">
+                    Enroll Now
+                  </a>
+                </div>
+              `}
+            </div>
+
+            <!-- Section 3: Account Verification -->
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h3 class="profile-card-title">
+                  ${icons.shieldCheck(18, "#00a477")} Account Verification
+                </h3>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div class="profile-session-card" style="margin-bottom:0; ${isEmailVerified ? "background:#ecfdf3; border-color:#a7f3d0;" : ""}">
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="color: ${isEmailVerified ? "#00a477" : "#e58a00"};">
+                      ${isEmailVerified ? icons.checkCircle(20, "#00a477") : icons.alertTriangle(20, "#e58a00")}
+                    </div>
+                    <div>
+                      <div style="font-weight: 700; font-size:0.9rem; color: var(--navy);">Email Address Verification</div>
+                      <div style="font-size: 0.78rem; color: var(--text-muted);">${user.email} · ${isEmailVerified ? "Confirmed verified identity" : "Pending confirmation"}</div>
+                    </div>
+                  </div>
+                  <span class="badge ${isEmailVerified ? "badge-active" : ""}" style="font-size:0.75rem;">
+                    ${isEmailVerified ? "VERIFIED" : "PENDING"}
+                  </span>
+                </div>
+
+                <div class="profile-session-card" style="margin-bottom:0; ${user.googleSubject ? "background:#ecfdf3; border-color:#a7f3d0;" : ""}">
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="color: ${user.googleSubject ? "#00a477" : "var(--text-muted)"};">
+                      ${user.googleSubject ? icons.checkCircle(20, "#00a477") : icons.shield(20, "var(--text-muted)")}
+                    </div>
+                    <div>
+                      <div style="font-weight: 700; font-size:0.9rem; color: var(--navy);">Google SSO Authentication</div>
+                      <div style="font-size: 0.78rem; color: var(--text-muted);">${user.googleSubject ? "Linked with verified Google ID" : "Standard email credential account"}</div>
+                    </div>
+                  </div>
+                  <span class="badge" style="font-size:0.75rem; background:${user.googleSubject ? "#ecfdf3" : "#f1f5f9"}; color:${user.googleSubject ? "#00a477" : "var(--text-muted)"};">
+                    ${user.googleSubject ? "LINKED" : "UNLINKED"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Active Sessions & Device Management -->
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h3 class="profile-card-title">
+                  ${icons.lock(18, "var(--primary)")} Active Sessions (${sessions.length})
+                </h3>
+                ${sessions.length > 1 ? `
+                  <button id="profileSignOutAllBtn" class="button button-outline" style="border-color:#fca5a5; color:#dc2626; font-size:0.8rem; padding: 4px 12px; border-radius:9999px;">
+                    Logout All Other Devices
+                  </button>
+                ` : ""}
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                ${sessions.map((s) => `
+                  <div class="profile-session-card ${s.isCurrent ? "current" : ""}">
+                    <div>
+                      <div style="font-weight: 700; color: var(--navy); font-size: 0.88rem; display:flex; align-items:center; gap:6px;">
+                        ${s.isCurrent ? "★ This Device (Current Browser)" : "Other Device / Browser Session"}
+                      </div>
+                      <div style="color: var(--text-muted); font-size: 0.76rem; margin-top: 2px;">
+                        IP: ${s.ipAddress} · Last Active: ${new Date(s.lastActiveAt).toLocaleString()}
+                      </div>
+                    </div>
+                    <div>
+                      ${s.isCurrent ? `
+                        <span class="badge badge-active" style="font-size:0.74rem;">CURRENT</span>
+                      ` : `
+                        <span class="badge" style="background:#f1f5f9; color:var(--text-muted); font-size:0.74rem;">ACTIVE</span>
+                      `}
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+
+            <!-- Section 5: Account & Security Settings -->
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <h3 class="profile-card-title">
+                  ${icons.lock(18, "var(--navy)")} Account &amp; Security Settings
+                </h3>
+              </div>
+              <div>
+                <div class="profile-security-row">
+                  <div>
+                    <div style="font-weight: 700; color: var(--navy); font-size: 0.9rem;">Change Password</div>
+                    <div style="color: var(--text-muted); font-size: 0.78rem;">Receive a secure password reset link on your registered email address.</div>
+                  </div>
+                  <button id="sendResetPasswordBtn" class="button button-outline" style="font-size: 0.82rem; padding: 6px 14px; border-radius: 8px;">
+                    Reset Password
+                  </button>
+                </div>
+
+                <div class="profile-security-row">
+                  <div>
+                    <div style="font-weight: 700; color: var(--navy); font-size: 0.9rem;">Privacy &amp; Data Consent</div>
+                    <div style="color: var(--text-muted); font-size: 0.78rem;">Review HIPAA and national blood coordination privacy practices.</div>
+                  </div>
+                  <a href="#/privacy" class="button button-outline" style="font-size: 0.82rem; padding: 6px 14px; border-radius: 8px;">
+                    Review Policy
+                  </a>
+                </div>
+
+                <div class="profile-security-row" style="border-color: #fee2e2; background: #fff7f7;">
+                  <div>
+                    <div style="font-weight: 700; color: #dc2626; font-size: 0.9rem;">Sign Out All Sessions</div>
+                    <div style="color: var(--text-muted); font-size: 0.78rem;">Revoke all authentication refresh tokens across all browsers immediately.</div>
+                  </div>
+                  <button id="logoutAllBtn" class="button button-outline" style="font-size: 0.82rem; padding: 6px 14px; border-radius: 8px; border-color:#fca5a5; color:#dc2626;">
+                    Sign Out All
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div style="border-top: 1px solid var(--border); padding-top: 14px; font-size: 0.85rem; color: var(--text-muted);">
-          <p style="margin: 4px 0;"><strong>Member Since:</strong> ${new Date(user.createdAt).toLocaleDateString()}</p>
-          <p style="margin: 4px 0;"><strong>Last Sign In:</strong> ${new Date(user.lastLoginAt).toLocaleString()}</p>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top: 24px;">
-          <button id="profileSignOutBtn" class="button button-outline" style="width: 100%;">
-            Sign Out (This Device)
-          </button>
-          ${sessions.length > 1 ? `
-            <button id="profileSignOutAllBtn" class="button button-outline" style="width: 100%; border-color:#fca5a5; color:#dc2626;">
-              Sign Out from All Devices
-            </button>
-          ` : ""}
+      <!-- Edit Profile Modal -->
+      <div id="profileEditModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:9999; backdrop-filter:blur(2px); align-items:center; justify-content:center;">
+        <div class="auth-card" style="max-width:480px; width:90%; padding:28px 24px; border-radius:18px; margin:0 auto; text-align:left;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+            <h3 style="margin:0; font-size:1.15rem; color:var(--navy); font-weight:800;">Edit Profile Information</h3>
+            <button id="closeEditModalBtn" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted);">&times;</button>
+          </div>
+          <form id="editProfileForm">
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label" for="editFullName">Full Name</label>
+              <input type="text" id="editFullName" class="form-input" value="${user.fullName || ""}" required>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label" for="editPhone">Phone Number</label>
+              <input type="tel" id="editPhone" class="form-input" placeholder="e.g. +91 98765 43210" value="${user.phoneNumber || ""}">
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+              <label class="form-label" for="editLanguage">Preferred Language</label>
+              <select id="editLanguage" class="form-input">
+                <option value="en" ${user.preferredLanguage === "en" || !user.preferredLanguage ? "selected" : ""}>English</option>
+                <option value="hi" ${user.preferredLanguage === "hi" ? "selected" : ""}>Hindi (हिंदी)</option>
+                <option value="pa" ${user.preferredLanguage === "pa" ? "selected" : ""}>Punjabi (ਪੰਜਾਬੀ)</option>
+              </select>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+              <button type="button" id="cancelEditModalBtn" class="button button-outline" style="padding:8px 16px;">Cancel</button>
+              <button type="submit" id="saveProfileBtn" class="button button-primary" style="padding:8px 20px;">Save Changes</button>
+            </div>
+          </form>
         </div>
       </div>
     `;
 
-        // Check and populate donor banner
-    (async () => {
-      try {
-        const dRes = await api.getMyDonorProfile();
-        if (dRes.ok) {
-          const dBody = await dRes.json();
-          const d = dBody.data?.donor;
-          const bannerText = document.getElementById("donorBannerStatusText");
-          const bannerBtn = document.getElementById("donorBannerActionBtn");
-          if (bannerText && bannerBtn && d) {
-            bannerText.innerHTML = `<strong>Blood Group:</strong> ${d.bloodGroup} - <strong>City:</strong> ${d.location.city} (${d.availabilityStatus})`;
-            bannerBtn.textContent = "Open Donor Dashboard";
-            bannerBtn.href = "#/donor/dashboard";
-            bannerBtn.className = "button button-outline";
-          }
-        }
-      } catch (e) {}
-    })();
+    // Edit Profile Modal Wireup
+    const editModal = document.getElementById("profileEditModal");
+    const openModalBtn = document.getElementById("profileEditModalBtn");
+    const closeModalBtn = document.getElementById("closeEditModalBtn");
+    const cancelModalBtn = document.getElementById("cancelEditModalBtn");
+    const editForm = document.getElementById("editProfileForm");
 
+    openModalBtn?.addEventListener("click", () => {
+      if (editModal) editModal.style.display = "flex";
+    });
+
+    const hideModal = () => {
+      if (editModal) editModal.style.display = "none";
+    };
+
+    closeModalBtn?.addEventListener("click", hideModal);
+    cancelModalBtn?.addEventListener("click", hideModal);
+
+    editForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById("saveProfileBtn");
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
+      }
+
+      const fullName = document.getElementById("editFullName")?.value.trim();
+      const phoneNumber = document.getElementById("editPhone")?.value.trim();
+      const preferredLanguage = document.getElementById("editLanguage")?.value;
+
+      try {
+        const updateRes = await api.updateProfile({
+          fullName,
+          phoneNumber,
+          preferredLanguage
+        });
+        const updateData = await updateRes.json();
+        if (updateRes.ok && updateData.success) {
+          toast.success("Profile updated successfully!");
+          if (updateData.data?.user) {
+            authState.setUser(updateData.data.user);
+          }
+          hideModal();
+          this.renderProfile();
+        } else {
+          toast.error(updateData.message || "Failed to update profile.");
+        }
+      } catch (err) {
+        toast.error(err.message || "Network error updating profile.");
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save Changes";
+        }
+      }
+    });
+
+    // Reset Password Handler
+    document.getElementById("sendResetPasswordBtn")?.addEventListener("click", async () => {
+      try {
+        const res = await api.forgotPassword({ email: user.email });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          toast.success("Password reset instructions sent to " + user.email);
+        } else {
+          toast.error(data.message || "Failed to send reset link.");
+        }
+      } catch (err) {
+        toast.error("Network error sending reset instructions.");
+      }
+    });
+
+    // Sign out handlers
     document.getElementById("profileSignOutBtn")?.addEventListener("click", () => {
       authState.logout();
     });
 
-    document.getElementById("profileSignOutAllBtn")?.addEventListener("click", async () => {
+    const handleSignOutAll = async () => {
+      if (!confirm("Are you sure you want to sign out from all devices? You will need to log back in.")) {
+        return;
+      }
       try {
         await api.logoutAll();
       } catch (err) {}
       await authState.logout();
-    });
+    };
+
+    document.getElementById("profileSignOutAllBtn")?.addEventListener("click", handleSignOutAll);
+    document.getElementById("logoutAllBtn")?.addEventListener("click", handleSignOutAll);
   }
 };
