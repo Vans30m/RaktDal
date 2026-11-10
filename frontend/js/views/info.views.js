@@ -438,87 +438,739 @@ export const infoViews = {
 
   renderHowItWorks(container) {
     container.innerHTML = `
-      <div style="background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%); padding: 60px 20px 40px; border-bottom: 1px solid var(--border);">
-        <div style="max-width: 900px; margin: 0 auto; text-align: center;">
-          <span style="display: inline-flex; align-items: center; gap: 8px; background: #fee2e2; color: var(--red); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 14px; border-radius: 9999px; margin-bottom: 16px;">
-            ⚙️ Simple & Streamlined
-          </span>
-          <h1 style="font-size: 2.6rem; font-weight: 800; color: var(--text-main); line-height: 1.2; margin: 0 0 16px;">
-            How RaktDal Works
-          </h1>
-          <p style="font-size: 1.15rem; color: var(--text-muted); line-height: 1.6; max-width: 720px; margin: 0 auto;">
-            A fast, secure, step-by-step workflow designed to connect patients in emergency need with active voluntary donors in their area.
-          </p>
-        </div>
-      </div>
-
-      <div style="max-width: 960px; margin: 0 auto; padding: 50px 20px 80px;">
-        <div style="display: flex; flex-direction: column; gap: 32px; margin-bottom: 56px;">
-          
-          <div style="display: flex; gap: 24px; align-items: flex-start; background: #ffffff; padding: 28px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 3px 12px rgba(0,0,0,0.03);">
-            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">
-              1
-            </div>
-            <div>
-              <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Post a Blood Request</h3>
-              <p style="margin: 0 0 12px; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem;">
-                When blood is urgently needed, create a verified blood request specifying the required blood group, hospital location, required date, and required units. Requests are instantly indexed for matching donors.
+      <div class="hiw-page-container">
+        <!-- 1. Hero Section -->
+        <section class="hiw-hero-section" aria-labelledby="hiwHeroHeading">
+          <div class="hiw-hero-inner">
+            <div class="hiw-hero-text">
+              <span class="hiw-badge">
+                <span class="hiw-badge-dot" aria-hidden="true"></span>
+                Simple &amp; Streamlined
+              </span>
+              <h1 id="hiwHeroHeading" class="hiw-hero-title">
+                How <span class="accent-text">RaktDal</span> Works
+              </h1>
+              <p class="hiw-hero-sub">
+                From discovering participating donors to coordinating blood requests, RaktDal makes responsible blood donation coordination simpler and more accessible.
               </p>
-              <span style="font-size: 0.82rem; background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-weight: 600;">For Patients & Families</span>
+              <div class="hiw-hero-ctas">
+                <a href="#/find-blood" class="button button-primary">
+                  Find Donors
+                </a>
+                <a href="#/donor/register" class="button button-outline">
+                  Become a Donor
+                </a>
+              </div>
+            </div>
+
+            <div class="hiw-hero-visual">
+              <svg class="hiw-illustration-svg" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Step by step blood donation coordination workflow">
+                <defs>
+                  <linearGradient id="hiwGradRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#C51E24"/>
+                    <stop offset="100%" stop-color="#991B1B"/>
+                  </linearGradient>
+                  <linearGradient id="hiwGradCard" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="100%" stop-color="#f8fafc"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Flow Path -->
+                <circle cx="250" cy="200" r="150" fill="#fef2f2" opacity="0.7"/>
+                <path d="M100 200 C100 120, 200 120, 250 200 C300 280, 400 280, 400 200" stroke="#fca5a5" stroke-width="4" stroke-dasharray="8 8"/>
+
+                <!-- Card 1: Request -->
+                <g transform="translate(70, 140)">
+                  <rect width="110" height="120" rx="16" fill="url(#hiwGradCard)" stroke="#e2e8f0" stroke-width="2"/>
+                  <rect x="15" y="20" width="80" height="10" rx="5" fill="#fee2e2"/>
+                  <rect x="15" y="40" width="60" height="8" rx="4" fill="#e2e8f0"/>
+                  <rect x="15" y="56" width="50" height="8" rx="4" fill="#e2e8f0"/>
+                  <circle cx="55" cy="90" r="16" fill="#C51E24"/>
+                  <path d="M55 83 L55 97 M48 90 L62 90" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+
+                <!-- Card 2: Central Match Node -->
+                <g transform="translate(210, 130)">
+                  <rect width="120" height="140" rx="18" fill="url(#hiwGradCard)" stroke="#C51E24" stroke-width="2.5"/>
+                  <circle cx="60" cy="55" r="28" fill="url(#hiwGradRed)"/>
+                  <path d="M60 40 C60 40 45 60 45 72 C45 80.5 51.5 87 60 87 C68.5 87 75 80.5 75 72 C75 60 60 40 60 40 Z" fill="#ffffff"/>
+                  <rect x="25" y="100" width="70" height="8" rx="4" fill="#cbd5e1"/>
+                  <rect x="35" y="115" width="50" height="6" rx="3" fill="#e2e8f0"/>
+                </g>
+
+                <!-- Card 3: Care Confirmation -->
+                <g transform="translate(350, 140)">
+                  <rect width="110" height="120" rx="16" fill="url(#hiwGradCard)" stroke="#e2e8f0" stroke-width="2"/>
+                  <circle cx="55" cy="50" r="22" fill="#ecfdf5"/>
+                  <path d="M48 50 L53 55 L63 45" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="20" y="85" width="70" height="8" rx="4" fill="#e2e8f0"/>
+                  <rect x="25" y="100" width="60" height="6" rx="3" fill="#cbd5e1"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- Body Wrapper -->
+        <div class="hiw-body-wrapper">
+          <!-- 2. Interactive User Journey Selector Tabs -->
+          <div class="hiw-journey-nav-wrapper">
+            <div class="hiw-journey-tabs" role="tablist" aria-label="Select User Journey">
+              <button type="button" class="hiw-tab-btn active" role="tab" aria-selected="true" id="tab-need-blood" aria-controls="panel-need-blood" data-journey="need-blood">
+                <span class="hiw-tab-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                </span>
+                <span>I Need Blood</span>
+              </button>
+
+              <button type="button" class="hiw-tab-btn" role="tab" aria-selected="false" id="tab-donate" aria-controls="panel-donate" data-journey="donate">
+                <span class="hiw-tab-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                  </svg>
+                </span>
+                <span>I Want to Donate</span>
+              </button>
+
+              <button type="button" class="hiw-tab-btn" role="tab" aria-selected="false" id="tab-org" aria-controls="panel-org" data-journey="org">
+                <span class="hiw-tab-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18"></path>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                    <path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path>
+                  </svg>
+                </span>
+                <span>I'm an Organization</span>
+              </button>
             </div>
           </div>
 
-          <div style="display: flex; gap: 24px; align-items: flex-start; background: #ffffff; padding: 28px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 3px 12px rgba(0,0,0,0.03);">
-            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">
-              2
+          <!-- ========================================== -->
+          <!-- JOURNEY 1: I NEED BLOOD (5 STEPS) -->
+          <!-- ========================================== -->
+          <div id="panel-need-blood" class="hiw-journey-panel active" role="tabpanel" aria-labelledby="tab-need-blood">
+            <div class="hiw-panel-header">
+              <h2>Workflow for Patients &amp; Coordinators</h2>
+              <p>Step-by-step guidance on how to request blood, locate nearby compatible donors, and coordinate clinical fulfillment.</p>
             </div>
-            <div>
-              <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Instant Donor Matching & In-App Alerts</h3>
-              <p style="margin: 0 0 12px; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem;">
-                Search available donors by blood group and city. Use the <strong>In-App Alert</strong> feature to notify active donors in your vicinity without unsolicited phone calls or privacy infringements.
-              </p>
-              <span style="font-size: 0.82rem; background: #fef2f2; color: var(--red); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Real-Time Notification System</span>
+
+            <div class="hiw-timeline-wrapper">
+              <!-- Step 1 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 1 · Authentication &amp; Posting</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <line x1="12" y1="18" x2="12" y2="12"></line>
+                          <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Create a Blood Request</h3>
+                    <p>Sign in securely with Google and submit your request specifying required blood group, component, hospital location, urgency tier, and units required.</p>
+                    <a href="#/requests" class="hiw-step-link">
+                      <span>View Blood Requests</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">1</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="hiw-timeline-item side-right">
+                <div class="hiw-spacer-col"></div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">2</div>
+                </div>
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                      </div>
+                      <span class="hiw-step-tag">Step 2 · Moderation</span>
+                    </div>
+                    <h3>Request Validation &amp; Publishing</h3>
+                    <p>The request enters our moderation queue to check that valid contact details and clinical hospital information are present before indexing.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 3 · Proximity Search</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Discover Participating Donors</h3>
+                    <p>Filter active donors by compatible blood group, city, district, and postal PIN code. Send instant In-App Alerts without exposing personal phone numbers.</p>
+                    <a href="#/find-blood" class="hiw-step-link">
+                      <span>Search Donors</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">3</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="hiw-timeline-item side-right">
+                <div class="hiw-spacer-col"></div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">4</div>
+                </div>
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <span class="hiw-step-tag">Step 4 · Voluntary Responses</span>
+                    </div>
+                    <h3>Receive Donor Responses</h3>
+                    <p>Matching voluntary donors receive notifications and independently accept or decline based on availability, confirming units and estimated arrival.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 5 · Medical Fulfillment</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Coordinate with Healthcare Providers</h3>
+                    <p>The coordinator and hospital transfusion department confirm biological compatibility, screen hemoglobin and viral markers, and carry out the safe transfusion.</p>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">5</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
             </div>
           </div>
 
-          <div style="display: flex; gap: 24px; align-items: flex-start; background: #ffffff; padding: 28px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 3px 12px rgba(0,0,0,0.03);">
-            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">
-              3
+          <!-- ========================================== -->
+          <!-- JOURNEY 2: I WANT TO DONATE (5 STEPS) -->
+          <!-- ========================================== -->
+          <div id="panel-donate" class="hiw-journey-panel" role="tabpanel" aria-labelledby="tab-donate">
+            <div class="hiw-panel-header">
+              <h2>Workflow for Voluntary Blood Donors</h2>
+              <p>How altruistic individuals register, manage privacy controls, receive relevant alerts, and voluntarily save lives.</p>
             </div>
-            <div>
-              <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Donor Confirms & Submits Offer</h3>
-              <p style="margin: 0 0 12px; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem;">
-                Available donors review the hospital location and urgency, then submit a formal response indicating units offered, estimated arrival, and optional message.
-              </p>
-              <span style="font-size: 0.82rem; background: #f0fdf4; color: #15803d; padding: 4px 10px; border-radius: 6px; font-weight: 600;">Voluntary Donor Action</span>
+
+            <div class="hiw-timeline-wrapper">
+              <!-- Step 1 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 1 · Identity</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Sign In Securely</h3>
+                    <p>Authenticate safely using Google Single Sign-On. Your session is protected by encrypted authentication tokens and strict CORS/CSRF safeguards.</p>
+                    <a href="#/login" class="hiw-step-link">
+                      <span>Sign In with Google</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">1</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="hiw-timeline-item side-right">
+                <div class="hiw-spacer-col"></div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">2</div>
+                </div>
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="9" cy="7" r="4"></circle>
+                        </svg>
+                      </div>
+                      <span class="hiw-step-tag">Step 2 · Profile</span>
+                    </div>
+                    <h3>Create Your Donor Profile</h3>
+                    <p>Enter your blood group (A+, B+, O-, etc.), age, and geographic location (city, district, PIN code) to ensure you are matched only with nearby requests.</p>
+                    <a href="#/donor/register" class="hiw-step-link">
+                      <span>Register as Donor</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 3 · Privacy &amp; Consent</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Manage Your Availability</h3>
+                    <p>Toggle your status between <em>Available</em> and <em>Unavailable</em> at any moment. Choose whether your profile appears in public donor searches.</p>
+                    <a href="#/donor/dashboard" class="hiw-step-link">
+                      <span>Manage Dashboard</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">3</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="hiw-timeline-item side-right">
+                <div class="hiw-spacer-col"></div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">4</div>
+                </div>
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                      </div>
+                      <span class="hiw-step-tag">Step 4 · In-App Alerts</span>
+                    </div>
+                    <h3>Receive Relevant Notifications</h3>
+                    <p>Get instant real-time alerts when hospitals or verified coordinators post an urgent blood requirement matching your blood group in your area.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 5 · Non-Obligatory</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Respond Voluntarily</h3>
+                    <p>Participation is 100% voluntary. You independently decide whether to accept or decline. Joining RaktDal never creates a mandatory obligation to donate.</p>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">5</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
             </div>
           </div>
 
-          <div style="display: flex; gap: 24px; align-items: flex-start; background: #ffffff; padding: 28px; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 3px 12px rgba(0,0,0,0.03);">
-            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--red); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; flex-shrink: 0;">
-              4
+          <!-- ========================================== -->
+          <!-- JOURNEY 3: ORGANIZATIONS (5 STEPS) -->
+          <!-- ========================================== -->
+          <div id="panel-org" class="hiw-journey-panel" role="tabpanel" aria-labelledby="tab-org">
+            <div class="hiw-panel-header">
+              <h2>Workflow for Hospitals &amp; Blood Banks</h2>
+              <p>How licensed healthcare institutions onboard, maintain reported stock levels, and coordinate community camps.</p>
             </div>
-            <div>
-              <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Hospital Verification & Donation</h3>
-              <p style="margin: 0 0 12px; color: var(--text-muted); line-height: 1.6; font-size: 0.95rem;">
-                The patient coordinator receives the donor offer details, coordinates with the hospital blood bank for pre-donation screening (Hb, blood pressure, viral markers), and fulfills the requirement.
-              </p>
-              <span style="font-size: 0.82rem; background: #fffbeb; color: #b45309; padding: 4px 10px; border-radius: 6px; font-weight: 600;">Clinical Safety Standard</span>
+
+            <div class="hiw-timeline-wrapper">
+              <!-- Step 1 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 1 · Portal Access</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Organization Sign In</h3>
+                    <p>Administrative medical coordinators sign in through Google OAuth to initiate the institution registration process.</p>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">1</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="hiw-timeline-item side-right">
+                <div class="hiw-spacer-col"></div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">2</div>
+                </div>
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 21h18"></path>
+                          <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                          <line x1="10" y1="9" x2="14" y2="9"></line>
+                        </svg>
+                      </div>
+                      <span class="hiw-step-tag">Step 2 · Compliance Submission</span>
+                    </div>
+                    <h3>Submit Organization Credentials</h3>
+                    <p>Provide verified institution details: hospital/blood bank license number, authorized representative contact, physical address, and documentation.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 3 · Verification Audit</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                          <polyline points="9 12 11 14 15 10"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Platform Admin Verification</h3>
+                    <p>Platform administrators audit licensing and documentation. Verified organization status is granted only after audit confirmation.</p>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">3</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="hiw-timeline-item side-right">
+                <div class="hiw-spacer-col"></div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">4</div>
+                </div>
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
+                          <rect x="14" y="3" width="7" height="5" rx="1.5"></rect>
+                          <rect x="14" y="12" width="7" height="9" rx="1.5"></rect>
+                          <rect x="3" y="16" width="7" height="5" rx="1.5"></rect>
+                        </svg>
+                      </div>
+                      <span class="hiw-step-tag">Step 4 · Tailored Dashboard</span>
+                    </div>
+                    <h3>Access Organization Dashboard</h3>
+                    <p>Role-based features unlock based on organization type: Hospitals coordinate bulk requests, Blood Banks manage reported inventory, and Organizers publish camps.</p>
+                    <a href="#/blood-banks" class="hiw-step-link">
+                      <span>Browse Blood Banks</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="hiw-timeline-item side-left">
+                <div class="hiw-card-col">
+                  <div class="hiw-step-card">
+                    <div class="hiw-step-top">
+                      <span class="hiw-step-tag">Step 5 · Operations</span>
+                      <div class="hiw-step-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3>Publish Camps &amp; Coordinate</h3>
+                    <p>Coordinate authorized community donation drives, review voluntary pledges, and publish updated inventory levels to ensure transparency across the network.</p>
+                    <a href="#/camps" class="hiw-step-link">
+                      <span>Explore Camps</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                  </div>
+                </div>
+                <div class="hiw-node-col">
+                  <div class="hiw-node-bubble">5</div>
+                </div>
+                <div class="hiw-spacer-col"></div>
+              </div>
             </div>
           </div>
 
-        </div>
+          <!-- 3. Platform Capabilities & Benefits Grid (8 Cards) -->
+          <section class="hiw-benefits-section" aria-labelledby="benefitsHeading">
+            <div class="hiw-panel-header" style="margin-bottom: 32px;">
+              <span class="hiw-badge" style="margin-bottom: 12px;">Core Architecture</span>
+              <h2 id="benefitsHeading">Platform Capabilities &amp; Benefits</h2>
+              <p>Key technological and operational features built into the RaktDal platform.</p>
+            </div>
 
-        <div style="text-align: center; background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 40px;">
-          <h3 style="font-size: 1.4rem; font-weight: 800; margin: 0 0 10px; color: var(--text-main);">Ready to Get Started?</h3>
-          <p style="color: var(--text-muted); margin: 0 0 24px;">Explore active requests or register as a donor today.</p>
-          <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-            <a href="#/requests" class="button">View Blood Requests</a>
-            <a href="#/find-blood" class="button button-outline">Search Donors</a>
+            <div class="hiw-benefits-grid">
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </div>
+                <h4>Location Discovery</h4>
+                <p>Filter participating voluntary donors by state, city, and postal PIN code proximity.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                </div>
+                <h4>Consent Participation</h4>
+                <p>Donors maintain granular control over discovery and contact sharing options.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <h4>Secure Google OAuth</h4>
+                <p>Industry-standard token authentication eliminates stored plain-text passwords.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18"></path>
+                    <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                    <line x1="10" y1="9" x2="14" y2="9"></line>
+                  </svg>
+                </div>
+                <h4>Organization Verification</h4>
+                <p>Multi-step platform audit for hospital licensing and blood bank credentials.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </div>
+                <h4>Reported Inventory</h4>
+                <p>Timely visibility into organization-reported stock with verification timestamps.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                  </svg>
+                </div>
+                <h4>Camp Coordination</h4>
+                <p>Community organizers partner with licensed blood banks for scheduled drives.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                </div>
+                <h4>Multilingual Support</h4>
+                <p>Accessible across 6+ major Indian languages including Hindi, Bengali, and Tamil.</p>
+              </div>
+
+              <div class="hiw-benefit-card">
+                <div class="hiw-benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                  </svg>
+                </div>
+                <h4>Responsive Mobile UI</h4>
+                <p>Fully optimized touch experience for fast emergency coordination on any smartphone.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. Responsibility & Safety Section (Shield Theme) -->
+          <div class="hiw-safety-card">
+            <div class="hiw-safety-left">
+              <div class="hiw-safety-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3>Responsible Coordination Comes First</h3>
+                <p>Important guidelines governing our coordination role, clinical boundaries, and donor safety.</p>
+              </div>
+            </div>
+
+            <div class="hiw-safety-list">
+              <div class="hiw-safety-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Donor participation is strictly voluntary and non-remunerated.</span>
+              </div>
+
+              <div class="hiw-safety-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Donor privacy and contact consent settings are honored at every step.</span>
+              </div>
+
+              <div class="hiw-safety-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Blood inventory is organization-reported with explicit update timestamps.</span>
+              </div>
+
+              <div class="hiw-safety-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Donor availability is reported and cannot be clinically guaranteed.</span>
+              </div>
+
+              <div class="hiw-safety-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Medical suitability must be confirmed by qualified healthcare professionals.</span>
+              </div>
+
+              <div class="hiw-safety-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>RaktDal is a coordination platform, not a medical decision-making service.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Final Call to Action -->
+          <div class="hiw-cta-card">
+            <h2 class="hiw-cta-title">Ready to Be Part of the Community?</h2>
+            <p class="hiw-cta-desc">
+              Every responsible connection can help strengthen the voluntary blood donation community across India.
+            </p>
+            <div class="hiw-cta-buttons">
+              <a href="#/find-blood" class="button contact-cta-btn-white">
+                Find Donors
+              </a>
+              <a href="#/donor/register" class="button contact-cta-btn-red">
+                Become a Donor
+              </a>
+              <a href="#/camps" class="button contact-cta-btn-ghost">
+                Explore Donation Camps
+              </a>
+            </div>
           </div>
         </div>
       </div>
     `;
+
+    // Initialize Interactive Tab Switching
+    this.initHowItWorksTabs(container);
+  },
+
+  initHowItWorksTabs(container) {
+    const tabBtns = container.querySelectorAll(".hiw-tab-btn");
+    const panels = container.querySelectorAll(".hiw-journey-panel");
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const journey = btn.getAttribute("data-journey");
+
+        tabBtns.forEach(b => {
+          b.classList.remove("active");
+          b.setAttribute("aria-selected", "false");
+        });
+        panels.forEach(p => {
+          p.classList.remove("active");
+        });
+
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+
+        const targetPanel = container.querySelector(`#panel-${journey}`);
+        if (targetPanel) {
+          targetPanel.classList.add("active");
+        }
+      });
+    });
   },
 
   renderContact(container) {
