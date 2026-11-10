@@ -18,56 +18,127 @@ export const donorViews = {
     const page = parseInt(params.get("page") || "1", 10);
 
     container.innerHTML = `
-      <section class="donor-search-header" style="text-align: center; margin-bottom: 24px;">
-        <p class="eyebrow">Direct Volunteer Coordination</p>
-        <h1 style="font-size: 2rem; margin: 4px 0 8px;">Find Opted-In Blood Donors</h1>
-        <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-          Search active, voluntary blood donors by blood group, city, or 6-digit postal PIN code.
-        </p>
-      </section>
+      <div class="find-donors-container">
+        <!-- 1. Privacy-Themed Split 2-Column Hero Section -->
+        <section class="find-donors-hero-section" aria-labelledby="findDonorsHeading">
+          <div class="find-donors-hero-inner">
+            <div class="find-donors-hero-text">
+              <span class="find-donors-badge">
+                <span class="find-donors-badge-dot" aria-hidden="true"></span>
+                Direct Volunteer Coordination
+              </span>
+              <h1 id="findDonorsHeading" class="find-donors-hero-title">
+                Find Opted-In <span class="accent-text">Blood Donors</span>
+              </h1>
+              <p class="find-donors-hero-sub">
+                Search verified, voluntary blood donors by blood group, city, or 6-digit postal PIN code across India with zero-spam privacy protection.
+              </p>
+              <div class="find-donors-metadata-pill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Pan-India Donor Directory · Direct In-App Alert Triage</span>
+              </div>
+              <div class="find-donors-hero-ctas">
+                <a href="#donorSearchCard" class="button button-primary">
+                  Filter Donors
+                </a>
+                <a href="#/donor/register" class="button button-outline">
+                  Become a Donor
+                </a>
+              </div>
+            </div>
 
-      <!-- Search Controls -->
-      <div class="auth-card" style="max-width: 1200px; margin: 0 auto 24px; text-align: left;">
-        <form id="donorSearchForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end;">
-          <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchBloodGroup">Blood Group</label>
-            <select id="searchBloodGroup" class="form-input">
-              <option value="">All Blood Groups</option>
-              ${BLOOD_GROUPS.map((bg) => `<option value="${bg}" ${bloodGroup === bg ? "selected" : ""}>${bg}</option>`).join("")}
-            </select>
+            <div class="find-donors-hero-visual">
+              <svg class="find-donors-illustration-svg" viewBox="0 0 480 380" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Volunteer donor discovery and location proximity illustration">
+                <defs>
+                  <linearGradient id="findGradRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#C51F26"/>
+                    <stop offset="100%" stop-color="#991B1B"/>
+                  </linearGradient>
+                  <linearGradient id="findGradCard" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="100%" stop-color="#f8fafc"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="240" cy="190" r="140" fill="#fef2f2" opacity="0.8"/>
+
+                <!-- Main Shield / Outer Border -->
+                <path d="M240 70 L340 120 V210 C340 275 295 325 240 340 C185 325 140 275 140 210 V120 Z" fill="url(#findGradCard)" stroke="#e2e8f0" stroke-width="2.5"/>
+
+                <!-- Inner Soft Red Frame -->
+                <path d="M240 95 L315 132 V205 C315 255 280 295 240 310 C200 295 165 255 165 205 V132 Z" fill="#fee2e2" opacity="0.5"/>
+
+                <!-- Central Blood Drop & User Silhouette Badge -->
+                <circle cx="240" cy="190" r="32" fill="url(#findGradRed)"/>
+                <!-- Blood Drop / Donor Symbol -->
+                <path d="M240 174 C240 174 231 187 231 193 C231 198 235 202 240 202 C245 202 249 198 249 193 C249 187 240 174 240 174 Z" fill="#ffffff"/>
+
+                <!-- Floating Location Pin Badge (Left) -->
+                <g transform="translate(90, 110)">
+                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+                  <circle cx="24" cy="24" r="18" fill="#ecfdf5"/>
+                  <path d="M24 16 C21 16 19 18 19 21 C19 25 24 30 24 30 C24 30 29 25 29 21 C29 18 27 16 24 16 Z" stroke="#059669" stroke-width="2" fill="none"/>
+                  <circle cx="24" cy="21" r="1.5" fill="#059669"/>
+                </g>
+
+                <!-- Floating Contact Shield Badge (Right) -->
+                <g transform="translate(340, 220)">
+                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+                  <circle cx="24" cy="24" r="18" fill="#eff6ff"/>
+                  <path d="M18 24 H30 M24 18 V30" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Main Body Wrapper -->
+        <div class="find-donors-body-wrapper">
+          <!-- Search Controls Card -->
+          <div id="donorSearchCard" class="find-donors-search-card">
+            <form id="donorSearchForm" class="find-donors-search-form">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" for="searchBloodGroup">Blood Group</label>
+                <select id="searchBloodGroup" class="form-input">
+                  <option value="">All Blood Groups</option>
+                  ${BLOOD_GROUPS.map((bg) => `<option value="${bg}" ${bloodGroup === bg ? "selected" : ""}>${bg}</option>`).join("")}
+                </select>
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" for="searchCity">City</label>
+                <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai, Delhi" value="${escapeHtml(city)}">
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" for="searchPinCode">PIN Code</label>
+                <input type="text" id="searchPinCode" class="form-input" maxlength="6" placeholder="6-digit PIN" value="${escapeHtml(pinCode)}">
+              </div>
+
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" for="searchAvailability">Availability</label>
+                <select id="searchAvailability" class="form-input">
+                  <option value="">Any Status</option>
+                  <option value="AVAILABLE" ${availabilityStatus === "AVAILABLE" ? "selected" : ""}>Available Now</option>
+                  <option value="UNAVAILABLE" ${availabilityStatus === "UNAVAILABLE" ? "selected" : ""}>Unavailable</option>
+                </select>
+              </div>
+
+              <div class="find-donors-btn-group">
+                <button type="submit" class="find-donors-search-btn">Search</button>
+                <button type="button" id="clearSearchBtn" class="find-donors-reset-btn">Reset</button>
+              </div>
+            </form>
           </div>
 
-          <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchCity">City</label>
-            <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai, Delhi" value="${escapeHtml(city)}">
+          <!-- Results Container -->
+          <div id="donorSearchResults">
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+              <div class="spinner" style="margin: 0 auto 12px;"></div>
+              Searching active donors...
+            </div>
           </div>
-
-          <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchPinCode">PIN Code</label>
-            <input type="text" id="searchPinCode" class="form-input" maxlength="6" placeholder="6-digit PIN" value="${escapeHtml(pinCode)}">
-          </div>
-
-          <div class="form-group" style="margin: 0;">
-            <label class="form-label" for="searchAvailability">Availability</label>
-            <select id="searchAvailability" class="form-input">
-              <option value="">Any Status</option>
-              <option value="AVAILABLE" ${availabilityStatus === "AVAILABLE" ? "selected" : ""}>Available Now</option>
-              <option value="UNAVAILABLE" ${availabilityStatus === "UNAVAILABLE" ? "selected" : ""}>Unavailable</option>
-            </select>
-          </div>
-
-          <div style="display: flex; gap: 8px;">
-            <button type="submit" class="button" style="flex: 1; height: 42px;">Search</button>
-            <button type="button" id="clearSearchBtn" class="button button-outline" style="height: 42px; padding: 0 14px;">Reset</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Results Container -->
-      <div id="donorSearchResults" style="max-width: 1200px; margin: 0 auto;">
-        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
-          <div class="spinner" style="margin: 0 auto 10px;"></div>
-          Searching active donors...
         </div>
       </div>
     `;
@@ -135,11 +206,18 @@ export const donorViews = {
 
       // Render Donor Cards
       resultsEl.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+        <div class="find-donors-results-bar">
+          <p>
             Found <strong>${pagination.total}</strong> opted-in donor${pagination.total === 1 ? "" : "s"}
           </p>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">Self-reported availability · Confirm suitability</span>
+          <span class="find-donors-results-notice">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            Self-reported availability · Confirm suitability independently
+          </span>
         </div>
 
         <div class="donors-grid">
@@ -195,12 +273,89 @@ export const donorViews = {
    */
   async renderDonorDashboard(container) {
     container.innerHTML = `
-      <div style="max-width: 840px; margin: 0 auto; text-align: left;">
-        <div id="donorDashMsg"></div>
-        <div id="donorDashContent">
-          <div style="text-align:center; padding: 40px;">
-            <div class="spinner" style="margin: 0 auto 12px;"></div>
-            <p style="color:var(--text-muted);">Loading your donor profile...</p>
+      <div class="donor-dashboard-page-container">
+        <!-- 1. Hero Section -->
+        <section class="donor-dashboard-hero-section" aria-labelledby="donorDashHeading">
+          <div class="donor-dashboard-hero-inner">
+            <div class="donor-dashboard-hero-text">
+              <span class="donor-dashboard-badge">
+                <span class="donor-dashboard-badge-dot" aria-hidden="true"></span>
+                Donor Hub &amp; Management
+              </span>
+              <h1 id="donorDashHeading" class="donor-dashboard-hero-title">
+                My Voluntary <span class="accent-text">Donor Profile</span>
+              </h1>
+              <p class="donor-dashboard-hero-sub">
+                Manage your voluntary blood group availability, consent permissions, and view verified emergency hospital alerts.
+              </p>
+              <div class="donor-dashboard-metadata-pill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>Live Verification Active · Privacy-Preserving Direct Sync</span>
+              </div>
+              <div class="donor-dashboard-hero-ctas">
+                <a href="#/donor/edit" class="button button-primary">
+                  Edit Profile
+                </a>
+                <a href="#/donor/consent" class="button button-outline">
+                  Privacy Settings
+                </a>
+              </div>
+            </div>
+
+            <div class="donor-dashboard-hero-visual">
+              <svg class="donor-dashboard-illustration-svg" viewBox="0 0 480 380" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Donor profile management and blood health badge illustration">
+                <defs>
+                  <linearGradient id="dashGradRed" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#C51F26"/>
+                    <stop offset="100%" stop-color="#991B1B"/>
+                  </linearGradient>
+                  <linearGradient id="dashGradCard" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="100%" stop-color="#f8fafc"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="240" cy="190" r="140" fill="#fef2f2" opacity="0.8"/>
+
+                <!-- Main Shield / Outer Border -->
+                <path d="M240 70 L340 120 V210 C340 275 295 325 240 340 C185 325 140 275 140 210 V120 Z" fill="url(#dashGradCard)" stroke="#e2e8f0" stroke-width="2.5"/>
+
+                <!-- Inner Soft Red Frame -->
+                <path d="M240 95 L315 132 V205 C315 255 280 295 240 310 C200 295 165 255 165 205 V132 Z" fill="#fee2e2" opacity="0.5"/>
+
+                <!-- Central Blood Group Badge -->
+                <circle cx="240" cy="190" r="32" fill="url(#dashGradRed)"/>
+                <!-- User Profile / Lifeline Emblem -->
+                <path d="M232 201 C232 195 235 192 240 192 C245 192 248 195 248 201" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round"/>
+                <circle cx="240" cy="183" r="4.5" fill="#ffffff"/>
+
+                <!-- Floating Available Check Badge (Left) -->
+                <g transform="translate(90, 110)">
+                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+                  <circle cx="24" cy="24" r="18" fill="#ecfdf5"/>
+                  <path d="M18 24 L22 28 L30 20" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+
+                <!-- Floating Privacy Shield Badge (Right) -->
+                <g transform="translate(340, 220)">
+                  <circle cx="24" cy="24" r="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+                  <circle cx="24" cy="24" r="18" fill="#eff6ff"/>
+                  <path d="M18 24 H30 M24 18 V30" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Main Content Body -->
+        <div class="donor-dashboard-body-wrapper">
+          <div id="donorDashMsg"></div>
+          <div id="donorDashContent">
+            <div style="text-align:center; padding: 40px;">
+              <div class="spinner" style="margin: 0 auto 12px;"></div>
+              <p style="color:var(--text-muted);">Loading your donor profile...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -890,57 +1045,72 @@ function renderDonorCard(d) {
   return `
     <div class="donor-card">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-          <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="donor-card-top">
+          <div class="donor-card-user">
             ${
               d.donor?.profileImage
-                ? `<img src="${d.donor.profileImage}" style="width: 40px; height: 40px; border-radius: 50%;" alt="">`
-                : `<div class="user-nav-avatar" style="width: 40px; height: 40px; font-size: 1rem;">${initial}</div>`
+                ? `<img src="${d.donor.profileImage}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" alt="">`
+                : `<div class="user-nav-avatar" style="width: 44px; height: 44px; font-size: 1.05rem; font-weight: 750;">${initial}</div>`
             }
             <div>
-              <div style="font-weight: 600; font-size: 0.95rem;">${escapeHtml(name)}</div>
-              <div style="font-size: 0.78rem; color: var(--text-muted);">${d.age} yrs · ${d.location.city}</div>
+              <div style="font-weight: 750; font-size: 1rem; color: var(--navy); line-height: 1.25;">${escapeHtml(name)}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">${d.age} yrs · ${escapeHtml(d.location.city)}</div>
             </div>
           </div>
 
-          <span style="font-size: 1.25rem; font-weight: 800; color: var(--primary); background: #fee2e2; padding: 4px 10px; border-radius: 6px;">
+          <span class="donor-blood-tag">
             ${d.bloodGroup}
           </span>
         </div>
 
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
-          <div>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-      <circle cx="12" cy="10" r="3"></circle>
-    </svg> ${escapeHtml(d.location.district)}, ${escapeHtml(d.location.state)} (${d.location.pinCode})</div>
-          <div>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-    </svg> Preferred: ${d.preferredContactMethod}</div>
-          ${d.donor?.email ? `<div style="color:var(--text-main);">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-      <polyline points="22,6 12,13 2,6"></polyline>
-    </svg> ${escapeHtml(d.donor.email)}</div>` : ""}
-          ${d.donor?.phoneNumber ? `<div style="color:var(--text-main);">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-    </svg> ${escapeHtml(d.donor.phoneNumber)}</div>` : ""}
+        <div class="donor-card-meta">
+          <div class="donor-meta-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>${escapeHtml(d.location.district)}, ${escapeHtml(d.location.state)} (${d.location.pinCode})</span>
+          </div>
+          <div class="donor-meta-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Preferred: <strong>${d.preferredContactMethod}</strong></span>
+          </div>
+          ${d.donor?.email ? `
+            <div class="donor-meta-row" style="color:var(--navy);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>${escapeHtml(d.donor.email)}</span>
+            </div>` : ""}
+          ${d.donor?.phoneNumber ? `
+            <div class="donor-meta-row" style="color:var(--navy);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+              <span>${escapeHtml(d.donor.phoneNumber)}</span>
+            </div>` : ""}
         </div>
       </div>
 
-      <div style="border-top: 1px solid var(--border); padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-        <span class="badge ${isAvailable ? "badge-active" : ""}" style="font-size: 0.75rem;">
-          ${isAvailable ? "● Available" : "Unavailable"}
+      <div class="donor-card-bottom">
+        <span class="badge ${isAvailable ? "badge-active" : ""}" style="font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 9999px;">
+          ${isAvailable ? "● AVAILABLE" : "UNAVAILABLE"}
         </span>
 
         ${isAvailable ? `
-          <button class="button button-outline send-donor-alert-btn" data-id="${d.id || d._id}" data-name="${escapeHtml(name)}" data-bg="${d.bloodGroup}" data-city="${escapeHtml(d.location.city)}" style="font-size: 0.78rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">
-            🔔 In-App Alert
+          <button class="button button-outline send-donor-alert-btn" data-id="${d.id || d._id}" data-name="${escapeHtml(name)}" data-bg="${d.bloodGroup}" data-city="${escapeHtml(d.location.city)}" style="font-size: 0.8rem; font-weight: 650; padding: 5px 12px; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>In-App Alert</span>
           </button>
         ` : `
-          <span style="font-size: 0.75rem; color: var(--text-muted);">
+          <span style="font-size: 0.76rem; color: var(--text-muted);">
             Joined ${new Date(d.createdAt).toLocaleDateString()}
           </span>
         `}
