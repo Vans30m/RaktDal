@@ -3,6 +3,7 @@ import { NotificationPreference } from "../models/NotificationPreference.js";
 import { User } from "../models/User.js";
 import { DonorProfile } from "../models/DonorProfile.js";
 import { sendEmail, renderEmailTemplate, escapeHtml } from "./email.service.js";
+import { realtimeNotifications } from "./realtime.service.js";
 import { env } from "../config/env.js";
 
 export class NotificationService {
@@ -62,6 +63,9 @@ export class NotificationService {
         channels: ["IN_APP"],
         metadata
       });
+
+      // Dispatch real-time WebSocket push immediately to recipient if connected
+      realtimeNotifications.sendToUser(userId, inAppNotification);
     }
 
     // 2. Email Delivery (Optional transactional, requires preference & user email)

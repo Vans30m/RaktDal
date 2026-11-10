@@ -3,6 +3,7 @@
  */
 import { authState } from "./auth.js";
 import { Router } from "./router.js";
+import { realtimeClient } from "./realtime.js";
 
 // Initialize i18n, Router and Auth State
 document.addEventListener("DOMContentLoaded", async () => {
@@ -20,6 +21,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 3. Fetch initial auth session
   await authState.init();
 
-  // 4. Start background notification polling with real-time pop-up toast alerts
-  router.startNotificationPolling();
+  // 4. Connect real-time WebSocket for instant alert popups
+  authState.subscribe((state) => {
+    if (state.isAuthenticated) {
+      realtimeClient.connect();
+    } else {
+      realtimeClient.disconnect();
+    }
+  });
 });
