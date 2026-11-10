@@ -21,14 +21,14 @@
     "files": [
       "main.js",
       "preload.js",
-      "../frontend/**/*"
+      "../raktdal-web/frontend/**/*"
     ],
     "win": {
       "target": [
         "nsis",
         "portable"
       ],
-      "icon": "../frontend/assets/logo-removebg.png"
+      "icon": "../raktdal-web/frontend/assets/logo-removebg.png"
     },
     "nsis": {
       "oneClick": false,

@@ -10,7 +10,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     title: "RaktDal - Blood Donation & Donor Coordination",
-    icon: path.join(__dirname, "../frontend/assets/logo-removebg.png"),
+    icon: path.join(__dirname, "../raktdal-web/frontend/assets/logo-removebg.png"),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -25,7 +25,7 @@ function createWindow() {
 
   mainWindow.loadURL(startUrl).catch(() => {
     // Fallback to local files if network is not available
-    mainWindow.loadFile(path.join(__dirname, "../frontend/index.html"));
+    mainWindow.loadFile(path.join(__dirname, "../raktdal-web/frontend/index.html"));
   });
 
   // Open external links securely in the default browser (e.g. Google OAuth)
