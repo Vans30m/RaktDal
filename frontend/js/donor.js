@@ -950,96 +950,395 @@ function renderDonorCard(d) {
 }
 
 /**
- * Helper: Renders active donor dashboard details
+ * Helper: Renders active donor dashboard details with modern healthcare styling
  */
 function renderActiveDashboard(container, donor) {
   const isAvailable = donor.availabilityStatus === "AVAILABLE";
   const user = authState.getState().user || donor.user || {};
 
+  // Calculate actual profile completion percentage based on registered data fields
+  const completionFields = [
+    Boolean(user.fullName),
+    Boolean(donor.bloodGroup),
+    Boolean(donor.age),
+    Boolean(donor.location?.city),
+    Boolean(donor.location?.district),
+    Boolean(donor.location?.state),
+    Boolean(donor.location?.pinCode),
+    Boolean(donor.preferredContactMethod),
+    donor.publicDiscoveryConsent !== undefined,
+    donor.notificationConsent !== undefined,
+    donor.contactSharingConsent !== undefined,
+    Boolean(donor.lastDonationDate)
+  ];
+  const filledCount = completionFields.filter(Boolean).length;
+  const completionPercent = Math.round((filledCount / completionFields.length) * 100);
+
   container.innerHTML = `
-    <!-- Top Hero Card -->
-    <div class="auth-card" style="padding: 24px; margin-bottom: 20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-        <div style="display:flex; gap:16px; align-items:center;">
-          <div style="font-size: 2.2rem; font-weight: 800; color: white; background: var(--primary); width: 68px; height: 68px; border-radius: 12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 12px rgba(220,38,38,0.25);">
-            ${donor.bloodGroup}
+    <div class="donor-dashboard-wrap">
+      
+      <!-- Feedback notice container for inline AJAX actions -->
+      <div id="donorDashNotice" style="display: none; margin-bottom: 20px;"></div>
+
+      <!-- 1. Profile Hero Section -->
+      <div class="donor-hero-card">
+        <div class="donor-hero-content">
+          <div class="donor-hero-left">
+            <div class="donor-blood-badge-wrap">
+              <div class="donor-blood-badge-large">${donor.bloodGroup}</div>
+              <div class="donor-pulse-dot ${isAvailable ? "available" : "unavailable"}" title="${isAvailable ? "Available to Donate" : "Currently Unavailable"}"></div>
+            </div>
+
+            <div class="donor-hero-meta">
+              <h1>${escapeHtml(user.fullName || "Volunteer Donor")}</h1>
+              <div class="donor-hero-sub">
+                <span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  ${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district || donor.location.city)}, ${escapeHtml(donor.location.state)} (${donor.location.pinCode})
+                </span>
+                <span>•</span>
+                <span>${donor.age} Years Old</span>
+              </div>
+
+              <div class="donor-hero-badges">
+                <span class="donor-status-pill ${isAvailable ? "available" : "unavailable"}">
+                  <span style="font-size: 0.6rem;">${isAvailable ? "●" : "○"}</span>
+                  ${isAvailable ? "AVAILABLE TO DONATE" : "CURRENTLY UNAVAILABLE"}
+                </span>
+
+                <span class="donor-status-pill ${donor.publicDiscoveryConsent ? "discoverable" : "hidden"}">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  ${donor.publicDiscoveryConsent ? "PUBLICLY DISCOVERABLE" : "HIDDEN FROM DIRECTORY"}
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h2 style="margin: 0 0 4px; font-size: 1.4rem; color: var(--text-main); font-weight: 800;">${escapeHtml(user.fullName || "Donor")}</h2>
-            <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
-              ${donor.age} yrs · ${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.state)} (${donor.location.pinCode})
+
+          <div class="donor-hero-right">
+            <div class="donor-meter-header">
+              <span>Profile Health</span>
+              <strong>${completionPercent}%</strong>
+            </div>
+            <div class="donor-meter-bar">
+              <div class="donor-meter-fill" style="width: ${completionPercent}%;"></div>
+            </div>
+            <p class="donor-meter-note">
+              ${completionPercent === 100 ? "✓ Your profile is fully complete and indexed." : "Complete optional history to optimize compatibility."}
             </p>
           </div>
         </div>
+      </div>
 
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="badge ${isAvailable ? "badge-active" : ""}" style="font-size: 0.82rem; padding: 6px 14px; font-weight: 600;">
-            ${isAvailable ? "● AVAILABLE TO DONATE" : "○ CURRENTLY UNAVAILABLE"}
-          </span>
-          <span class="badge ${donor.publicDiscoveryConsent ? "badge-active" : ""}" style="font-size: 0.82rem; padding: 6px 14px; font-weight: 600;">
-            ${donor.publicDiscoveryConsent ? "PUBLICLY DISCOVERABLE" : "HIDDEN FROM SEARCH"}
-          </span>
+      <!-- 2. Profile Summary Statistics -->
+      <div class="donor-stats-grid">
+        <div class="donor-stat-card">
+          <div class="donor-stat-card-top">
+            <span class="donor-stat-label">Blood Type</span>
+            <div class="donor-stat-icon-bubble red">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="donor-stat-value" style="color: #c51e24;">${donor.bloodGroup}</div>
+          <p class="donor-stat-desc">Certified voluntary blood group profile</p>
+        </div>
+
+        <div class="donor-stat-card">
+          <div class="donor-stat-card-top">
+            <span class="donor-stat-label">Availability</span>
+            <div class="donor-stat-icon-bubble green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="donor-stat-value" style="font-size: 1.25rem; color: ${isAvailable ? "#16a36a" : "#64748b"};">
+            ${isAvailable ? "Ready" : "Paused"}
+          </div>
+          <p class="donor-stat-desc">${isAvailable ? "Active for emergency hospital matching" : "Temporarily paused from new alerts"}</p>
+        </div>
+
+        <div class="donor-stat-card">
+          <div class="donor-stat-card-top">
+            <span class="donor-stat-label">Profile Depth</span>
+            <div class="donor-stat-icon-bubble blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+          </div>
+          <div class="donor-stat-value">${completionPercent}%</div>
+          <p class="donor-stat-desc">Verified contact & location credentials</p>
+        </div>
+
+        <div class="donor-stat-card">
+          <div class="donor-stat-card-top">
+            <span class="donor-stat-label">Discovery Mode</span>
+            <div class="donor-stat-icon-bubble purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="donor-stat-value" style="font-size: 1.25rem;">
+            ${donor.publicDiscoveryConsent ? "Public" : "Private"}
+          </div>
+          <p class="donor-stat-desc">${donor.publicDiscoveryConsent ? "Visible to patients and blood banks" : "Hidden from search directory"}</p>
         </div>
       </div>
-    </div>
 
-    <!-- Quick Action Navigation Tiles in Clean 3-Column Grid -->
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
-      <a href="#/donor/edit" class="auth-card" style="padding: 20px; text-decoration:none; color:inherit; border:1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; align-items:center; text-align:center; transition: all 0.2s ease;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">✏️</div>
-        <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; color: var(--text-main);">Edit Profile</div>
-        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">Update city, state, pin code, age, and preferred channel.</div>
-      </a>
+      <!-- 3. Quick Action Hub -->
+      <div class="donor-actions-grid">
+        <a href="#/donor/edit" class="donor-action-card">
+          <div>
+            <div class="donor-action-header">
+              <div class="donor-action-bubble red">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </div>
+            </div>
+            <h4 class="donor-action-title">Edit Profile</h4>
+            <p class="donor-action-desc">Update your residential address, PIN code, age, and preferred communication channel.</p>
+          </div>
+          <div class="donor-action-footer">
+            <span>Manage Profile</span>
+            <span class="donor-action-arrow">→</span>
+          </div>
+        </a>
 
-      <a href="#/donor/availability" class="auth-card" style="padding: 20px; text-decoration:none; color:inherit; border:1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; align-items:center; text-align:center; transition: all 0.2s ease;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">⏱️</div>
-        <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; color: var(--text-main);">Availability Toggle</div>
-        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">Instantly switch between Available and Unavailable status.</div>
-      </a>
+        <a href="#/donor/availability" class="donor-action-card">
+          <div>
+            <div class="donor-action-header">
+              <div class="donor-action-bubble teal">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+            </div>
+            <h4 class="donor-action-title">Availability Status</h4>
+            <p class="donor-action-desc">Instantly toggle whether you are available to receive donation calls and hospital requests.</p>
+          </div>
+          <div class="donor-action-footer">
+            <span>Change Status</span>
+            <span class="donor-action-arrow">→</span>
+          </div>
+        </a>
 
-      <a href="#/donor/consent" class="auth-card" style="padding: 20px; text-decoration:none; color:inherit; border:1px solid var(--border); border-radius: 12px; display:flex; flex-direction:column; align-items:center; text-align:center; transition: all 0.2s ease;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
-        <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; color: var(--text-main);">Privacy & Consents</div>
-        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">Manage public directory visibility and notification rules.</div>
-      </a>
-    </div>
+        <a href="#/donor/consent" class="donor-action-card">
+          <div>
+            <div class="donor-action-header">
+              <div class="donor-action-bubble blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="M9 12l2 2 4-4"></path>
+                </svg>
+              </div>
+            </div>
+            <h4 class="donor-action-title">Privacy & Consent</h4>
+            <p class="donor-action-desc">Configure public discovery, emergency alert permissions, and contact sharing rules.</p>
+          </div>
+          <div class="donor-action-footer">
+            <span>Manage Consents</span>
+            <span class="donor-action-arrow">→</span>
+          </div>
+        </a>
+      </div>
 
-    <!-- Detailed Profile View -->
-    <div class="auth-card" style="padding: 24px; border-radius: 12px;">
-      <h3 style="margin: 0 0 18px; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 12px; color: var(--text-main); font-weight: 700;">
-        Profile & Privacy Summary
-      </h3>
+      <!-- 4. Two-Column Structured Profile & Interactive Privacy Section -->
+      <div class="donor-dashboard-split">
+        
+        <!-- Section A: Structured Donor Details -->
+        <div class="donor-panel">
+          <div class="donor-panel-header">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Donor Specifications
+            </h3>
+            <a href="#/donor/edit" style="font-size:0.82rem; font-weight:700; color:var(--primary); text-decoration:none;">Edit Details</a>
+          </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; font-size: 0.9rem;">
-        <div>
-          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Blood Group</span>
-          <div style="font-weight:700; font-size:1.2rem; color:var(--primary); margin-top:2px;">${donor.bloodGroup}</div>
-        </div>
+          <div class="donor-info-list">
+            <div class="donor-info-row">
+              <span class="donor-info-key">Registered Name</span>
+              <span class="donor-info-val">${escapeHtml(user.fullName || "Volunteer Donor")}</span>
+            </div>
 
-        <div>
-          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Location</span>
-          <div style="font-weight:600; margin-top:2px;">${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district)}</div>
-          <div style="color:var(--text-muted); font-size:0.82rem;">${escapeHtml(donor.location.state)} · ${donor.location.pinCode}</div>
-        </div>
+            <div class="donor-info-row">
+              <span class="donor-info-key">Blood Group</span>
+              <span class="donor-info-val" style="color:#c51e24; font-weight:800;">${donor.bloodGroup}</span>
+            </div>
 
-        <div>
-          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Contact Preference</span>
-          <div style="font-weight:600; margin-top:2px;">${donor.preferredContactMethod}</div>
-          <div style="color:var(--text-muted); font-size:0.82rem;">
-            Sharing: ${donor.contactSharingConsent ? "Enabled (Public)" : "Protected (In-App only)"}
+            <div class="donor-info-row">
+              <span class="donor-info-key">Age</span>
+              <span class="donor-info-val">${donor.age} Years</span>
+            </div>
+
+            <div class="donor-info-row">
+              <span class="donor-info-key">City / District</span>
+              <span class="donor-info-val">${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district || donor.location.city)}</span>
+            </div>
+
+            <div class="donor-info-row">
+              <span class="donor-info-key">State & PIN</span>
+              <span class="donor-info-val">${escapeHtml(donor.location.state)} · ${donor.location.pinCode}</span>
+            </div>
+
+            <div class="donor-info-row">
+              <span class="donor-info-key">Preferred Channel</span>
+              <span class="donor-info-val">
+                ${
+                  donor.preferredContactMethod === "IN_APP" ? "In-App Notification (Safest)" :
+                  donor.preferredContactMethod === "EMAIL" ? "Direct Email" : "Phone / WhatsApp"
+                }
+              </span>
+            </div>
+
+            <div class="donor-info-row">
+              <span class="donor-info-key">Last Donation Date</span>
+              <span class="donor-info-val" style="display:flex; align-items:center; gap:6px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                ${donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : "Not Recorded"}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div>
-          <span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Last Donation Date</span>
-          <div style="font-weight:600; margin-top:2px;">
-            ${donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : "Not specified"}
+        <!-- Section B: Live Privacy & Consent Engine -->
+        <div class="donor-panel">
+          <div class="donor-panel-header">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a36a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="M9 12l2 2 4-4"></path>
+              </svg>
+              Privacy & Consent Controls
+            </h3>
+            <span style="font-size:0.75rem; color:var(--text-muted); background:#f1f5f9; padding:3px 8px; border-radius:6px; font-weight:600;">Active Guard</span>
           </div>
-          <div style="color:var(--text-muted); font-size:0.78rem;">🔒 Private to you only</div>
+
+          <!-- 1. Public Discovery Toggle -->
+          <div class="donor-toggle-item">
+            <div class="donor-toggle-text">
+              <strong>1. Public Donor Discovery</strong>
+              <p>Allows verified patients and hospitals in your city to find your blood group in directory searches.</p>
+            </div>
+            <label class="donor-switch" title="Toggle Public Discovery">
+              <input type="checkbox" id="dashToggleDiscovery" ${donor.publicDiscoveryConsent ? "checked" : ""}>
+              <span class="donor-slider"></span>
+            </label>
+          </div>
+
+          <!-- 2. Notification Consent Toggle -->
+          <div class="donor-toggle-item">
+            <div class="donor-toggle-text">
+              <strong>2. Urgent Donation Alerts</strong>
+              <p>Receive real-time in-app emergency notifications when matching blood requests are opened near you.</p>
+            </div>
+            <label class="donor-switch" title="Toggle Notification Consent">
+              <input type="checkbox" id="dashToggleNotifications" ${donor.notificationConsent ? "checked" : ""}>
+              <span class="donor-slider"></span>
+            </label>
+          </div>
+
+          <!-- 3. Contact Sharing Consent Toggle -->
+          <div class="donor-toggle-item">
+            <div class="donor-toggle-text">
+              <strong>3. Direct Contact Sharing</strong>
+              <p>Display your contact details on your donor card. When off, communication requires safe in-app alerts.</p>
+            </div>
+            <label class="donor-switch" title="Toggle Contact Sharing">
+              <input type="checkbox" id="dashToggleContact" ${donor.contactSharingConsent ? "checked" : ""}>
+              <span class="donor-slider"></span>
+            </label>
+          </div>
+
+          <div style="margin-top: 16px; padding: 12px 14px; background: #fff5f5; border-radius: 10px; border-left: 3px solid #c51e24; display: flex; align-items: center; gap: 10px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c51e24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <p style="font-size: 0.78rem; color: #7f1d1d; margin: 0; line-height: 1.4;">
+              All privacy toggles save instantly to your account using the verified RaktDal consent API.
+            </p>
+          </div>
+
         </div>
+
       </div>
+
     </div>
   `;
+
+  // Attach interactive toggle listeners for immediate feedback & API sync
+  attachConsentToggleHandler("dashToggleDiscovery", donor, "publicDiscoveryConsent", container);
+  attachConsentToggleHandler("dashToggleNotifications", donor, "notificationConsent", container);
+  attachConsentToggleHandler("dashToggleContact", donor, "contactSharingConsent", container);
+}
+
+/**
+ * Helper: Attaches async toggle handler with loading feedback and rollbacks
+ */
+function attachConsentToggleHandler(elementId, donor, key, container) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  el.addEventListener("change", async (e) => {
+    const input = e.target;
+    const originalValue = !input.checked;
+    const newValue = input.checked;
+    input.disabled = true;
+
+    const payload = {
+      publicDiscoveryConsent: donor.publicDiscoveryConsent,
+      notificationConsent: donor.notificationConsent,
+      contactSharingConsent: donor.contactSharingConsent,
+      [key]: newValue
+    };
+
+    try {
+      const res = await api.updateDonorConsent(payload);
+      const data = await res.json();
+
+      if (res.ok) {
+        donor[key] = newValue;
+        toast.show({
+          title: "Privacy Setting Saved",
+          message: data.message || "Your consent preferences have been updated.",
+          type: "success"
+        });
+      } else {
+        throw new Error(data.message || "Failed to update setting");
+      }
+    } catch (err) {
+      input.checked = originalValue;
+      toast.show({
+        title: "Update Failed",
+        message: err.message || "Could not save consent change. Reverted to previous setting.",
+        type: "error"
+      });
+    } finally {
+      input.disabled = false;
+      // Re-render hero and stat indicators with new values
+      renderActiveDashboard(container, donor);
+    }
+  });
 }
 
 /**
