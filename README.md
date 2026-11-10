@@ -25,7 +25,7 @@
 - [API Reference](#api-reference)
 - [Security](#security)
 - [Multilingual Support](#multilingual-support)
-- [Roadmap](#roadmap)
+- [Testing & Quality Assurance](#testing--quality-assurance)
 - [Contributing](#contributing)
 - [Medical Disclaimer](#medical-disclaimer)
 - [License](#license)
@@ -494,6 +494,37 @@ RaktDal supports six Indian languages across the entire interface:
 | Tamil | `ta` | Tamil |
 
 Language selection is available in the navigation bar and persists across sessions.
+
+---
+
+## Testing & Quality Assurance
+
+RaktDal maintains a 100% automated test pass rate with an extensive suite covering unit, integration, RBAC authorization, and security audits.
+
+### Test Execution
+
+To execute the automated test suite locally:
+
+```bash
+cd raktdal-web/backend
+npm test
+```
+
+### Test Suite Architecture
+
+| Test Suite | File | Focus Areas |
+|---|---|---|
+| Authentication & Sessions | `auth.test.js`, `auth_session.test.js` | JWT signing/verification, Argon2 password hashing, session lifecycle, token revocation |
+| Google OAuth 2.0 | `google_oauth.test.js` | PKCE S256 verification, state validation, authorization code flow, token claim parsing |
+| Role-Based Access Control | `rbac.test.js` | Platform ADMIN vs. Organization ADMIN privilege separation, role elevation prevention |
+| Donor Profiles & Privacy | `donor_phase10.test.js` | Public discovery PII stripping (`toPublicDiscovery`), PIN code validation, consent verification |
+| Blood Requests | `blood_request.test.js` | 50-unit safety caps, urgency validation, lifecycle state transitions, duplicate response checks |
+| Camps & Registrations | `camp_phase13.test.js` | Camp capacity limit enforcement, registration deadlines, verified organizer permissions |
+| Notifications & Resiliency | `notification_phase14.test.js` | Notification preferences, email fallback, idempotency deduplication |
+| Reports & Security | `reports_phase16.test.js`, `security_audit.test.js` | Anti-Formula Injection (CWE-1236), NoSQL injection sanitization, IDOR boundaries |
+| Admin Platform Governance | `admin_phase15.test.js` | Organization verification, audit log immutability, fraud alert moderation |
+
+All 116 tests run without dependencies on external live databases, executing in under 6 seconds using Node.js's native test runner (`node --test`).
 
 ---
 
