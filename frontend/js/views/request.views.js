@@ -49,12 +49,12 @@ async renderBloodRequests(params) {
           </div>
         </div>
 
-        <div class="find-donors-body-wrapper">
-          <div class="find-donors-search-card" style="padding: 20px 24px; margin-bottom: 24px; border-radius: 18px;">
-            <div class="find-donors-search-form" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 160px; gap: 14px; align-items: end;">
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="find-donors-search-form form-label" for="filterBloodGroup" style="font-size:0.78rem; margin-bottom:5px;">Blood Group</label>
-                <select id="filterBloodGroup" class="form-input" style="height:42px; font-size:0.88rem;">
+        <div class="find-donors-body-wrapper" style="padding-top: 24px;">
+          <div class="find-donors-search-card" style="padding: 16px 20px; margin-bottom: 22px; border-radius: 14px;">
+            <div class="find-donors-search-form" style="grid-template-columns: repeat(3, minmax(0, 1fr)) 160px; gap: 12px; align-items: end;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" for="filterBloodGroup" style="font-size:0.75rem; font-weight:700; margin-bottom:4px; display:block; color:var(--navy);">Blood Group</label>
+                <select id="filterBloodGroup" class="form-input" style="height:38px; font-size:0.86rem; padding: 0 10px; width:100%;">
                   <option value="">All Groups</option>
                   <option value="A+" ${bloodGroup === "A+" ? "selected" : ""}>A+</option>
                   <option value="A-" ${bloodGroup === "A-" ? "selected" : ""}>A-</option>
@@ -67,14 +67,14 @@ async renderBloodRequests(params) {
                 </select>
               </div>
 
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="find-donors-search-form form-label" for="filterCity" style="font-size:0.78rem; margin-bottom:5px;">City</label>
-                <input type="text" id="filterCity" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Delhi, Mumbai" value="${city}">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" for="filterCity" style="font-size:0.75rem; font-weight:700; margin-bottom:4px; display:block; color:var(--navy);">City</label>
+                <input type="text" id="filterCity" class="form-input" style="height:38px; font-size:0.86rem; padding: 0 10px; width:100%;" placeholder="e.g. Delhi, Mumbai" value="${city}">
               </div>
 
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="find-donors-search-form form-label" for="filterUrgency" style="font-size:0.78rem; margin-bottom:5px;">Urgency</label>
-                <select id="filterUrgency" class="form-input" style="height:42px; font-size:0.88rem;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label" for="filterUrgency" style="font-size:0.75rem; font-weight:700; margin-bottom:4px; display:block; color:var(--navy);">Urgency</label>
+                <select id="filterUrgency" class="form-input" style="height:38px; font-size:0.86rem; padding: 0 10px; width:100%;">
                   <option value="">All Urgencies</option>
                   <option value="CRITICAL" ${urgency === "CRITICAL" ? "selected" : ""}>Critical</option>
                   <option value="HIGH" ${urgency === "HIGH" ? "selected" : ""}>High</option>
@@ -84,8 +84,8 @@ async renderBloodRequests(params) {
               </div>
 
               <div class="find-donors-btn-group" style="gap:8px;">
-                <button id="applyFiltersBtn" class="button button-primary" style="height:42px; padding: 0 18px; font-size:0.88rem; flex:1;">Filter</button>
-                <button id="resetFiltersBtn" class="button button-outline" style="height:42px; padding: 0 14px; font-size:0.88rem;">Reset</button>
+                <button id="applyFiltersBtn" class="find-donors-search-btn" style="height:38px; font-size:0.86rem;">Filter</button>
+                <button id="resetFiltersBtn" class="find-donors-reset-btn" style="height:38px; font-size:0.86rem; padding: 0 14px;">Reset</button>
               </div>
             </div>
           </div>
@@ -794,19 +794,32 @@ async renderBloodRequests(params) {
         : (data.data?.requests || []);
 
       this.appContainer.innerHTML = `
-        <div class="requests-container">
-          <div class="requests-header">
-            <div>
-              <h1 style="margin:0 0 6px 0; font-size:1.85rem;">My Blood Requests</h1>
-              <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        <div class="find-donors-hero-section">
+          <div class="find-donors-hero-inner">
+            <div class="find-donors-hero-text">
+              <div class="find-donors-badge">
+                <span class="find-donors-badge-dot" aria-hidden="true"></span>
+                <span>PERSONAL COORDINATION DASHBOARD</span>
+              </div>
+              <h1 class="find-donors-hero-title">
+                My Blood <span class="accent-text">Requests</span>
+              </h1>
+              <p class="find-donors-hero-sub">
                 Manage your active and completed blood requirements, review donor responses, and update statuses.
               </p>
-            </div>
-            <div style="display:flex; gap:10px; align-items:center;">
-              <a href="#/requests/create" class="button">+ Create Request</a>
+              <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:14px;">
+                <a href="#/requests" class="button button-outline" style="padding: 7px 18px; font-size: 0.88rem; border-radius: 9999px;">
+                  ← All Blood Requests
+                </a>
+                <a href="#/requests/create" class="button button-primary" style="padding: 7px 20px; font-size: 0.88rem; border-radius: 9999px;">
+                  + Create Request
+                </a>
+              </div>
             </div>
           </div>
+        </div>
 
+        <div class="find-donors-body-wrapper">
           ${requests.length === 0 ? `
             <div class="auth-card" style="max-width:520px; margin:40px auto; text-align:center;">
               <div style="margin: 0 auto 12px; color: var(--text-muted); display:flex; justify-content:center;">
@@ -818,7 +831,7 @@ async renderBloodRequests(params) {
               <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:20px;">
                 You haven't submitted any blood donation requests yet.
               </p>
-              <a href="#/requests/create" class="button">Create Your First Request</a>
+              <a href="#/requests/create" class="button button-primary">Create Your First Request</a>
             </div>
           ` : `
             <div class="requests-grid">
