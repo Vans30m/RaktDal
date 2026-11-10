@@ -33,6 +33,7 @@ import { adminViews } from "./views/admin.views.js";
 import { campViews } from "./views/camp.views.js";
 import { notificationViews } from "./views/notification.views.js";
 import { requestViews } from "./views/request.views.js";
+import { infoViews } from "./views/info.views.js";
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -506,53 +507,25 @@ export class Router {
         this.renderCamps(params);
         break;
       case "/about":
-        this.renderPlaceholderPage(
-          "About RaktDal",
-          "RaktDal is a Pan-India blood donor coordination and emergency request platform built to streamline the voluntary blood donation network with strict privacy controls.",
-          icons.heart(40, 'var(--red)')
-        );
+        infoViews.renderAbout(this.appContainer);
         break;
       case "/how-it-works":
-        this.renderPlaceholderPage(
-          "How RaktDal Works",
-          "RaktDal connects donors and healthcare coordinators using verified profiles, location-indexed discovery, and direct request-response communication.",
-          icons.settings(40, 'var(--text-muted)')
-        );
+        infoViews.renderHowItWorks(this.appContainer);
         break;
       case "/contact":
-        this.renderPlaceholderPage(
-          "Contact RaktDal",
-          "For technical assistance, organization onboarding, or general queries, please reach out to our platform support team.",
-          icons.mail(40, 'var(--text-muted)')
-        );
+        infoViews.renderContact(this.appContainer);
         break;
       case "/privacy":
-        this.renderPlaceholderPage(
-          "Privacy Policy",
-          "RaktDal strictly protects donor personal data. Phone numbers, emails, and last donation history are never revealed without explicit donor consent.",
-          icons.shield(40, 'var(--red)')
-        );
+        infoViews.renderPrivacy(this.appContainer);
         break;
       case "/terms":
-        this.renderPlaceholderPage(
-          "Terms and Conditions",
-          "RaktDal is a voluntary coordination platform. Users agree to provide truthful information and adhere to responsible community standards.",
-          icons.auditLog(40, 'var(--text-muted)')
-        );
+        infoViews.renderTerms(this.appContainer);
         break;
       case "/disclaimer":
-        this.renderPlaceholderPage(
-          "Medical Disclaimer",
-          "RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified medical professionals. RaktDal does not verify blood suitability.",
-          icons.alertTriangle(40, 'var(--warning)')
-        );
+        infoViews.renderDisclaimer(this.appContainer);
         break;
       case "/help":
-        this.renderPlaceholderPage(
-          "Help & Support",
-          "Frequently asked questions, donor guides, and instructions for posting emergency blood requests.",
-          icons.info(40, 'var(--text-muted)')
-        );
+        infoViews.renderHelp(this.appContainer);
         break;
       default:
         this.renderHome();
