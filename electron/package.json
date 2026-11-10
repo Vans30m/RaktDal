@@ -1,0 +1,41 @@
+{
+  "name": "raktdal-desktop",
+  "version": "1.0.0",
+  "description": "RaktDal - Blood Donation & Donor Coordination Desktop Application",
+  "main": "main.js",
+  "author": "RaktDal Team",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "org.raktdal.desktop",
+    "productName": "RaktDal",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "../frontend/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "../frontend/assets/logo-removebg.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
+
