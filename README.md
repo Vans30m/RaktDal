@@ -8,16 +8,6 @@
 
 **A technology-driven platform for blood donation, emergency coordination, and donor discovery across India.**
 
-<br/>
-
-[![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen?style=flat-square)](https://github.com)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue?style=flat-square)](LICENSE)
-[![Backend](https://img.shields.io/badge/Backend-Node.js%20%7C%20Express-339933?style=flat-square&logo=node.js&logoColor=white)](backend/package.json)
-[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com)
-[![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20JS%20SPA-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](frontend/)
-[![Auth](https://img.shields.io/badge/Auth-Google%20OAuth%202.0%20%2B%20JWT-4285F4?style=flat-square&logo=google&logoColor=white)](https://developers.google.com/identity)
-[![Tests](https://img.shields.io/badge/Tests-116%20Passing-success?style=flat-square&logo=checkmarx&logoColor=white)](backend/tests/)
-
 </div>
 
 ---
@@ -63,7 +53,7 @@ The platform prioritizes **donor privacy**, **consent-based participation**, and
 
 ## Key Features
 
-### 🔐 Authentication & Accounts
+### Authentication & Accounts
 
 | Feature | Details |
 |---|---|
@@ -85,7 +75,7 @@ The platform prioritizes **donor privacy**, **consent-based participation**, and
 | Profile Health Score | Completion indicator for donor profile quality |
 | Donor Dashboard | Centralized hub for donor stats, availability, and history |
 
-### 📋 Blood Request Coordination
+### Blood Request Coordination
 
 | Feature | Details |
 |---|---|
@@ -95,7 +85,7 @@ The platform prioritizes **donor privacy**, **consent-based participation**, and
 | Donor Response System | Donors accept/decline requests; requesters track responses |
 | Urgency Classification | CRITICAL / URGENT / STANDARD priority levels |
 
-### 🏥 Blood Banks & Donation Camps
+### Blood Banks & Donation Camps
 
 | Feature | Details |
 |---|---|
@@ -105,7 +95,7 @@ The platform prioritizes **donor privacy**, **consent-based participation**, and
 | Camp Registration | Register to donate at a specific camp; manage registrations |
 | Organization Profiles | Verified organizational accounts for hospitals and blood banks |
 
-### 🔔 Notifications & Communication
+### Notifications & Communication
 
 | Feature | Details |
 |---|---|
@@ -115,7 +105,7 @@ The platform prioritizes **donor privacy**, **consent-based participation**, and
 | Notification Preferences | Granular control over which events trigger notifications |
 | Notification History | Paginated notification inbox with read/unread states |
 
-### 🛡️ Administration
+### Administration
 
 | Feature | Details |
 |---|---|
@@ -125,7 +115,7 @@ The platform prioritizes **donor privacy**, **consent-based participation**, and
 | Audit Logging | Detailed audit trail for sensitive admin operations |
 | Role-Based Access Control | USER / DONOR / ADMIN roles with scoped permissions |
 
-### 🌐 Additional
+### Additional
 
 | Feature | Details |
 |---|---|
@@ -507,33 +497,6 @@ Language selection is available in the navigation bar and persists across sessio
 
 ---
 
-## Roadmap
-
-RaktDal is developed in structured milestones:
-
-| Phase | Focus Area | Status |
-|---|---|---|
-| 1 | Requirements, database design & monorepo setup | ✅ Complete |
-| 2 | Google OAuth 2.0, session lifecycle & user roles | ✅ Complete |
-| 3 | Email OTP verification & password reset | ✅ Complete |
-| 4 | Donor profiles, search & privacy consent | ✅ Complete |
-| 5 | Blood requests, urgency levels & status tracking | ✅ Complete |
-| 6 | Donor response system & request coordination | ✅ Complete |
-| 7 | Blood bank directory & organization profiles | ✅ Complete |
-| 8 | Donation camp management & registrations | ✅ Complete |
-| 9 | In-app notifications & WebSocket real-time delivery | ✅ Complete |
-| 10 | Admin dashboard, verification & fraud detection | ✅ Complete |
-| 11 | Multilingual support (6 languages) | ✅ Complete |
-| 12 | PWA support (manifest + service worker) | ✅ Complete |
-| 13 | Comprehensive security audit & 116 automated tests | ✅ Complete |
-| 14 | Frontend UI redesign — premium red/navy design system | ✅ Complete |
-| 15 | Production deployment on Render | 🔄 In Progress |
-| 16 | Mobile app (React Native) | 📋 Planned |
-| 17 | Real-time blood inventory for banks | 📋 Planned |
-| 18 | SMS notifications & hospital API integration | 📋 Planned |
-
----
-
 ## Contributing
 
 Contributions are welcome. Please follow these steps:
@@ -575,7 +538,7 @@ See the [LICENSE](LICENSE) file for the full license text.
 
 <div align="center">
 
-**Made with ❤️ for a healthier India.**
+**Made for a healthier India.**
 
 *RaktDal — Every connection can save a life.*
 
