@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="frontend/assets/logo-removebg.png" alt="RaktDal Logo" width="90" />
-
 # RaktDal
 
 ### *Connecting voluntary blood donors with patients who need them most.*
