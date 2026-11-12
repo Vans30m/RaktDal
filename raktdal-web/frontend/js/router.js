@@ -64,6 +64,7 @@ export class Router {
 
     // Listen to hash changes and auth state changes
     window.addEventListener("hashchange", () => {
+      this.closeUserMenu();
       this.handleRoute();
       this.updateActiveNav();
       this.closeMobileNav();
@@ -371,6 +372,13 @@ export class Router {
       document.getElementById("userMenuTrigger")?.addEventListener("click", (e) => {
         e.stopPropagation();
         this.toggleUserMenu();
+      });
+
+      // Close menu when any dropdown link is clicked
+      document.getElementById("userMenuDropdown")?.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+          this.closeUserMenu();
+        });
       });
 
       document.getElementById("userMenuLogoutBtn")?.addEventListener("click", () => {

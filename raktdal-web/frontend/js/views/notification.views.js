@@ -6,6 +6,15 @@ export const notificationViews = {
   async renderNotificationCenter() {
     this.appContainer.innerHTML = `
       <div class="requests-container" style="max-width: 820px; margin: 0 auto; padding: 24px 16px;">
+        <div style="margin-bottom: 16px;">
+          <a href="#/" id="notifBackBtn" class="button button-outline" style="font-size: 0.85rem; padding: 5px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Home</span>
+          </a>
+        </div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
           <div>
             <h2 style="margin: 0; font-size: 1.6rem; color: var(--text-main); font-weight: 800;">Notifications</h2>
