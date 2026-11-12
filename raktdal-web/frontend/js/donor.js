@@ -127,11 +127,6 @@ export const donorViews = {
         page,
         limit: 9
       });
-        pinCode,
-        availabilityStatus,
-        page,
-        limit: 9
-      });
       const data = await res.json();
 
       const resultsEl = document.getElementById("donorSearchResults");

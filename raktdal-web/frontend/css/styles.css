@@ -7391,35 +7391,42 @@ body {
 .find-donors-search-card {
   background: #ffffff;
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px 28px;
+  border-radius: 16px;
+  padding: 16px 20px;
   box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .find-donors-search-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 160px;
-  gap: 16px;
-  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.find-donors-search-form .form-group {
+  flex: 1 1 140px;
+  min-width: 130px;
 }
 
 .find-donors-search-form .form-label {
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--navy);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   display: block;
 }
 
 .find-donors-search-form .form-input {
-  height: 44px;
-  border-radius: 10px;
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
   border: 1.5px solid var(--border);
   background: #ffffff;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
+  padding: 0 10px;
   transition: all 0.2s ease;
 }
 
@@ -7431,17 +7438,19 @@ body {
 .find-donors-btn-group {
   display: flex;
   gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
 }
 
 .find-donors-search-btn {
-  flex: 1;
-  height: 44px;
+  height: 38px;
+  padding: 0 18px;
   background: var(--primary);
   color: #ffffff;
   font-weight: 750;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(197, 31, 38, 0.2);
@@ -7453,14 +7462,14 @@ body {
 }
 
 .find-donors-reset-btn {
-  height: 44px;
-  padding: 0 16px;
+  height: 38px;
+  padding: 0 14px;
   background: #ffffff;
   border: 1.5px solid var(--border);
   color: var(--navy);
   font-weight: 650;
-  font-size: 0.92rem;
-  border-radius: 10px;
+  font-size: 0.88rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -7573,11 +7582,14 @@ body {
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .find-donors-search-form {
-    grid-template-columns: 1fr 1fr;
+  .find-donors-search-form .form-group {
+    flex: 1 1 calc(50% - 12px);
   }
   .find-donors-btn-group {
-    grid-column: span 2;
+    width: 100%;
+  }
+  .find-donors-btn-group .find-donors-search-btn {
+    flex: 1;
   }
 }
 
@@ -7595,14 +7607,17 @@ body {
     padding: 16px 14px 48px;
   }
   .find-donors-search-card {
-    padding: 18px 14px;
+    padding: 16px 14px;
     border-radius: 14px;
   }
-  .find-donors-search-form {
-    grid-template-columns: 1fr;
+  .find-donors-search-form .form-group {
+    flex: 1 1 100%;
   }
   .find-donors-btn-group {
-    grid-column: span 1;
+    width: 100%;
+  }
+  .find-donors-btn-group .find-donors-search-btn {
+    flex: 1;
   }
   .find-donors-results-bar {
     flex-direction: column;
@@ -8007,6 +8022,19 @@ button,
     width: 100%;
   }
 
+  .requests-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .requests-grid > *,
+  .request-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   .modal-backdrop {
     padding: 10px;
   }
@@ -8125,11 +8153,29 @@ button,
   .find-donors-grid,
   .dashboard-grid {
     grid-template-columns: 1fr !important;
-    gap: 14px;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .requests-grid > *,
+  .find-donors-grid > *,
+  .dashboard-grid > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .request-card {
-    padding: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 18px 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .request-card .request-details-grid {
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Modal Actions vertical stacking on narrow screens */
