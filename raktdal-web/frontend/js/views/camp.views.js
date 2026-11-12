@@ -151,8 +151,8 @@ export const campViews = {
                 </div>
 
                 <div>
-                  <button class="button view-camp-detail-btn" data-id="${camp.id || camp._id}" style="width: 100%; font-size: 0.9rem;">
-                    ${isClosed ? "View Details" : (isFull ? "View Camp (Full)" : "Register to Donate")}
+                  <button class="button register-camp-card-btn" data-id="${camp.id || camp._id}" style="width: 100%; font-size: 0.92rem; font-weight: 600;">
+                    ${isClosed ? "View Details" : (isFull ? "Camp Full - View Info" : "Register to Donate")}
                   </button>
                 </div>
               </div>
@@ -161,10 +161,12 @@ export const campViews = {
         </div>
       `;
 
-      container.querySelectorAll(".view-camp-detail-btn").forEach(btn => {
+      container.querySelectorAll(".register-camp-card-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
           const id = e.currentTarget.dataset.id;
-          this.renderCampDetailModal(id);
+          if (id) {
+            this.renderCampDetailModal(id);
+          }
         });
       });
     } catch (err) {
@@ -173,6 +175,11 @@ export const campViews = {
   },
 
   async renderCampDetailModal(campId) {
+    if (!campId) {
+      toast.show("Invalid Camp ID.", "error");
+      return;
+    }
+
     let modal = document.getElementById("campDetailModal");
     if (!modal) {
       modal = document.createElement("div");
@@ -200,26 +207,29 @@ export const campViews = {
 
       const myReg = myRegRes?.data?.registration;
       const isRegistered = myReg && myReg.registrationStatus === "REGISTERED";
-      const startStr = new Date(camp.startDate).toLocaleString();
-      const endStr = new Date(camp.endDate).toLocaleString();
+      const startStr = new Date(camp.startDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+      const endStr = new Date(camp.endDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
       const user = authState.getState().user;
+      const userName = user?.fullName || user?.name || "";
+      const userPhone = user?.phoneNumber || "";
+      const userBlood = user?.bloodGroup || "";
 
       modal.innerHTML = `
-        <div class="modal-content" style="max-width: 560px; padding: 28px; text-align: left;">
+        <div class="modal-content" style="max-width: 560px; padding: 28px; text-align: left; max-height: 90vh; overflow-y: auto;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
-            <span class="badge" style="background:#fee2e2; color:#991b1b;">${camp.status}</span>
-            <button id="closeCampModalBtn" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted);">&times;</button>
+            <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:700;">${camp.status}</span>
+            <button id="closeCampModalBtn" style="background:none; border:none; font-size:1.6rem; cursor:pointer; color:var(--text-muted); line-height:1;" aria-label="Close">&times;</button>
           </div>
 
-          <h2 style="margin: 0 0 8px; font-size: 1.4rem; color: var(--text-main);">${camp.title}</h2>
+          <h2 style="margin: 0 0 8px; font-size: 1.4rem; color: var(--text-main); font-weight:800;">${camp.title}</h2>
           <p style="margin: 0 0 16px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">${camp.description}</p>
 
           <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:20px; font-size:0.88rem; display:flex; flex-direction:column; gap:8px;">
             <div><strong>Venue:</strong> ${camp.venueName}, ${camp.address}</div>
-            <div><strong>Location:</strong> ${camp.location.city}, ${camp.location.state} (${camp.location.pinCode})</div>
+            <div><strong>Location:</strong> ${camp.location?.city || ""}, ${camp.location?.state || ""} (${camp.location?.pinCode || ""})</div>
             <div><strong>Schedule:</strong> ${startStr} to ${endStr}</div>
-            <div><strong>Organizer:</strong> ${camp.organizer?.name || "Community Organization"}</div>
-            <div><strong>Registration:</strong> ${camp.availableSlots} slots remaining out of ${camp.capacity}</div>
+            <div><strong>Organizer:</strong> ${camp.organizer?.name || "Community Partner Organization"}</div>
+            <div><strong>Slots Remaining:</strong> <span style="font-weight:700; color:${camp.availableSlots > 0 ? 'var(--success)' : '#dc2626'}">${camp.availableSlots} available out of ${camp.capacity}</span></div>
           </div>
 
           ${camp.additionalInstructions ? `
@@ -231,52 +241,64 @@ export const campViews = {
           <div id="campActionSection">
             ${isRegistered ? `
               <div class="alert alert-success" style="margin-bottom:16px;">
-                
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg> You are registered for this donation camp!
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle; margin-right:4px;">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg> <strong>You are registered for this donation camp!</strong>
               </div>
-              <button id="cancelCampRegBtn" class="button button-outline" style="width:100%; color:#dc2626; border-color:#dc2626;">
-                Cancel Registration
-              </button>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">
+                Please report to the registration desk at ${camp.venueName} during camp hours with your government photo ID.
+              </p>
+              <div style="display:flex; gap:10px;">
+                <a href="#/camps/my-registrations" class="button" style="flex:1; text-align:center;">View My Bookings</a>
+                <button id="cancelCampRegBtn" class="button button-outline" style="flex:1; color:#dc2626; border-color:#dc2626;">
+                  Cancel Registration
+                </button>
+              </div>
             ` : (camp.availableSlots <= 0 ? `
-              <button class="button" disabled style="width:100%;">Camp Capacity Full</button>
+              <div class="alert alert-warning" style="margin-bottom:12px;">This donation drive has reached maximum registered donor capacity.</div>
+              <button class="button" disabled style="width:100%; opacity:0.6;">Camp Capacity Full</button>
             ` : `
               <form id="campRegistrationForm" style="display:flex; flex-direction:column; gap:12px; margin-top:8px;">
                 <div style="border-top:1px solid var(--border); padding-top:14px; margin-bottom:2px;">
-                  <h4 style="margin:0 0 4px; font-size:1.05rem; font-weight:700; color:var(--text-main);">Donor Registration Form</h4>
-                  <p style="margin:0; font-size:0.84rem; color:var(--text-muted);">Complete the form below to register for this donation drive.</p>
+                  <h4 style="margin:0 0 4px; font-size:1.1rem; font-weight:750; color:var(--text-main);">Donor Registration Form</h4>
+                  <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Fill in your details below to confirm your donor slot.</p>
+                </div>
+
+                ${!authState.isAuthenticated ? `
+                  <div class="alert alert-warning" style="font-size:0.85rem; margin-bottom:6px;">
+                    <strong>Note:</strong> You will be prompted to sign in with your verified Google account to finalize your donor booking.
+                  </div>
+                ` : ""}
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                  <div>
+                    <label class="filter-label" for="regDonorName">Full Name *</label>
+                    <input type="text" id="regDonorName" class="filter-input" required value="${userName}" placeholder="Your Full Name">
+                  </div>
+                  <div>
+                    <label class="filter-label" for="regDonorPhone">Phone Number *</label>
+                    <input type="tel" id="regDonorPhone" class="filter-input" required value="${userPhone}" placeholder="+91 98765 43210">
+                  </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                   <div>
-                    <label class="filter-label">Full Name *</label>
-                    <input type="text" id="regDonorName" class="filter-input" required value="${user?.name || ''}" placeholder="Your Name">
-                  </div>
-                  <div>
-                    <label class="filter-label">Phone Number *</label>
-                    <input type="tel" id="regDonorPhone" class="filter-input" required value="${user?.phoneNumber || ''}" placeholder="+91 98765 43210">
-                  </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                  <div>
-                    <label class="filter-label">Blood Group *</label>
+                    <label class="filter-label" for="regDonorBloodGroup">Blood Group *</label>
                     <select id="regDonorBloodGroup" class="filter-select" required>
                       <option value="">Select Group</option>
-                      <option value="A+" ${user?.bloodGroup === 'A+' ? 'selected' : ''}>A+</option>
-                      <option value="A-" ${user?.bloodGroup === 'A-' ? 'selected' : ''}>A-</option>
-                      <option value="B+" ${user?.bloodGroup === 'B+' ? 'selected' : ''}>B+</option>
-                      <option value="B-" ${user?.bloodGroup === 'B-' ? 'selected' : ''}>B-</option>
-                      <option value="AB+" ${user?.bloodGroup === 'AB+' ? 'selected' : ''}>AB+</option>
-                      <option value="AB-" ${user?.bloodGroup === 'AB-' ? 'selected' : ''}>AB-</option>
-                      <option value="O+" ${user?.bloodGroup === 'O+' ? 'selected' : ''}>O+</option>
-                      <option value="O-" ${user?.bloodGroup === 'O-' ? 'selected' : ''}>O-</option>
+                      <option value="A+" ${userBlood === 'A+' ? 'selected' : ''}>A+</option>
+                      <option value="A-" ${userBlood === 'A-' ? 'selected' : ''}>A-</option>
+                      <option value="B+" ${userBlood === 'B+' ? 'selected' : ''}>B+</option>
+                      <option value="B-" ${userBlood === 'B-' ? 'selected' : ''}>B-</option>
+                      <option value="AB+" ${userBlood === 'AB+' ? 'selected' : ''}>AB+</option>
+                      <option value="AB-" ${userBlood === 'AB-' ? 'selected' : ''}>AB-</option>
+                      <option value="O+" ${userBlood === 'O+' ? 'selected' : ''}>O+</option>
+                      <option value="O-" ${userBlood === 'O-' ? 'selected' : ''}>O-</option>
                     </select>
                   </div>
                   <div>
-                    <label class="filter-label">Preferred Arrival Slot *</label>
+                    <label class="filter-label" for="regDonorSlot">Preferred Arrival Slot *</label>
                     <select id="regDonorSlot" class="filter-select" required>
                       <option value="morning">Morning (09:00 AM - 12:00 PM)</option>
                       <option value="afternoon">Afternoon (12:00 PM - 03:00 PM)</option>
@@ -288,14 +310,14 @@ export const campViews = {
                 <div>
                   <label style="display:flex; align-items:flex-start; gap:8px; font-size:0.83rem; color:var(--text-muted); cursor:pointer;">
                     <input type="checkbox" id="regDonorConsent" required style="margin-top:3px;">
-                    <span>I confirm I am aged 18-65, weight > 45kg, and have not donated whole blood in the last 90 days.</span>
+                    <span>I confirm I am aged 18-65, weigh > 45kg, and have not donated whole blood in the last 90 days.</span>
                   </label>
                 </div>
 
                 <div id="campRegErrorMsg"></div>
 
                 <button type="submit" id="registerCampSubmitBtn" class="button" style="width:100%; margin-top:4px;">
-                  ${authState.isAuthenticated ? 'Submit Registration' : 'Sign in & Confirm Registration'}
+                  ${authState.isAuthenticated ? 'Confirm Registration' : 'Sign in & Register for Camp'}
                 </button>
               </form>
             `)}
@@ -303,9 +325,16 @@ export const campViews = {
         </div>
       `;
 
-      document.getElementById("closeCampModalBtn").addEventListener("click", () => {
+      document.getElementById("closeCampModalBtn")?.addEventListener("click", () => {
         modal.style.display = "none";
       });
+
+      // Close modal on backdrop click
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
+        }
+      };
 
       const regForm = document.getElementById("campRegistrationForm");
       regForm?.addEventListener("submit", async (e) => {
@@ -315,8 +344,8 @@ export const campViews = {
 
         if (!authState.isAuthenticated) {
           modal.style.display = "none";
-          toast.show("Please sign in with Google to register for this donation camp.", "info");
-          window.location.hash = "#/login";
+          toast.show("Please sign in to complete your camp registration.", "info");
+          window.location.hash = `#/login?redirect=camps&registerCampId=${campId}`;
           return;
         }
 
@@ -340,7 +369,7 @@ export const campViews = {
         } finally {
           if (btn) {
             btn.disabled = false;
-            btn.innerHTML = "Submit Registration";
+            btn.innerHTML = "Confirm Registration";
           }
         }
       });

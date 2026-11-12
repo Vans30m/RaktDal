@@ -491,6 +491,15 @@ export class Router {
       return;
     }
 
+    // Phase 13: Donation Camps direct routes
+    if (path.startsWith("/camps/") && path.endsWith("/register")) {
+      const campId = path.split("/")[2];
+      this.renderCamps(params).then(() => {
+        campViews.renderCampDetailModal(campId);
+      });
+      return;
+    }
+
     // View Mapping
     if (path === "/requests/create") {
       this.renderCreateBloodRequest();
@@ -569,7 +578,14 @@ export class Router {
         this.renderBloodBanks(params);
         break;
       case "/camps":
-        this.renderCamps(params);
+        this.renderCamps(params).then(() => {
+          if (params.registerCampId) {
+            campViews.renderCampDetailModal(params.registerCampId);
+          }
+        });
+        break;
+      case "/camps/my-registrations":
+        this.renderMyCampRegistrations();
         break;
       case "/about":
         infoViews.renderAbout(this.appContainer);
