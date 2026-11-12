@@ -9,6 +9,7 @@ import {
   getSessions,
   forgotPassword,
   resetPassword,
+  changePassword,
   verifyEmailOtp,
   resendOtp,
   initiateGoogleLogin,
@@ -46,9 +47,10 @@ router.post("/refresh", verifyCsrf, refresh);
 router.post("/logout", verifyCsrf, logout);
 router.post("/logout-all", authenticate, verifyCsrf, logoutAll);
 
-// Password Reset Flow
+// Password Management Flows
 router.post("/forgot-password", passwordResetLimiter, verifyCsrf, forgotPassword);
 router.post("/reset-password", passwordResetLimiter, verifyCsrf, resetPassword);
+router.post("/change-password", authenticate, verifyCsrf, changePassword);
 
 // Profile and Sessions
 router.get("/me", authenticate, getCurrentUser);
@@ -63,6 +65,20 @@ router.patch("/me", authenticate, verifyCsrf, preventSelfRoleElevation, async (r
   }
   Object.assign(req.user, updates);
   await req.user.save();
+
+  // If user changed their name or phone, also keep any embedded references up to date in related models
+  if (updates.fullName || updates.phoneNumber) {
+    try {
+      const { CampRegistration } = await import("../models/CampRegistration.js");
+      const campUpdates = {};
+      if (updates.fullName) campUpdates.donorName = updates.fullName;
+      if (updates.phoneNumber) campUpdates.donorPhone = updates.phoneNumber;
+      await CampRegistration.updateMany({ userId: req.user._id }, { $set: campUpdates });
+    } catch (e) {
+      console.warn("Could not cascade update to CampRegistrations:", e.message);
+    }
+  }
+
   res.json({ success: true, message: "Profile updated successfully.", data: { user: req.user.toPublicProfile() } });
 });
 

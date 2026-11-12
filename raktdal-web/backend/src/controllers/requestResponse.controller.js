@@ -17,7 +17,8 @@ export async function createResponse(req, res) {
       organizationId,
       unitsOffered = 1,
       contactSharingConsent = false,
-      notes
+      notes,
+      message
     } = req.body || {};
 
     const bloodRequest = await BloodRequest.findById(requestId);
@@ -117,7 +118,7 @@ export async function createResponse(req, res) {
       unitsOffered: Math.max(1, parseInt(unitsOffered, 10) || 1),
       contactSharingConsent: Boolean(contactSharingConsent),
       sharedContactInfo: sharedContact,
-      notes: notes ? String(notes).trim() : "",
+      notes: (notes || message) ? String(notes || message).trim() : "",
       statusHistory: [{
         status: "ACCEPTED",
         timestamp: new Date(),
@@ -134,6 +135,9 @@ export async function createResponse(req, res) {
     await eventDispatcher.emit(DOMAIN_EVENTS.RESPONSE_SUBMITTED, {
       requestId: bloodRequest._id,
       responseId: responseRecord._id,
+      response: responseRecord,
+      requesterUserId: bloodRequest.createdByUserId,
+      bloodGroup: bloodRequest.bloodGroup,
       responderType
     });
 
@@ -168,17 +172,42 @@ export async function getRequestResponses(req, res) {
     const isCreator = bloodRequest.createdByUserId.toString() === userId.toString();
     const isPlatformAdmin = req.user.platformRoles.includes("ADMIN");
 
-    if (!isCreator && !isPlatformAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: "Only the request creator or platform administrator can view responder details.",
-        error: { code: "FORBIDDEN" }
+    if (isCreator || isPlatformAdmin) {
+      const responses = await RequestResponse.find({ requestId: bloodRequest._id })
+        .populate("donorUserId", "fullName profileImage")
+        .populate("organizationId", "name contactEmail phoneNumber type")
+        .sort({ createdAt: -1 });
+
+      return res.json({
+        success: true,
+        data: { responses }
       });
     }
 
-    const responses = await RequestResponse.find({ requestId: bloodRequest._id })
-      .populate("donorUserId", "fullName profileImage")
-      .populate("organizationId", "name contactEmail phoneNumber type")
+    // Authenticated donor checking their own response to this request
+    const myResponses = await RequestResponse.find({
+      requestId: bloodRequest._id,
+      donorUserId: userId
+    }).sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      data: { responses: myResponses }
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Failed to retrieve responses." });
+  }
+}
+
+/**
+ * 2b. Get My Submitted Responses across all requests
+ * GET /api/v1/responses/my
+ */
+export async function getMyResponses(req, res) {
+  try {
+    const userId = req.user._id;
+    const responses = await RequestResponse.find({ donorUserId: userId })
+      .populate("requestId")
       .sort({ createdAt: -1 });
 
     return res.json({
@@ -186,7 +215,7 @@ export async function getRequestResponses(req, res) {
       data: { responses }
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Failed to retrieve responses." });
+    return res.status(500).json({ success: false, message: "Failed to retrieve my responses." });
   }
 }
 

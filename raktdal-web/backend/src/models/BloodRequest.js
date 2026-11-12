@@ -161,6 +161,8 @@ bloodRequestSchema.methods.toPublicView = function () {
 
   return {
     id: this._id,
+    _id: this._id,
+    createdByUserId: this.createdByUserId,
     requestNumber: this.requestNumber,
     requesterType: this.requesterType,
     patientReference: maskedPatientRef,
@@ -174,7 +176,7 @@ bloodRequestSchema.methods.toPublicView = function () {
     urgency: this.urgency,
     description: this.description,
     status: this.status,
-    verificationStatus: this.verificationStatus.status,
+    verificationStatus: this.verificationStatus?.status || this.verificationStatus,
     expiresAt: this.expiresAt,
     isDemoRequest: this.isDemoRequest,
     createdAt: this.createdAt

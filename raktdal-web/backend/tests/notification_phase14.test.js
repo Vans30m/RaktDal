@@ -121,3 +121,8 @@ test("Duplicate Notification Prevention: Idempotency Key check", async () => {
   assert.equal(isDuplicate(existingNotification, dedupKey), true, "Duplicate notification must be prevented");
 });
 
+test("Camp and Welcome Notification Support: Types and Event handling verify", () => {
+  assert.ok(NOTIFICATION_TYPES.includes("CAMP_REGISTRATION_CONFIRMED"));
+  assert.ok(NOTIFICATION_TYPES.includes("ACCOUNT_CREATED"));
+});
+

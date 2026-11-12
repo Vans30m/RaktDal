@@ -83,8 +83,16 @@ export class NotificationService {
 
           await sendEmail({
             to: user.email,
+            toName: user.fullName || "User",
             subject: emailOptions.subject || title,
-            html: emailHtml
+            html: emailHtml,
+            templateParams: emailOptions.templateParams || {
+              to_name: user.fullName || "User",
+              title: emailOptions.subject || title,
+              message: message,
+              action_url: emailOptions.actionUrl ? `${env.frontendUrl}${emailOptions.actionUrl}` : ""
+            },
+            templateId: emailOptions.templateId || null
           });
 
           if (inAppNotification) {

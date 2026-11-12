@@ -24,7 +24,6 @@ export const donorViews = {
         <section class="find-donors-hero-section" aria-labelledby="findDonorsHeading">
           <div class="find-donors-hero-inner">
             <span class="find-donors-badge">
-              <span class="find-donors-badge-dot" aria-hidden="true"></span>
               Direct Volunteer Coordination
             </span>
             <h1 id="findDonorsHeading" class="find-donors-hero-title">
@@ -139,7 +138,17 @@ export const donorViews = {
         return;
       }
 
-      const { donors, pagination } = data.data || { donors: [], pagination: {} };
+      let { donors, pagination } = data.data || { donors: [], pagination: {} };
+
+      // Ensure logged in user's own donor profile is not shown in find donors list
+      const auth = authState.getState();
+      const currentUserId = auth?.user?._id || auth?.user?.id;
+      if (currentUserId && Array.isArray(donors)) {
+        donors = donors.filter(d => {
+          const dUserId = d.userId?._id || d.userId || d.donor?.userId || d.user?._id || d.user?.id;
+          return !dUserId || String(dUserId) !== String(currentUserId);
+        });
+      }
 
       if (!donors || donors.length === 0) {
         resultsEl.innerHTML = `
@@ -235,7 +244,6 @@ export const donorViews = {
         <section class="donor-dashboard-hero-section" aria-labelledby="donorDashHeading">
           <div class="donor-dashboard-hero-inner">
             <span class="donor-dashboard-badge">
-              <span class="donor-dashboard-badge-dot" aria-hidden="true"></span>
               Donor Hub &amp; Management
             </span>
             <h1 id="donorDashHeading" class="donor-dashboard-hero-title">
@@ -948,7 +956,7 @@ function renderDonorCard(d) {
           <div class="donor-card-user">
             ${
               d.donor?.profileImage
-                ? `<img src="${d.donor.profileImage}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" alt="">`
+                ? `<img src="${d.donor.profileImage}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-nav-avatar\\' style=\\'width: 44px; height: 44px; font-size: 1.05rem; font-weight: 750;\\'>${initial}</div>';">`
                 : `<div class="user-nav-avatar" style="width: 44px; height: 44px; font-size: 1.05rem; font-weight: 750;">${initial}</div>`
             }
             <div>
@@ -1055,7 +1063,6 @@ function renderActiveDashboard(container, donor) {
           <div class="donor-hero-left">
             <div class="donor-blood-badge-wrap">
               <div class="donor-blood-badge-large">${donor.bloodGroup}</div>
-              <div class="donor-pulse-dot ${isAvailable ? "available" : "unavailable"}" title="${isAvailable ? "Available to Donate" : "Currently Unavailable"}"></div>
             </div>
 
             <div class="donor-hero-meta">

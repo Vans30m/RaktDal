@@ -417,12 +417,18 @@ nav a.active::after {
   border-radius: 9999px;
 }
 
-.eyebrow-dot {
-  width: 7px;
-  height: 7px;
-  background: var(--red);
-  border-radius: 50%;
-  display: inline-block;
+.eyebrow-dot,
+.donor-pulse-dot,
+.contact-badge-dot,
+.about-badge-dot,
+.hiw-badge-dot,
+.privacy-badge-dot,
+.terms-badge-dot,
+.disclaimer-badge-dot,
+.help-badge-dot,
+.find-donors-badge-dot,
+.donor-dashboard-badge-dot {
+  display: none !important;
 }
 
 .section-header-center {
@@ -1587,7 +1593,7 @@ nav a.active::after {
   background: rgba(15, 23, 42, 0.6);
   display: grid;
   place-items: center;
-  z-index: 100;
+  z-index: 10000;
   padding: clamp(10px, 3vw, 24px);
   overflow-y: auto;
 }
@@ -1864,73 +1870,162 @@ nav a.active::after {
   transform: translateY(0);
 }
 
+/* ==========================================================================
+   Healthcare Production Toast Notification System (RaktDal)
+   ========================================================================== */
 .toast-container {
   position: fixed;
-  top: 24px;
+  bottom: 24px;
   right: 24px;
-  z-index: 9999;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   pointer-events: none;
+  max-width: 380px;
+  width: calc(100% - 32px);
 }
 
-.toast {
+.toast-item {
   pointer-events: auto;
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 280px;
-  max-width: 420px;
-  padding: 14px 18px;
-  border-radius: 12px;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
   background: #ffffff;
   color: var(--text-main);
-  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.12);
-  border: 1px solid var(--border);
-  font-size: 0.92rem;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: opacity 180ms ease, transform 180ms ease;
+  animation: toastIn 180ms cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
-.toast.toast-hiding {
+@keyframes toastIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-item.toast-item-leaving {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateY(6px);
 }
 
-.toast-success {
-  border-left: 4px solid #16a34a;
+/* Subtle, Restrained Semantic Accents */
+.toast-item-success {
+  border-color: #cbd5e1;
 }
 
-.toast-error {
-  border-left: 4px solid #dc2626;
+.toast-item-success .toast-leading-icon {
+  color: #15803d; /* Muted clinical green */
 }
 
-.toast-info {
-  border-left: 4px solid #2563eb;
+.toast-item-error {
+  border-color: #fecaca;
+  background: #fffcfc;
 }
 
-.toast-content {
+.toast-item-error .toast-leading-icon {
+  color: #b91c1c; /* Muted healthcare red */
+}
+
+.toast-item-warning {
+  border-color: #fed7aa;
+}
+
+.toast-item-warning .toast-leading-icon {
+  color: #b45309; /* Muted amber */
+}
+
+.toast-item-urgent {
+  border-color: #fca5a5;
+  background: #fffafa;
+}
+
+.toast-item-urgent .toast-leading-icon {
+  color: #b91c1c; /* Brand emergency red */
+}
+
+.toast-item-info {
+  border-color: #cbd5e1;
+}
+
+.toast-item-info .toast-leading-icon {
+  color: #2563eb; /* Muted healthcare blue */
+}
+
+/* Icon Container */
+.toast-leading-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.toast-icon-svg {
+  display: block;
+}
+
+/* Text Typography */
+.toast-text-wrap {
   flex: 1;
+  min-width: 0;
 }
 
-.toast-title {
-  font-weight: 700;
-  font-size: 0.92rem;
+.toast-headline {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  color: #0f172a;
   margin-bottom: 2px;
 }
 
-.toast-desc {
-  font-size: 0.84rem;
-  color: var(--text-muted);
+.toast-copy {
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #475569;
+  word-break: break-word;
 }
 
-.toast-close {
-  background: none;
+/* Dismiss Icon Button */
+.toast-dismiss-btn {
+  background: transparent;
   border: none;
-  font-size: 1.2rem;
   color: #94a3b8;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 2px;
+  margin: -2px -2px 0 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 150ms ease;
+}
+
+.toast-dismiss-btn:hover {
+  color: #475569;
+}
+
+@media (max-width: 640px) {
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    max-width: none;
+  }
 }
 
 /* Responsive Media Queries */
@@ -2129,9 +2224,9 @@ nav a.active::after {
   }
 
   .toast-container {
-    top: 12px;
-    right: 12px;
-    left: 12px;
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
   }
 
   .toast {
@@ -8148,10 +8243,10 @@ button,
 
   /* Toast notification responsiveness */
   .toast-container {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    max-width: calc(100vw - 20px);
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    max-width: calc(100vw - 24px);
   }
 
   .toast {

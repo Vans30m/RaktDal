@@ -31,6 +31,7 @@ import {
 } from '../controllers/requestResponse.controller.js';
 import {
   authenticate,
+  optionalAuthenticate,
   authorize,
   logAdminAction,
 } from '../middleware/auth.middleware.js';
@@ -43,8 +44,8 @@ const router = express.Router();
 // POST /api/v1/requests - Create request
 router.post('/', authenticate, verifyCsrf, createBloodRequest);
 
-// GET /api/v1/requests - Filter / discover requests
-router.get('/', getBloodRequests);
+// GET /api/v1/requests - Filter / discover requests (Optional authentication to filter/identify own requests)
+router.get('/', optionalAuthenticate, getBloodRequests);
 
 // POST /api/v1/requests/seed - Seed sample blood requests
 router.post('/seed', async (req, res) => {
@@ -187,7 +188,7 @@ router.post('/seed', async (req, res) => {
 router.get('/my', authenticate, getMyBloodRequests);
 
 // GET /api/v1/requests/:requestId - Request details
-router.get('/:requestId', getBloodRequestById);
+router.get('/:requestId', optionalAuthenticate, getBloodRequestById);
 
 // DELETE /api/v1/requests/:requestId - Requester deletes their own request
 router.delete('/:requestId', authenticate, verifyCsrf, deleteBloodRequest);

@@ -255,7 +255,17 @@ export class CampService {
       await eventDispatcher.emit("camp.registered", {
         campId,
         userId,
-        campTitle: camp.title
+        campTitle: camp.title,
+        venueName: camp.venueName,
+        address: camp.address,
+        city: camp.location?.city,
+        state: camp.location?.state,
+        pinCode: camp.location?.pinCode,
+        startDate: camp.startDate,
+        endDate: camp.endDate,
+        preferredSlot: preferredSlot || "All-day",
+        donorName: donorName || null,
+        bloodGroup: bloodGroup || null
       });
 
       return registration;

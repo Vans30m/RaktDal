@@ -79,6 +79,31 @@ export async function authenticate(req, res, next) {
 }
 
 /**
+ * Optional Authentication Middleware
+ * Attaches req.user if a valid session exists, but allows unauthenticated requests to proceed.
+ */
+export async function optionalAuthenticate(req, res, next) {
+  try {
+    const token = req.cookies?.accessToken || req.headers.authorization?.replace("Bearer ", "");
+    if (!token) {
+      return next();
+    }
+    const decoded = verifyAccessToken(token);
+    if (!decoded || !decoded.id) {
+      return next();
+    }
+    const user = await User.findById(decoded.id);
+    if (!user || user.accountStatus !== "ACTIVE") {
+      return next();
+    }
+    req.user = user;
+    next();
+  } catch (_err) {
+    next();
+  }
+}
+
+/**
  * 2. Platform Role Authorization Middleware
  * Authorizes based on platform roles: "USER", "ADMIN"
  */

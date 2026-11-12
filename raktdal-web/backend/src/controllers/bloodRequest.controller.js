@@ -205,6 +205,7 @@ export async function getBloodRequests(req, res) {
       component,
       urgency,
       status = "ACTIVE",
+      excludeMine = "false",
       page = 1,
       limit = 10,
       sortBy = "createdAt",
@@ -212,6 +213,11 @@ export async function getBloodRequests(req, res) {
     } = req.query;
 
     const filter = {};
+
+    // Exclude own requests if requested or if user is viewing volunteer feed
+    if (req.user?._id && (excludeMine === "true" || excludeMine === true)) {
+      filter.createdByUserId = { $ne: req.user._id };
+    }
 
     // By default, public feeds only show ACTIVE or RESPONSES_RECEIVED requests
     if (status && ["ACTIVE", "RESPONSES_RECEIVED", "FULFILLED", "EXPIRED", "PENDING_VERIFICATION"].includes(status)) {

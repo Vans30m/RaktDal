@@ -471,6 +471,11 @@ export async function searchDonors(req, res) {
       publicDiscoveryConsent: true // ONLY show donors who consented to public discovery
     };
 
+    // If an authenticated user is searching donors, exclude their own profile
+    if (req.user?._id) {
+      filter.userId = { $ne: req.user._id };
+    }
+
     // Validate & apply bloodGroup filter
     if (bloodGroup) {
       if (typeof bloodGroup !== "string" || !BLOOD_GROUPS.includes(bloodGroup.trim())) {
@@ -564,6 +569,7 @@ export async function searchDonors(req, res) {
       };
 
       if (doc.userId && typeof doc.userId === "object") {
+        publicItem.userId = doc.userId._id;
         publicItem.donor = {
           fullName: doc.userId.fullName || "Volunteer Donor",
           profileImage: doc.userId.profileImage || null

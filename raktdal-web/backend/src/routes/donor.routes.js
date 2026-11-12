@@ -7,7 +7,7 @@ import {
   updateMyConsent,
   searchDonors
 } from "../controllers/donor.controller.js";
-import { authenticate } from "../middleware/auth.middleware.js";
+import { authenticate, optionalAuthenticate } from "../middleware/auth.middleware.js";
 import { verifyCsrf } from "../utils/security.js";
 import { Organization } from "../models/Organization.js";
 import { CampService } from "../services/camp.service.js";
@@ -22,8 +22,8 @@ const searchLimiter = createRateLimiter({
 
 const router = Router();
 
-// Public Donor Discovery Endpoint (No authentication required)
-router.get("/search", searchLimiter, searchDonors);
+// Public Donor Discovery Endpoint (Optional authentication to filter own profile)
+router.get("/search", optionalAuthenticate, searchLimiter, searchDonors);
 
 // POST /api/v1/donors/seed - Seed sample donor profiles if database has none (Development & Demo utility)
 router.post("/seed", async (req, res) => {
@@ -173,7 +173,7 @@ router.post("/:donorProfileId/alert", authenticate, verifyCsrf, async (req, res)
 
     return res.json({
       success: true,
-      message: `In-app alert successfully sent to ${profile.userId.fullName}!`
+      message: `Alert delivered to ${profile.userId.fullName}.`
     });
   } catch (err) {
     console.error("Donor alert error:", err);
