@@ -316,7 +316,7 @@ export const donorViews = {
         <div id="createDonorMsg"></div>
 
         <form id="createDonorForm" novalidate>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="responsive-form-row">
             <div class="form-group">
               <label class="form-label" for="donorBloodGroup">Blood Group *</label>
               <select id="donorBloodGroup" class="form-input" required>
@@ -334,7 +334,7 @@ export const donorViews = {
           <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
             <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Residential Location</h4>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="responsive-form-row">
               <div class="form-group" style="position:relative;">
                 <label class="form-label" for="donorCity">City *</label>
                 <input type="text" id="donorCity" class="form-input" placeholder="e.g. Pune, Chandigarh" autocomplete="off" required>
@@ -347,7 +347,7 @@ export const donorViews = {
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="responsive-form-row">
               <div class="form-group">
                 <label class="form-label" for="donorState">State *</label>
                 <input type="text" id="donorState" class="form-input" placeholder="e.g. Maharashtra" required>
@@ -363,7 +363,7 @@ export const donorViews = {
           <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
             <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Availability & History</h4>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="responsive-form-row">
               <div class="form-group">
                 <label class="form-label" for="donorAvailability">Availability Status</label>
                 <select id="donorAvailability" class="form-input">
@@ -597,7 +597,7 @@ export const donorViews = {
 
       formContainer.innerHTML = `
         <form id="editDonorForm" novalidate>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="responsive-form-row">
             <div class="form-group">
               <label class="form-label" for="editBloodGroup">Blood Group</label>
               <select id="editBloodGroup" class="form-input" required>
@@ -614,7 +614,7 @@ export const donorViews = {
           <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
             <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Residential Location</h4>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="responsive-form-row">
               <div class="form-group">
                 <label class="form-label" for="editCity">City</label>
                 <input type="text" id="editCity" class="form-input" value="${escapeHtml(d.location.city)}" required>
@@ -626,7 +626,7 @@ export const donorViews = {
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="responsive-form-row">
               <div class="form-group">
                 <label class="form-label" for="editState">State</label>
                 <input type="text" id="editState" class="form-input" value="${escapeHtml(d.location.state)}" required>
@@ -640,7 +640,7 @@ export const donorViews = {
           </div>
 
           <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="responsive-form-row">
               <div class="form-group">
                 <label class="form-label" for="editContactMethod">Preferred Contact</label>
                 <select id="editContactMethod" class="form-input">
@@ -1453,7 +1453,7 @@ function openDonorAlertModal(donorId, donorName, donorBg, donorCity) {
             <input type="text" id="alertHospital" class="form-input" placeholder="e.g. AIIMS Delhi" required style="width:100%;">
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="responsive-form-row">
             <div>
               <label class="form-label" for="alertBloodGroup" style="font-size:0.85rem; font-weight:600;">Blood Group</label>
               <input type="text" id="alertBloodGroup" class="form-input" value="${donorBg}" readonly style="width:100%; background:#f1f5f9;">

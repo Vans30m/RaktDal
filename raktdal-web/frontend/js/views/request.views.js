@@ -51,7 +51,7 @@ async renderBloodRequests(params) {
 
         <div class="find-donors-body-wrapper" style="padding-top: 24px;">
           <div class="find-donors-search-card" style="padding: 16px 20px; margin-bottom: 22px; border-radius: 14px;">
-            <div class="find-donors-search-form" style="grid-template-columns: repeat(3, minmax(0, 1fr)) 160px; gap: 12px; align-items: end;">
+            <div class="find-donors-search-form request-filter-responsive-form">
               <div class="form-group" style="margin:0;">
                 <label class="form-label" for="filterBloodGroup" style="font-size:0.75rem; font-weight:700; margin-bottom:4px; display:block; color:var(--navy);">Blood Group</label>
                 <select id="filterBloodGroup" class="form-input" style="height:38px; font-size:0.86rem; padding: 0 10px; width:100%;">
@@ -185,7 +185,7 @@ async renderBloodRequests(params) {
         </p>
 
         <form id="createRequestForm" style="display:flex; flex-direction:column; gap:16px;">
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="responsive-form-row">
             <div>
               <label class="filter-label" for="reqBloodGroup">Blood Group *</label>
               <select id="reqBloodGroup" class="filter-select" style="width:100%; margin-top:4px;" required>
@@ -212,7 +212,7 @@ async renderBloodRequests(params) {
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="responsive-form-row">
             <div>
               <label class="filter-label" for="reqUnits">Units Required (Max 50) *</label>
               <input type="number" id="reqUnits" class="filter-input" style="width:100%; margin-top:4px;" min="1" max="50" value="1" required>
@@ -233,7 +233,7 @@ async renderBloodRequests(params) {
             <input type="text" id="reqHospital" class="filter-input" style="width:100%; margin-top:4px;" placeholder="e.g. AIIMS Delhi" required>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div class="responsive-form-row-3">
             <div style="position:relative;">
               <label class="filter-label" for="reqCity">City *</label>
               <input type="text" id="reqCity" class="filter-input" style="width:100%; margin-top:4px;" placeholder="e.g. Chandigarh, Delhi" autocomplete="off" required>
@@ -249,7 +249,7 @@ async renderBloodRequests(params) {
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="responsive-form-row">
             <div>
               <label class="filter-label" for="reqDeadline">Required By (Date & Time) *</label>
               <input type="datetime-local" id="reqDeadline" class="filter-input" style="width:100%; margin-top:4px;" required>
@@ -485,7 +485,7 @@ async renderBloodRequests(params) {
               <span>${r.location?.city || "Unknown"}, ${r.location?.state || ""} — Pin: ${r.location?.pinCode || "N/A"}</span>
             </div>
 
-            <div class="request-details-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:24px;">
+            <div class="request-details-grid request-details-grid-responsive" style="margin-bottom:24px;">
               <div>
                 <div class="filter-label">Component</div>
                 <strong>${r.component?.replace(/_/g, " ")}</strong>

@@ -37,7 +37,7 @@ export const campViews = {
 
       <div class="find-donors-body-wrapper">
         <div class="find-donors-search-card" style="padding: 20px 24px; margin-bottom: 24px; border-radius: 18px;">
-          <form id="campFilterForm" class="find-donors-search-form" style="grid-template-columns: 1.5fr 1fr 1.2fr 160px; gap: 14px; align-items: end;">
+          <form id="campFilterForm" class="find-donors-search-form camp-filter-responsive-form">
             <div class="form-group" style="margin-bottom:0;">
               <label class="find-donors-search-form form-label" for="campFilterCity" style="font-size:0.78rem; margin-bottom:5px;">City</label>
               <input type="text" id="campFilterCity" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Delhi, Mumbai" value="${city}">
@@ -271,7 +271,7 @@ export const campViews = {
                   </div>
                 ` : ""}
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="responsive-form-row">
                   <div>
                     <label class="filter-label" for="regDonorName">Full Name *</label>
                     <input type="text" id="regDonorName" class="filter-input" required value="${userName}" placeholder="Your Full Name">
@@ -282,7 +282,7 @@ export const campViews = {
                   </div>
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="responsive-form-row">
                   <div>
                     <label class="filter-label" for="regDonorBloodGroup">Blood Group *</label>
                     <select id="regDonorBloodGroup" class="filter-select" required>
@@ -514,7 +514,7 @@ export const campViews = {
 
       <div class="find-donors-body-wrapper">
         <div class="find-donors-search-card" style="padding: 20px 24px; margin-bottom: 24px; border-radius: 18px;">
-          <form id="bankFilterForm" class="find-donors-search-form" style="grid-template-columns: 2fr 1fr 160px; gap: 14px; align-items: end;">
+          <form id="bankFilterForm" class="find-donors-search-form bank-filter-responsive-form">
             <div class="form-group" style="margin-bottom:0;">
               <label class="find-donors-search-form form-label" for="bankSearchInput" style="font-size:0.78rem; margin-bottom:5px;">Search Center / Hospital</label>
               <input type="text" id="bankSearchInput" class="form-input" style="height:42px; font-size:0.88rem;" placeholder="e.g. Red Cross, PGIMER, Rotary" value="${searchVal}">
