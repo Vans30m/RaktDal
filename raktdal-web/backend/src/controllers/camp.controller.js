@@ -91,7 +91,14 @@ export async function publishCamp(req, res) {
 export async function registerForCamp(req, res) {
   try {
     const { campId } = req.params;
-    const registration = await CampService.registerUserForCamp(campId, req.user._id);
+    const { donorName, donorPhone, bloodGroup, preferredSlot, notes } = req.body || {};
+    const registration = await CampService.registerUserForCamp(campId, req.user._id, {
+      donorName,
+      donorPhone,
+      bloodGroup,
+      preferredSlot,
+      notes
+    });
     return sendSuccess(res, { registration }, "Registration for donation camp confirmed.", 201);
   } catch (err) {
     return sendError(res, err.message, 400);

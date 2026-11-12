@@ -182,7 +182,7 @@ export class CampService {
   /**
    * Atomic user registration with capacity concurrency protection
    */
-  static async registerUserForCamp(campId, userId) {
+  static async registerUserForCamp(campId, userId, registrationData = {}) {
     const camp = await DonationCamp.findById(campId);
     if (!camp) {
       throw new Error("Camp not found.");
@@ -195,6 +195,8 @@ export class CampService {
     if (new Date() > new Date(camp.registrationDeadline)) {
       throw new Error("Registration deadline for this camp has passed.");
     }
+
+    const { donorName, donorPhone, bloodGroup, preferredSlot, notes } = registrationData;
 
     // Check existing registration
     const existing = await CampRegistration.findOne({ campId, userId });
@@ -216,6 +218,11 @@ export class CampService {
       existing.attendanceStatus = "NOT_MARKED";
       existing.registeredAt = new Date();
       existing.cancelledAt = null;
+      if (donorName) existing.donorName = donorName;
+      if (donorPhone) existing.donorPhone = donorPhone;
+      if (bloodGroup) existing.bloodGroup = bloodGroup;
+      if (preferredSlot) existing.preferredSlot = preferredSlot;
+      if (notes) existing.notes = notes;
       await existing.save();
 
       return existing;
@@ -237,7 +244,12 @@ export class CampService {
         campId,
         userId,
         registrationStatus: "REGISTERED",
-        attendanceStatus: "NOT_MARKED"
+        attendanceStatus: "NOT_MARKED",
+        donorName: donorName || null,
+        donorPhone: donorPhone || null,
+        bloodGroup: bloodGroup || null,
+        preferredSlot: preferredSlot || null,
+        notes: notes || ""
       });
 
       await eventDispatcher.emit("camp.registered", {

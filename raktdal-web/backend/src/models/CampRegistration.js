@@ -51,6 +51,28 @@ const campRegistrationSchema = new mongoose.Schema(
       ref: "User",
       default: null
     },
+    donorName: {
+      type: String,
+      trim: true,
+      default: null,
+      maxlength: 100
+    },
+    donorPhone: {
+      type: String,
+      trim: true,
+      default: null,
+      maxlength: 20
+    },
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", null],
+      default: null
+    },
+    preferredSlot: {
+      type: String,
+      enum: ["morning", "afternoon", "evening", null],
+      default: null
+    },
     notes: {
       type: String,
       maxlength: 500,

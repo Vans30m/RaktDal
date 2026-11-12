@@ -350,8 +350,11 @@ export const api = {
     return this.request(`/camps/${campId}`);
   },
 
-  registerForCamp(campId) {
-    return this.request(`/camps/${campId}/register`, { method: "POST" });
+  registerForCamp(campId, registrationData = {}) {
+    return this.request(`/camps/${campId}/register`, {
+      method: "POST",
+      body: registrationData
+    });
   },
 
   cancelCampRegistration(campId, reason = "") {

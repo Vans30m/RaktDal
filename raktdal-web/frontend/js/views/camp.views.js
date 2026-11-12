@@ -355,8 +355,18 @@ export const campViews = {
           btn.innerHTML = '<div class="btn-spinner"></div><span>Registering...</span>';
         }
 
+        const donorName = document.getElementById("regDonorName")?.value.trim();
+        const donorPhone = document.getElementById("regDonorPhone")?.value.trim();
+        const bloodGroup = document.getElementById("regDonorBloodGroup")?.value;
+        const preferredSlot = document.getElementById("regDonorSlot")?.value;
+
         try {
-          await api.registerForCamp(campId);
+          await api.registerForCamp(campId, {
+            donorName,
+            donorPhone,
+            bloodGroup,
+            preferredSlot
+          });
           toast.show("Registration submitted successfully! You are booked for this donation camp.", "success");
           modal.style.display = "none";
           this.renderCamps();
