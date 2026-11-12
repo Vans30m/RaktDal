@@ -139,6 +139,13 @@ export const homeViews = {
                   Become a Donor
                 </a>
               </div>
+            </div>
+            
+            <div class="hero-visual-col scroll-reveal delay-1">
+              ${this.getHeroIllustrationSvg()}
+            </div>
+
+            <div class="hero-disclaimer-wrapper scroll-reveal">
               <div class="hero-disclaimer-card">
                 <svg class="disclaimer-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -149,10 +156,6 @@ export const homeViews = {
                   <strong>Medical Coordination Notice:</strong> RaktDal is a coordination platform. Availability and medical suitability must always be confirmed by qualified professionals.
                 </span>
               </div>
-            </div>
-            
-            <div class="hero-visual-col scroll-reveal delay-1">
-              ${this.getHeroIllustrationSvg()}
             </div>
           </div>
         </section>
