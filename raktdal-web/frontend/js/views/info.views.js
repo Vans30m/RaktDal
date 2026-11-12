@@ -10,7 +10,6 @@ export const infoViews = {
           <div class="about-hero-inner">
             <div class="about-hero-text">
               <span class="about-badge">
-                <span class="about-badge-dot" aria-hidden="true"></span>
                 Our Mission &amp; Vision
               </span>
               <h1 id="aboutHeroHeading" class="about-hero-title">
@@ -444,7 +443,6 @@ export const infoViews = {
           <div class="hiw-hero-inner">
             <div class="hiw-hero-text">
               <span class="hiw-badge">
-                <span class="hiw-badge-dot" aria-hidden="true"></span>
                 Simple &amp; Streamlined
               </span>
               <h1 id="hiwHeroHeading" class="hiw-hero-title">
@@ -1181,7 +1179,6 @@ export const infoViews = {
           <div class="contact-hero-inner">
             <div class="contact-hero-text">
               <span class="contact-badge">
-                <span class="contact-badge-dot" aria-hidden="true"></span>
                 Support & Inquiries
               </span>
               <h1 id="contactHeroHeading" class="contact-hero-title">
@@ -1881,7 +1878,6 @@ export const infoViews = {
           <div class="privacy-hero-inner">
             <div class="privacy-hero-text">
               <span class="privacy-badge">
-                <span class="privacy-badge-dot" aria-hidden="true"></span>
                 Your Data, Your Control
               </span>
               <h1 id="privacyHeroHeading" class="privacy-hero-title">
@@ -2617,7 +2613,6 @@ export const infoViews = {
           <div class="terms-hero-inner">
             <div class="terms-hero-text">
               <span class="terms-badge">
-                <span class="terms-badge-dot" aria-hidden="true"></span>
                 Platform Guidelines
               </span>
               <h1 id="termsHeroHeading" class="terms-hero-title">
@@ -2761,7 +2756,6 @@ export const infoViews = {
           <div class="disclaimer-hero-inner">
             <div class="disclaimer-hero-text">
               <span class="disclaimer-badge">
-                <span class="disclaimer-badge-dot" aria-hidden="true"></span>
                 Essential Medical Advisory
               </span>
               <h1 id="disclaimerHeroHeading" class="disclaimer-hero-title">
@@ -2939,7 +2933,6 @@ export const infoViews = {
           <div class="help-hero-inner">
             <div class="help-hero-text">
               <span class="help-badge">
-                <span class="help-badge-dot" aria-hidden="true"></span>
                 Knowledge Base &amp; FAQs
               </span>
               <h1 id="helpHeroHeading" class="help-hero-title">
@@ -3335,7 +3328,6 @@ export const infoViews = {
           <!-- Still Have Questions Card -->
           <div class="help-support-card">
             <span class="help-support-badge">
-              <span class="help-badge-dot" aria-hidden="true"></span>
               24/7 Assistance
             </span>
             <h2>Still have questions?</h2>

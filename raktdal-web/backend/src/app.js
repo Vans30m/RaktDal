@@ -33,13 +33,17 @@ app.use(helmet({
         "'unsafe-eval'",
         "https://accounts.google.com",
         "https://translate.google.com",
-        "https://translate.googleapis.com"
+        "https://translate.googleapis.com",
+        "https://*.google.com",
+        "https://*.gstatic.com"
       ],
       connectSrc: [
         "'self'",
         "https://accounts.google.com",
         "https://translate.googleapis.com",
         "https://translate.google.com",
+        "https://*.google.com",
+        "https://*.googleapis.com",
         "http://localhost:*",
         "http://127.0.0.1:*"
       ],
@@ -47,11 +51,14 @@ app.use(helmet({
         "'self'",
         "'unsafe-inline'",
         "https://fonts.googleapis.com",
-        "https://translate.googleapis.com"
+        "https://translate.googleapis.com",
+        "https://*.google.com",
+        "https://*.gstatic.com"
       ],
       fontSrc: [
         "'self'",
-        "https://fonts.gstatic.com"
+        "https://fonts.gstatic.com",
+        "https://*.gstatic.com"
       ],
       imgSrc: [
         "'self'",
@@ -61,12 +68,15 @@ app.use(helmet({
         "https://www.google.com",
         "https://translate.google.com",
         "https://translate.googleapis.com",
-        "https://www.gstatic.com"
+        "https://www.gstatic.com",
+        "https://*.google.com",
+        "https://*.gstatic.com"
       ],
       frameSrc: [
         "'self'",
         "https://accounts.google.com",
-        "https://translate.google.com"
+        "https://translate.google.com",
+        "https://*.google.com"
       ],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: env.isProduction ? [] : null

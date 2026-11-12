@@ -27,5 +27,11 @@ export const env = {
 
   // Gmail SMTP
   smtpUser: process.env.SMTP_USER || "",
-  smtpPass: process.env.SMTP_PASS || ""
+  smtpPass: process.env.SMTP_PASS || "",
+
+  // EmailJS Configuration
+  emailjsServiceId: process.env.EMAILJS_SERVICE_ID || "",
+  emailjsTemplateId: process.env.EMAILJS_TEMPLATE_ID || "",
+  emailjsPublicKey: process.env.EMAILJS_PUBLIC_KEY || process.env.EMAILJS_USER_ID || "",
+  emailjsPrivateKey: process.env.EMAILJS_PRIVATE_KEY || process.env.EMAILJS_ACCESS_TOKEN || ""
 };

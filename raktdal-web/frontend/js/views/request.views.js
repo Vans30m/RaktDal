@@ -28,7 +28,6 @@ async renderBloodRequests(params) {
           <div class="find-donors-hero-inner">
             <div class="find-donors-hero-text">
               <div class="find-donors-badge">
-                <span class="find-donors-badge-dot" aria-hidden="true"></span>
                 <span>EMERGENCY &amp; SCHEDULED REQUIREMENTS</span>
               </div>
               <h1 class="find-donors-hero-title">
@@ -640,7 +639,7 @@ async renderBloodRequests(params) {
           window.location.hash = "#/login?error=auth_required";
           return;
         }
-        this.openDonationModal(requestId, r);
+        requestViews.openDonationModal.call(this, requestId, r);
       });
 
       // Handle requester actions
@@ -757,21 +756,26 @@ async renderBloodRequests(params) {
       if (submitBtn) submitBtn.disabled = true;
 
       try {
+        const unitsVal = parseInt(document.getElementById("offerUnits")?.value, 10);
+        const msgVal = document.getElementById("offerMessage")?.value?.trim() || "";
+        const consentVal = document.getElementById("contactConsentCheck")?.checked || false;
+
         const payload = {
-          unitsOffered: parseInt(document.getElementById("offerUnits")?.value, 10),
-          message: document.getElementById("offerMessage")?.value?.trim(),
-          contactSharingConsent: document.getElementById("contactConsentCheck")?.checked || false
+          unitsOffered: isNaN(unitsVal) || unitsVal < 1 ? 1 : unitsVal,
+          message: msgVal,
+          notes: msgVal,
+          contactSharingConsent: consentVal
         };
 
         const res = await api.submitDonationResponse(requestId, payload);
         const data = await res.json();
 
         if (res.ok && data.success) {
-          toast.success("Thank you! Your donation offer has been sent to the requester.");
+          toast.success("Donation offer submitted to the requester.");
           close();
           this.renderBloodRequestDetail(requestId);
         } else {
-          throw new Error(data.message || "Failed to submit response");
+          throw new Error(data.message || "Unable to submit donation offer.");
         }
       } catch (err) {
         if (errBox) {
@@ -798,7 +802,6 @@ async renderBloodRequests(params) {
           <div class="find-donors-hero-inner">
             <div class="find-donors-hero-text">
               <div class="find-donors-badge">
-                <span class="find-donors-badge-dot" aria-hidden="true"></span>
                 <span>PERSONAL COORDINATION DASHBOARD</span>
               </div>
               <h1 class="find-donors-hero-title">

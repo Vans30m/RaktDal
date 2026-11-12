@@ -75,12 +75,15 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.toPublicProfile = function () {
   return {
     id: this._id,
+    _id: this._id,
     fullName: this.fullName,
     email: this.email,
+    phoneNumber: this.phoneNumber || null,
     profileImage: this.profileImage,
     platformRoles: this.platformRoles,
     accountStatus: this.accountStatus,
     preferredLanguage: this.preferredLanguage,
+    googleSubject: this.googleSubject || null,
     emailVerifiedAt: this.emailVerifiedAt,
     lastLoginAt: this.lastLoginAt,
     createdAt: this.createdAt

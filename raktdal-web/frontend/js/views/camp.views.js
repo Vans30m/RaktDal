@@ -15,7 +15,6 @@ export const campViews = {
         <div class="find-donors-hero-inner">
           <div class="find-donors-hero-text">
             <div class="find-donors-badge">
-              <span class="find-donors-badge-dot" aria-hidden="true"></span>
               <span>COMMUNITY BLOOD DRIVES</span>
             </div>
             <h1 class="find-donors-hero-title">
@@ -24,7 +23,7 @@ export const campViews = {
             <p class="find-donors-hero-sub">
               Join public blood drives organized by verified community centers, colleges, and hospitals.
             </p>
-            ${authState.isAuthenticated ? `
+            ${(authState.getState().isAuthenticated || authState.getState().user) ? `
               <div style="margin-top: 14px;">
                 <a href="#/camps/my-registrations" class="button button-outline" style="padding: 7px 18px; font-size: 0.88rem; border-radius: 9999px;">
                   My Registered Camps
@@ -165,7 +164,7 @@ export const campViews = {
         btn.addEventListener("click", (e) => {
           const id = e.currentTarget.dataset.id;
           if (id) {
-            this.renderCampDetailModal(id);
+            campViews.renderCampDetailModal(id);
           }
         });
       });
@@ -196,20 +195,23 @@ export const campViews = {
     `;
 
     try {
+      const state = authState.getState();
+      const isAuthenticated = Boolean(state.isAuthenticated || state.user);
+
       const [campRes, myRegRes] = await Promise.all([
         api.getCampById(campId),
-        authState.isAuthenticated ? api.getMyCampRegistration(campId).then(r => r.json()).catch(() => null) : null
+        isAuthenticated ? api.getMyCampRegistration(campId).then(r => r.json()).catch(() => null) : null
       ]);
 
       const campData = await campRes.json();
       const camp = campData.camp || campData.data?.camp;
       if (!camp) throw new Error("Camp details could not be retrieved.");
 
-      const myReg = myRegRes?.data?.registration;
+      const myReg = myRegRes?.registration || myRegRes?.data?.registration;
       const isRegistered = myReg && myReg.registrationStatus === "REGISTERED";
       const startStr = new Date(camp.startDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
       const endStr = new Date(camp.endDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-      const user = authState.getState().user;
+      const user = state.user;
       const userName = user?.fullName || user?.name || "";
       const userPhone = user?.phoneNumber || "";
       const userBlood = user?.bloodGroup || "";
@@ -265,7 +267,7 @@ export const campViews = {
                   <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Fill in your details below to confirm your donor slot.</p>
                 </div>
 
-                ${!authState.isAuthenticated ? `
+                ${!isAuthenticated ? `
                   <div class="alert alert-warning" style="font-size:0.85rem; margin-bottom:6px;">
                     <strong>Note:</strong> You will be prompted to sign in with your verified Google account to finalize your donor booking.
                   </div>
@@ -317,7 +319,7 @@ export const campViews = {
                 <div id="campRegErrorMsg"></div>
 
                 <button type="submit" id="registerCampSubmitBtn" class="button" style="width:100%; margin-top:4px;">
-                  ${authState.isAuthenticated ? 'Confirm Registration' : 'Sign in & Register for Camp'}
+                  ${isAuthenticated ? 'Confirm Registration' : 'Sign in & Register for Camp'}
                 </button>
               </form>
             `)}
@@ -342,7 +344,10 @@ export const campViews = {
         const errEl = document.getElementById("campRegErrorMsg");
         if (errEl) errEl.innerHTML = "";
 
-        if (!authState.isAuthenticated) {
+        const currentState = authState.getState();
+        const userIsAuth = Boolean(currentState.isAuthenticated || currentState.user);
+
+        if (!userIsAuth) {
           modal.style.display = "none";
           toast.show("Please sign in to complete your camp registration.", "info");
           window.location.hash = `#/login?redirect=camps&registerCampId=${campId}`;
@@ -361,20 +366,24 @@ export const campViews = {
         const preferredSlot = document.getElementById("regDonorSlot")?.value;
 
         try {
-          await api.registerForCamp(campId, {
+          const res = await api.registerForCamp(campId, {
             donorName,
             donorPhone,
             bloodGroup,
             preferredSlot
           });
-          toast.show("Registration submitted successfully! You are booked for this donation camp.", "success");
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.message || data.error?.message || "Registration failed.");
+          }
+          toast.success("Camp registration confirmed.");
           modal.style.display = "none";
-          this.renderCamps();
+          window.router?.renderCamps();
         } catch (err) {
           if (errEl) {
             errEl.innerHTML = '<div class="alert alert-error" style="margin-top:8px;">' + (err.message || "Registration failed.") + '</div>';
           } else {
-            toast.show(err.message || "Registration failed.", "error");
+            toast.error(err.message || "Registration failed.");
           }
         } finally {
           if (btn) {
@@ -387,10 +396,14 @@ export const campViews = {
       document.getElementById("cancelCampRegBtn")?.addEventListener("click", async () => {
         if (!confirm("Are you sure you want to cancel your donation camp registration?")) return;
         try {
-          await api.cancelCampRegistration(campId);
+          const res = await api.cancelCampRegistration(campId);
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.message || data.error?.message || "Failed to cancel registration.");
+          }
           toast.show("Registration cancelled successfully.", "info");
           modal.style.display = "none";
-          this.renderCamps();
+          window.router?.renderCamps();
         } catch (err) {
           toast.show(err.message || "Failed to cancel registration.", "error");
         }
@@ -499,7 +512,6 @@ export const campViews = {
         <div class="find-donors-hero-inner">
           <div class="find-donors-hero-text">
             <div class="find-donors-badge">
-              <span class="find-donors-badge-dot" aria-hidden="true"></span>
               <span>VERIFIED HEALTHCARE NETWORK</span>
             </div>
             <h1 class="find-donors-hero-title">

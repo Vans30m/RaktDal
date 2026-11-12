@@ -359,7 +359,7 @@ renderLogin(params) {
       const res = await api.getSessions();
       if (res.ok) {
         const body = await res.json();
-        sessions = body.data?.sessions || [];
+        sessions = (body.data?.sessions || []).slice(0, 5);
       }
     } catch (e) {
       console.warn("Could not retrieve sessions:", e);
@@ -409,7 +409,7 @@ renderLogin(params) {
           <div>
             <div class="profile-card" style="text-align: center;">
               ${user.profileImage ? `
-                <img src="${user.profileImage}" class="profile-avatar-img" alt="${user.fullName}">
+                <img src="${user.profileImage}" class="profile-avatar-img" alt="${user.fullName}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'profile-avatar-large\\'>${initial}</div>';">
               ` : `
                 <div class="profile-avatar-large">${initial}</div>
               `}
@@ -474,7 +474,7 @@ renderLogin(params) {
                 </div>
                 <div>
                   <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px;">Authentication Mode</div>
-                  <div style="color: var(--navy); font-weight: 600;">${user.googleSubject ? "Google OAuth 2.0 (SSO)" : "Password &amp; OTP Authentication"}</div>
+                  <div style="color: var(--navy); font-weight: 600;">${user.googleSubject ? "Google Account" : "Password &amp; OTP Authentication"}</div>
                 </div>
               </div>
             </div>
@@ -600,21 +600,6 @@ renderLogin(params) {
                     ${isEmailVerified ? "VERIFIED" : "PENDING"}
                   </span>
                 </div>
-
-                <div class="profile-session-card" style="margin-bottom:0; ${user.googleSubject ? "background:#ecfdf3; border-color:#a7f3d0;" : ""}">
-                  <div style="display:flex; align-items:center; gap:12px;">
-                    <div style="color: ${user.googleSubject ? "#00a477" : "var(--text-muted)"};">
-                      ${user.googleSubject ? icons.checkCircle(20, "#00a477") : icons.shield(20, "var(--text-muted)")}
-                    </div>
-                    <div>
-                      <div style="font-weight: 700; font-size:0.9rem; color: var(--navy);">Google SSO Authentication</div>
-                      <div style="font-size: 0.78rem; color: var(--text-muted);">${user.googleSubject ? "Linked with verified Google ID" : "Standard email credential account"}</div>
-                    </div>
-                  </div>
-                  <span class="badge" style="font-size:0.75rem; background:${user.googleSubject ? "#ecfdf3" : "#f1f5f9"}; color:${user.googleSubject ? "#00a477" : "var(--text-muted)"};">
-                    ${user.googleSubject ? "LINKED" : "UNLINKED"}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -664,10 +649,10 @@ renderLogin(params) {
                 <div class="profile-security-row">
                   <div>
                     <div style="font-weight: 700; color: var(--navy); font-size: 0.9rem;">Change Password</div>
-                    <div style="color: var(--text-muted); font-size: 0.78rem;">Receive a secure password reset link on your registered email address.</div>
+                    <div style="color: var(--text-muted); font-size: 0.78rem;">Update your account password with your current credentials.</div>
                   </div>
-                  <button id="sendResetPasswordBtn" class="button button-outline" style="font-size: 0.82rem; padding: 6px 14px; border-radius: 8px;">
-                    Reset Password
+                  <button id="openChangePasswordModalBtn" class="button button-outline" style="font-size: 0.82rem; padding: 6px 14px; border-radius: 8px;">
+                    Change Password
                   </button>
                 </div>
 
@@ -727,6 +712,35 @@ renderLogin(params) {
           </form>
         </div>
       </div>
+
+      <!-- Change Password Modal -->
+      <div id="changePasswordModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.55); z-index:9999; backdrop-filter:blur(2px); align-items:center; justify-content:center;">
+        <div class="auth-card" style="max-width:440px; width:90%; padding:28px 24px; border-radius:18px; margin:0 auto; text-align:left;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+            <h3 style="margin:0; font-size:1.15rem; color:var(--navy); font-weight:800;">Change Account Password</h3>
+            <button id="closeChangePasswordModalBtn" style="background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--text-muted);">&times;</button>
+          </div>
+          <div id="changePasswordMsg" style="margin-bottom:14px; font-size:0.86rem; display:none;"></div>
+          <form id="changePasswordForm">
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label" for="currentPasswordInput">Current Password</label>
+              <input type="password" id="currentPasswordInput" class="form-input" placeholder="Enter current password" required>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label" for="newPasswordInput">New Password</label>
+              <input type="password" id="newPasswordInput" class="form-input" placeholder="At least 8 characters" minlength="8" required>
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+              <label class="form-label" for="confirmPasswordInput">Confirm New Password</label>
+              <input type="password" id="confirmPasswordInput" class="form-input" placeholder="Re-enter new password" minlength="8" required>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+              <button type="button" id="cancelChangePasswordModalBtn" class="button button-outline" style="padding:8px 16px;">Cancel</button>
+              <button type="submit" id="savePasswordBtn" class="button button-primary" style="padding:8px 20px;">Update Password</button>
+            </div>
+          </form>
+        </div>
+      </div>
     `;
 
     // Edit Profile Modal Wireup
@@ -768,11 +782,15 @@ renderLogin(params) {
         const updateData = await updateRes.json();
         if (updateRes.ok && updateData.success) {
           toast.success("Profile updated successfully!");
-          if (updateData.data?.user) {
-            authState.setUser(updateData.data.user);
-          }
+          const updatedUser = updateData.data?.user || {
+            ...authState.getState().user,
+            fullName,
+            phoneNumber,
+            preferredLanguage
+          };
+          authState.setUser(updatedUser);
           hideModal();
-          this.renderProfile();
+          authViews.renderProfile.call(this);
         } else {
           toast.error(updateData.message || "Failed to update profile.");
         }
@@ -786,18 +804,86 @@ renderLogin(params) {
       }
     });
 
-    // Reset Password Handler
-    document.getElementById("sendResetPasswordBtn")?.addEventListener("click", async () => {
+    // Change Password Modal Wireup
+    const pwdModal = document.getElementById("changePasswordModal");
+    const openPwdModalBtn = document.getElementById("openChangePasswordModalBtn");
+    const closePwdModalBtn = document.getElementById("closeChangePasswordModalBtn");
+    const cancelPwdModalBtn = document.getElementById("cancelChangePasswordModalBtn");
+    const pwdForm = document.getElementById("changePasswordForm");
+    const pwdMsg = document.getElementById("changePasswordMsg");
+
+    const hidePwdModal = () => {
+      if (pwdModal) pwdModal.style.display = "none";
+      if (pwdMsg) {
+        pwdMsg.style.display = "none";
+        pwdMsg.textContent = "";
+      }
+      pwdForm?.reset();
+    };
+
+    openPwdModalBtn?.addEventListener("click", () => {
+      hidePwdModal();
+      if (pwdModal) pwdModal.style.display = "flex";
+    });
+
+    closePwdModalBtn?.addEventListener("click", hidePwdModal);
+    cancelPwdModalBtn?.addEventListener("click", hidePwdModal);
+
+    pwdForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const currentPassword = document.getElementById("currentPasswordInput")?.value;
+      const newPassword = document.getElementById("newPasswordInput")?.value;
+      const confirmPassword = document.getElementById("confirmPasswordInput")?.value;
+      const saveBtn = document.getElementById("savePasswordBtn");
+
+      if (newPassword !== confirmPassword) {
+        if (pwdMsg) {
+          pwdMsg.textContent = "New passwords do not match.";
+          pwdMsg.style.color = "#dc2626";
+          pwdMsg.style.display = "block";
+        }
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        if (pwdMsg) {
+          pwdMsg.textContent = "Password must be at least 8 characters long.";
+          pwdMsg.style.color = "#dc2626";
+          pwdMsg.style.display = "block";
+        }
+        return;
+      }
+
       try {
-        const res = await api.forgotPassword({ email: user.email });
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Updating...";
+        }
+
+        const res = await api.changePassword({ currentPassword, newPassword });
         const data = await res.json();
+
         if (res.ok && data.success) {
-          toast.success("Password reset instructions sent to " + user.email);
+          toast.success(data.message || "Password updated successfully.");
+          hidePwdModal();
         } else {
-          toast.error(data.message || "Failed to send reset link.");
+          if (pwdMsg) {
+            pwdMsg.textContent = data.message || "Failed to update password.";
+            pwdMsg.style.color = "#dc2626";
+            pwdMsg.style.display = "block";
+          }
         }
       } catch (err) {
-        toast.error("Network error sending reset instructions.");
+        if (pwdMsg) {
+          pwdMsg.textContent = "Network error. Please try again.";
+          pwdMsg.style.color = "#dc2626";
+          pwdMsg.style.display = "block";
+        }
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Update Password";
+        }
       }
     });
 
