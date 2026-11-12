@@ -174,29 +174,41 @@ export class Router {
     localStorage.setItem("raktdal_lang", langCode);
     const hostname = window.location.hostname;
     const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
-    
-    // Determine cookie domains (both host-only and apex domain if applicable)
-    const domainPart = isLocal ? "" : `; domain=.${hostname.replace(/^www\./, "")}`;
-    const hostDomainPart = isLocal ? "" : `; domain=${hostname}`;
+
+    // Split hostname into domain segments to clear/set across all levels (e.g. on Render: onrender.com)
+    const hostParts = hostname.split(".");
+    const domains = [null]; // null = host-only (no domain attribute)
+    if (!isLocal) {
+      domains.push(hostname);
+      for (let i = 1; i < hostParts.length - 1; i++) {
+        domains.push("." + hostParts.slice(i).join("."));
+      }
+    }
 
     const clearCookie = (name) => {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${domainPart}`;
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${hostDomainPart}`;
+      domains.forEach(d => {
+        const domAttr = d ? `; domain=${d}` : "";
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${domAttr}`;
+      });
     };
 
     if (langCode === "en") {
       clearCookie("googtrans");
     } else {
       const transVal = `/en/${langCode}`;
-      // Set without domain (host-only)
-      document.cookie = `googtrans=${transVal}; path=/;`;
-      // Set with domain if not local
-      if (!isLocal) {
-        document.cookie = `googtrans=${transVal}; path=/;${hostDomainPart}`;
-        document.cookie = `googtrans=${transVal}; path=/;${domainPart}`;
-      }
+      domains.forEach(d => {
+        const domAttr = d ? `; domain=${d}` : "";
+        document.cookie = `googtrans=${transVal}; path=/;${domAttr}`;
+      });
     }
+
+    // If Google translate select element is already present in DOM, trigger change directly as well
+    const selectEl = document.querySelector(".goog-te-combo");
+    if (selectEl) {
+      selectEl.value = langCode;
+      selectEl.dispatchEvent(new Event("change"));
+    }
+
     window.location.reload();
   }
 
@@ -308,7 +320,7 @@ export class Router {
 
           <div class="user-menu-wrapper">
             <button id="userMenuTrigger" class="user-menu-trigger" aria-haspopup="true" aria-expanded="${this.isMenuOpen}">
-              ${u.profileImage ? `<img src="${u.profileImage}" class="user-nav-avatar" alt="">` : `<div class="user-nav-avatar">${initial}</div>`}
+              ${u.profileImage ? `<img src="${u.profileImage}" class="user-nav-avatar" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-nav-avatar\\'>${initial}</div>';">` : `<div class="user-nav-avatar">${initial}</div>`}
               <span>${u.fullName.split(" ")[0]}</span>
               <span style="font-size:0.7rem; color:var(--text-muted);">▼</span>
             </button>
@@ -712,8 +724,8 @@ export class Router {
     return requestViews.renderBloodRequestDetail.call(this, requestId);
   }
 
-  openDonationModal(request) {
-    return requestViews.openDonationModal.call(this, request);
+  openDonationModal(requestId, request) {
+    return requestViews.openDonationModal.call(this, requestId, request);
   }
 
   async renderMyBloodRequests() {

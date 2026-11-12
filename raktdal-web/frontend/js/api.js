@@ -123,6 +123,10 @@ export const api = {
   resetPassword(data) {
     return this.request("/auth/reset-password", { method: "POST", body: data });
   },
+
+  changePassword(data) {
+    return this.request("/auth/change-password", { method: "POST", body: data });
+  },
   getMe() {
     return this.request("/auth/me");
   },

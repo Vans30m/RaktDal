@@ -95,17 +95,88 @@ export function renderEmailTemplate({ title, subtitle, bodyHtml, actionUrl = nul
 }
 
 /**
- * Low-level email dispatcher (Resend -> Gmail SMTP -> Dev fallback)
+ * Send email via EmailJS REST API
+ * Supports standard parameters: to_email, to_name, subject, message, html_content
  */
-export async function sendEmail({ to, subject, html }) {
+export async function sendEmailViaEmailJS({
+  to,
+  toName = "",
+  subject,
+  html,
+  templateParams = {},
+  templateId = null
+}) {
+  const serviceId = env.emailjsServiceId;
+  const targetTemplateId = templateId || env.emailjsTemplateId;
+  const publicKey = env.emailjsPublicKey;
+  const privateKey = env.emailjsPrivateKey;
+
+  if (!serviceId || !targetTemplateId || !publicKey) {
+    throw new Error("EmailJS configuration is missing serviceId, templateId, or publicKey.");
+  }
+
+  const payload = {
+    service_id: serviceId,
+    template_id: targetTemplateId,
+    user_id: publicKey,
+    template_params: {
+      to_email: to,
+      email: to,
+      to_name: toName,
+      name: toName,
+      subject: subject,
+      message: html,
+      html_content: html,
+      ...templateParams
+    }
+  };
+
+  if (privateKey) {
+    payload.accessToken = privateKey;
+  }
+
+  const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`EmailJS send failed (${response.status}): ${errorText}`);
+  }
+
+  return { success: true, provider: "emailjs", messageId: `emailjs-${Date.now()}` };
+}
+
+/**
+ * Low-level email dispatcher (EmailJS -> Gmail SMTP -> Resend -> Dev fallback)
+ */
+export async function sendEmail({ to, toName = "", subject, html, templateParams = {}, templateId = null }) {
   const from = env.smtpUser ? `RaktDal <${env.smtpUser}>` : env.emailFrom;
 
   try {
+    // Priority 1: EmailJS if configured
+    if (env.emailjsServiceId && (templateId || env.emailjsTemplateId) && env.emailjsPublicKey) {
+      return await sendEmailViaEmailJS({
+        to,
+        toName,
+        subject,
+        html,
+        templateParams,
+        templateId
+      });
+    }
+
+    // Priority 2: Gmail SMTP
     if (transporter) {
       const info = await transporter.sendMail({ from, to, subject, html });
       return { success: true, provider: "smtp", messageId: info.messageId };
     }
 
+    // Priority 3: Resend
     if (resend) {
       const { data, error } = await resend.emails.send({
         from: env.emailFrom,
@@ -120,7 +191,7 @@ export async function sendEmail({ to, subject, html }) {
     }
   } catch (deliveryError) {
     if (env.nodeEnv !== "production") {
-      console.warn(`[EMAIL DELIVERY NOTICE] Resend/SMTP could not send (${deliveryError.message}). Fallback to dev log.`);
+      console.warn(`[EMAIL DELIVERY NOTICE] Primary email provider failed (${deliveryError.message}). Fallback to dev log.`);
       return { success: true, provider: "dev-fallback", messageId: "dev-simulated-fallback-id" };
     }
     throw deliveryError;

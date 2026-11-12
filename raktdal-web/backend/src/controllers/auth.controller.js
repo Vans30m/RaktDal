@@ -20,6 +20,7 @@ import {
   generateGoogleAuthUrl,
   exchangeAndVerifyGoogleToken
 } from "../services/googleAuth.service.js";
+import { NotificationService } from "../services/notification.service.js";
 
 const googleClient = new OAuth2Client(
   env.google.clientId,
@@ -347,7 +348,9 @@ export async function getSessions(req, res) {
       userId: req.user._id,
       isRevoked: false,
       expiresAt: { $gt: new Date() }
-    }).sort({ updatedAt: -1 });
+    })
+      .sort({ updatedAt: -1 })
+      .limit(5);
 
     const formatted = sessions.map((s) => ({
       id: s._id,
@@ -555,6 +558,65 @@ export async function resetPassword(req, res) {
 }
 
 /**
+ * Change Password (Authenticated user with current password check)
+ * POST /api/v1/auth/change-password
+ */
+export async function changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+
+    if (!newPassword || typeof newPassword !== "string" || newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 8 characters long."
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User account not found."
+      });
+    }
+
+    // If user already has a password set, verify currentPassword
+    if (user.passwordHash) {
+      if (!currentPassword || typeof currentPassword !== "string") {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is required."
+        });
+      }
+
+      const isMatch = await argon2.verify(user.passwordHash, currentPassword);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Incorrect current password."
+        });
+      }
+    }
+
+    // Hash the new password using Argon2
+    const passwordHash = await argon2.hash(newPassword);
+    user.passwordHash = passwordHash;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Password changed successfully."
+    });
+  } catch (err) {
+    console.error("changePassword error:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update password. Please try again."
+    });
+  }
+}
+
+/**
  * Verify Email with OTP
  * POST /api/v1/auth/verify-email
  */
@@ -617,8 +679,47 @@ export async function verifyEmailOtp(req, res) {
 
     const user = await User.findOne({ email: targetEmail.toLowerCase().trim() });
     if (user) {
+      const wasAlreadyVerified = Boolean(user.emailVerifiedAt);
       user.emailVerifiedAt = new Date();
       await user.save();
+
+      // If newly verified, send welcome email notification
+      if (!wasAlreadyVerified) {
+        try {
+          await NotificationService.notifyUser({
+            userId: user._id,
+            type: "ACCOUNT_CREATED",
+            title: "Welcome to RaktDal!",
+            message: `Hello ${user.fullName || "Friend"}, your email has been verified. Welcome to RaktDal, where every drop connects and saves lives!`,
+            priority: "NORMAL",
+            emailOptions: {
+              subject: "Welcome to RaktDal - Account Activated!",
+              subtitle: "Thank you for joining our life-saving community.",
+              bodyHtml: `
+                <p>Hello <strong>${user.fullName || "Friend"}</strong>,</p>
+                <p>Congratulations! Your RaktDal account has been successfully created and verified.</p>
+                <p>With RaktDal, you can:</p>
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                  <li><strong>Register as a Blood Donor:</strong> Make yourself discoverable to verified hospitals and families in critical need.</li>
+                  <li><strong>Find Blood Donors:</strong> Search verified donors in real-time across your city and state.</li>
+                  <li><strong>Join Blood Donation Camps:</strong> Discover and register for verified donation drives in your area.</li>
+                  <li><strong>Request Emergency Blood:</strong> Submit verified emergency blood requests that notify matching donors immediately.</li>
+                </ul>
+                <p>Together, we bridge the gap between donors and patients in urgent need.</p>
+              `,
+              actionUrl: "/pages/donor-registration.html",
+              actionText: "Become a Donor",
+              templateParams: {
+                to_name: user.fullName || "User",
+                subject: "Welcome to RaktDal - Account Activated!",
+                message: "Your email has been verified and your RaktDal account is activated. Thank you for joining our community!"
+              }
+            }
+          });
+        } catch (welcomeErr) {
+          console.warn("[AUTH] Welcome notification non-fatal error:", welcomeErr.message);
+        }
+      }
     }
 
     return res.json({
@@ -743,7 +844,16 @@ export async function handleGoogleCallback(req, res) {
     // Lookup user by immutable Google Subject ID ('sub') first
     let user = await User.findOne({ googleSubject: payload.sub });
 
-    if (!user) {
+    if (user) {
+      // Keep profile image and name fresh from Google if provided
+      if (payload.picture && payload.picture !== user.profileImage) {
+        user.profileImage = payload.picture;
+      }
+      if (payload.name && (!user.fullName || user.fullName === "Blood Donor")) {
+        user.fullName = payload.name;
+      }
+      await user.save();
+    } else {
       // Check if an existing account uses this email
       const existingUserWithEmail = await User.findOne({ email: payload.email });
       if (existingUserWithEmail) {
@@ -757,7 +867,7 @@ export async function handleGoogleCallback(req, res) {
         if (payload.emailVerified && !existingUserWithEmail.emailVerifiedAt) {
           existingUserWithEmail.emailVerifiedAt = new Date();
         }
-        if (payload.picture && !existingUserWithEmail.profileImage) {
+        if (payload.picture) {
           existingUserWithEmail.profileImage = payload.picture;
         }
         user = await existingUserWithEmail.save();

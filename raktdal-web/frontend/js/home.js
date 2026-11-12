@@ -115,7 +115,6 @@ export const homeViews = {
           <div class="landing-container hero-grid">
             <div class="hero-content-col scroll-reveal">
               <span class="landing-eyebrow">
-                <span class="eyebrow-dot"></span>
                 BLOOD DONATION & DONOR COORDINATION
               </span>
               <h1 id="heroHeadline" class="hero-title">
