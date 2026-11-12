@@ -25,6 +25,106 @@ const router = Router();
 // Public Donor Discovery Endpoint (No authentication required)
 router.get("/search", searchLimiter, searchDonors);
 
+// POST /api/v1/donors/seed - Seed sample donor profiles if database has none (Development & Demo utility)
+router.post("/seed", async (req, res) => {
+  try {
+    const { DonorProfile } = await import("../models/DonorProfile.js");
+    const { User } = await import("../models/User.js");
+
+    const sampleDonors = [
+      {
+        fullName: "Aarav Sharma",
+        email: "aarav.sharma@raktdal-demo.org",
+        phoneNumber: "+91 98123 45671",
+        bloodGroup: "O+",
+        age: 26,
+        location: { city: "Delhi", district: "Central Delhi", state: "Delhi", pinCode: "110001" },
+        availabilityStatus: "AVAILABLE"
+      },
+      {
+        fullName: "Priya Patel",
+        email: "priya.patel@raktdal-demo.org",
+        phoneNumber: "+91 98234 56782",
+        bloodGroup: "B+",
+        age: 29,
+        location: { city: "Mumbai", district: "Mumbai City", state: "Maharashtra", pinCode: "400001" },
+        availabilityStatus: "AVAILABLE"
+      },
+      {
+        fullName: "Vikram Singh",
+        email: "vikram.singh@raktdal-demo.org",
+        phoneNumber: "+91 98345 67893",
+        bloodGroup: "A+",
+        age: 32,
+        location: { city: "Chandigarh", district: "Chandigarh", state: "Punjab", pinCode: "160017" },
+        availabilityStatus: "AVAILABLE"
+      },
+      {
+        fullName: "Ananya Iyer",
+        email: "ananya.iyer@raktdal-demo.org",
+        phoneNumber: "+91 98456 78904",
+        bloodGroup: "AB+",
+        age: 24,
+        location: { city: "Bengaluru", district: "Bengaluru Urban", state: "Karnataka", pinCode: "560001" },
+        availabilityStatus: "AVAILABLE"
+      },
+      {
+        fullName: "Rohan Verma",
+        email: "rohan.verma@raktdal-demo.org",
+        phoneNumber: "+91 98567 89015",
+        bloodGroup: "O-",
+        age: 35,
+        location: { city: "Delhi", district: "South Delhi", state: "Delhi", pinCode: "110016" },
+        availabilityStatus: "AVAILABLE"
+      },
+      {
+        fullName: "Sneha Mukherjee",
+        email: "sneha.m@raktdal-demo.org",
+        phoneNumber: "+91 98678 90126",
+        bloodGroup: "B-",
+        age: 28,
+        location: { city: "Kolkata", district: "Kolkata", state: "West Bengal", pinCode: "700001" },
+        availabilityStatus: "AVAILABLE"
+      }
+    ];
+
+    let createdCount = 0;
+    for (const d of sampleDonors) {
+      let user = await User.findOne({ email: d.email });
+      if (!user) {
+        user = await User.create({
+          fullName: d.fullName,
+          email: d.email,
+          phoneNumber: d.phoneNumber,
+          platformRoles: ["USER"],
+          isEmailVerified: true
+        });
+      }
+
+      let profile = await DonorProfile.findOne({ userId: user._id });
+      if (!profile) {
+        await DonorProfile.create({
+          userId: user._id,
+          bloodGroup: d.bloodGroup,
+          age: d.age,
+          location: d.location,
+          availabilityStatus: d.availabilityStatus,
+          preferredContactMethod: "IN_APP",
+          publicDiscoveryConsent: true,
+          notificationConsent: true,
+          contactSharingConsent: true,
+          profileStatus: "ACTIVE"
+        });
+        createdCount++;
+      }
+    }
+
+    return res.json({ success: true, message: `Successfully seeded ${createdCount} volunteer donor profiles.` });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Authenticated Donor Profile Endpoints
 router.post("/profile", authenticate, verifyCsrf, createDonorProfile);
 router.get("/me", authenticate, getMyDonorProfile);

@@ -12,6 +12,7 @@ export const donorViews = {
    */
   async renderDonorSearch(container, params = new URLSearchParams()) {
     const bloodGroup = params.get("bloodGroup") || "";
+    const state = params.get("state") || "";
     const city = params.get("city") || "";
     const pinCode = params.get("pinCode") || "";
     const availabilityStatus = params.get("availabilityStatus") || "";
@@ -30,7 +31,7 @@ export const donorViews = {
               Find Opted-In <span class="accent-text">Blood Donors</span>
             </h1>
             <p class="find-donors-hero-sub">
-              Search verified, voluntary blood donors by blood group, city, or 6-digit postal PIN code.
+              Search verified, voluntary blood donors by blood group, state, city, or 6-digit postal PIN code.
             </p>
           </div>
         </section>
@@ -39,7 +40,7 @@ export const donorViews = {
         <div class="find-donors-body-wrapper">
           <!-- Search Controls Card -->
           <div id="donorSearchCard" class="find-donors-search-card">
-            <form id="donorSearchForm" class="find-donors-search-form">
+            <form id="donorSearchForm" class="find-donors-search-form donor-filter-form">
               <div class="form-group" style="margin: 0;">
                 <label class="form-label" for="searchBloodGroup">Blood Group</label>
                 <select id="searchBloodGroup" class="form-input">
@@ -49,8 +50,13 @@ export const donorViews = {
               </div>
 
               <div class="form-group" style="margin: 0;">
+                <label class="form-label" for="searchState">State</label>
+                <input type="text" id="searchState" class="form-input" placeholder="e.g. Maharashtra, Punjab" value="${escapeHtml(state)}">
+              </div>
+
+              <div class="form-group" style="margin: 0;">
                 <label class="form-label" for="searchCity">City</label>
-                <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai, Delhi" value="${escapeHtml(city)}">
+                <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai, Delhi, Chandigarh" value="${escapeHtml(city)}">
               </div>
 
               <div class="form-group" style="margin: 0;">
@@ -90,12 +96,14 @@ export const donorViews = {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const bg = document.getElementById("searchBloodGroup").value;
+      const st = document.getElementById("searchState").value.trim();
       const c = document.getElementById("searchCity").value.trim();
       const pin = document.getElementById("searchPinCode").value.trim();
       const avail = document.getElementById("searchAvailability").value;
 
       const q = new URLSearchParams();
       if (bg) q.set("bloodGroup", bg);
+      if (st) q.set("state", st);
       if (c) q.set("city", c);
       if (pin) q.set("pinCode", pin);
       if (avail) q.set("availabilityStatus", avail);
@@ -112,7 +120,13 @@ export const donorViews = {
     try {
       const res = await api.searchDonors({
         bloodGroup,
+        state,
         city,
+        pinCode,
+        availabilityStatus,
+        page,
+        limit: 9
+      });
         pinCode,
         availabilityStatus,
         page,
@@ -138,11 +152,17 @@ export const donorViews = {
             <div style="font-size: 2.5rem; margin-bottom: 10px;">🩸</div>
             <h3 style="margin: 0 0 8px;">No matching donors found</h3>
             <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 450px; margin: 0 auto 16px;">
-              Try broadening your search criteria or searching for nearby cities and PIN codes.
+              Try broadening your search criteria or resetting filters to find available donors across regions.
             </p>
-            <a href="#/donor/register" class="button button-outline" style="font-size: 0.88rem;">Register as a Donor</a>
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+              <button id="emptyResetFilterBtn" class="button button-outline" style="font-size:0.88rem;">Reset Filters</button>
+              <a href="#/donor/register" class="button" style="font-size:0.88rem;">Register as a Donor</a>
+            </div>
           </div>
         `;
+        document.getElementById("emptyResetFilterBtn")?.addEventListener("click", () => {
+          window.location.hash = "#/find-blood";
+        });
         return;
       }
 

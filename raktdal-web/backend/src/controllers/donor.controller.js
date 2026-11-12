@@ -463,7 +463,7 @@ export async function updateMyConsent(req, res) {
  */
 export async function searchDonors(req, res) {
   try {
-    const { bloodGroup, city, pinCode, availabilityStatus, page = 1, limit = 10 } = req.query;
+    const { bloodGroup, city, state, pinCode, availabilityStatus, page = 1, limit = 10 } = req.query;
 
     // Strict NoSQL injection defense: ensure all query inputs are strictly primitive strings
     const filter = {
@@ -482,7 +482,7 @@ export async function searchDonors(req, res) {
       filter.bloodGroup = bloodGroup.trim();
     }
 
-    // Validate & apply city filter (case-insensitive exact or trimmed match)
+    // Validate & apply city filter (case-insensitive substring or match)
     if (city) {
       if (typeof city !== "string" || city.trim().length > 100) {
         return res.status(400).json({
@@ -490,9 +490,21 @@ export async function searchDonors(req, res) {
           message: "City filter must be a valid string."
         });
       }
-      // Sanitized escaped regex for search to prevent injection
+      // Sanitized escaped regex for flexible search
       const escapedCity = city.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      filter["location.city"] = new RegExp(`^${escapedCity}$`, "i");
+      filter["location.city"] = new RegExp(escapedCity, "i");
+    }
+
+    // Validate & apply state filter (case-insensitive substring or match)
+    if (state) {
+      if (typeof state !== "string" || state.trim().length > 100) {
+        return res.status(400).json({
+          success: false,
+          message: "State filter must be a valid string."
+        });
+      }
+      const escapedState = state.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter["location.state"] = new RegExp(escapedState, "i");
     }
 
     // Validate & apply pinCode filter
