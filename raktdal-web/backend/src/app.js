@@ -27,12 +27,47 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
-      connectSrc: ["'self'", "https://accounts.google.com", "http://localhost:*", "http://127.0.0.1:*"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
-      frameSrc: ["'self'", "https://accounts.google.com"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "https://accounts.google.com",
+        "https://translate.google.com",
+        "https://translate.googleapis.com"
+      ],
+      connectSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://translate.googleapis.com",
+        "https://translate.google.com",
+        "http://localhost:*",
+        "http://127.0.0.1:*"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+        "https://translate.googleapis.com"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com"
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https:",
+        "blob:",
+        "https://www.google.com",
+        "https://translate.google.com",
+        "https://translate.googleapis.com",
+        "https://www.gstatic.com"
+      ],
+      frameSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://translate.google.com"
+      ],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: env.isProduction ? [] : null
     }

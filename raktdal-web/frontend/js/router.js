@@ -172,14 +172,29 @@ export class Router {
   setWebsiteLanguage(langCode) {
     localStorage.setItem("raktdal_lang", langCode);
     const hostname = window.location.hostname;
-    const domainPart = hostname === "localhost" || hostname === "127.0.0.1" ? "" : `; domain=${hostname}`;
+    const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
+    
+    // Determine cookie domains (both host-only and apex domain if applicable)
+    const domainPart = isLocal ? "" : `; domain=.${hostname.replace(/^www\./, "")}`;
+    const hostDomainPart = isLocal ? "" : `; domain=${hostname}`;
+
+    const clearCookie = (name) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${domainPart}`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${hostDomainPart}`;
+    };
+
     if (langCode === "en") {
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${domainPart}`;
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+      clearCookie("googtrans");
     } else {
       const transVal = `/en/${langCode}`;
-      document.cookie = `googtrans=${transVal}; path=/;${domainPart}`;
-      document.cookie = `googtrans=${transVal}; path=/`;
+      // Set without domain (host-only)
+      document.cookie = `googtrans=${transVal}; path=/;`;
+      // Set with domain if not local
+      if (!isLocal) {
+        document.cookie = `googtrans=${transVal}; path=/;${hostDomainPart}`;
+        document.cookie = `googtrans=${transVal}; path=/;${domainPart}`;
+      }
     }
     window.location.reload();
   }
