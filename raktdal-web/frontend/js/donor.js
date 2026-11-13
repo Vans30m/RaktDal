@@ -230,17 +230,15 @@ export const donorViews = {
   async renderDonorDashboard(container) {
     container.innerHTML = `
       <div class="donor-dashboard-page-container">
-        <!-- 1. Compact Header Section -->
+        <!-- 1. Header Section -->
         <section class="donor-dashboard-hero-section" aria-labelledby="donorDashHeading">
           <div class="donor-dashboard-hero-inner">
-            <span class="donor-dashboard-badge">
-              Donor Hub &amp; Management
-            </span>
+            <span class="donor-dashboard-badge">Donor Dashboard</span>
             <h1 id="donorDashHeading" class="donor-dashboard-hero-title">
-              My Voluntary <span class="accent-text">Donor Profile</span>
+              Voluntary Donor <span class="accent-text">Profile</span>
             </h1>
             <p class="donor-dashboard-hero-sub">
-              Manage your voluntary blood group availability, consent permissions, and view verified emergency hospital alerts.
+              Manage your blood donation availability, contact options, and privacy settings.
             </p>
           </div>
         </section>
@@ -249,9 +247,9 @@ export const donorViews = {
         <div class="donor-dashboard-body-wrapper">
           <div id="donorDashMsg"></div>
           <div id="donorDashContent">
-            <div style="text-align:center; padding: 40px;">
-              <div class="spinner" style="margin: 0 auto 12px;"></div>
-              <p style="color:var(--text-muted);">Loading your donor profile...</p>
+            <div style="text-align:center; padding: 48px 20px;">
+              <div class="spinner" style="margin: 0 auto 14px;"></div>
+              <p style="color:var(--text-muted); font-size:0.95rem;">Loading donor profile...</p>
             </div>
           </div>
         </div>
@@ -1038,31 +1036,13 @@ function renderActiveDashboard(container, donor) {
   const isAvailable = donor.availabilityStatus === "AVAILABLE";
   const user = authState.getState().user || donor.user || {};
 
-  // Calculate actual profile completion percentage based on registered data fields
-  const completionFields = [
-    Boolean(user.fullName),
-    Boolean(donor.bloodGroup),
-    Boolean(donor.age),
-    Boolean(donor.location?.city),
-    Boolean(donor.location?.district),
-    Boolean(donor.location?.state),
-    Boolean(donor.location?.pinCode),
-    Boolean(donor.preferredContactMethod),
-    donor.publicDiscoveryConsent !== undefined,
-    donor.notificationConsent !== undefined,
-    donor.contactSharingConsent !== undefined,
-    Boolean(donor.lastDonationDate)
-  ];
-  const filledCount = completionFields.filter(Boolean).length;
-  const completionPercent = Math.round((filledCount / completionFields.length) * 100);
-
   container.innerHTML = `
     <div class="donor-dashboard-wrap">
       
       <!-- Feedback notice container for inline AJAX actions -->
       <div id="donorDashNotice" style="display: none; margin-bottom: 20px;"></div>
 
-      <!-- 1. Profile Hero Section -->
+      <!-- 1. Profile Overview Card -->
       <div class="donor-hero-card">
         <div class="donor-hero-content">
           <div class="donor-hero-left">
@@ -1078,190 +1058,53 @@ function renderActiveDashboard(container, donor) {
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                     <circle cx="12" cy="10" r="3"></circle>
                   </svg>
-                  ${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district || donor.location.city)}, ${escapeHtml(donor.location.state)} (${donor.location.pinCode})
+                  ${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.state)} (${donor.location.pinCode})
                 </span>
                 <span>•</span>
-                <span>${donor.age} Years Old</span>
+                <span>${donor.age} yrs</span>
               </div>
 
               <div class="donor-hero-badges">
                 <span class="donor-status-pill ${isAvailable ? "available" : "unavailable"}">
-                  <span style="font-size: 0.6rem;">${isAvailable ? "●" : "○"}</span>
-                  ${isAvailable ? "AVAILABLE TO DONATE" : "CURRENTLY UNAVAILABLE"}
+                  ${isAvailable ? "Available to Donate" : "Currently Unavailable"}
                 </span>
-
                 <span class="donor-status-pill ${donor.publicDiscoveryConsent ? "discoverable" : "hidden"}">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                  ${donor.publicDiscoveryConsent ? "PUBLICLY DISCOVERABLE" : "HIDDEN FROM DIRECTORY"}
+                  ${donor.publicDiscoveryConsent ? "Public in Directory" : "Hidden from Directory"}
                 </span>
               </div>
             </div>
           </div>
 
-          <div class="donor-hero-right">
-            <div class="donor-meter-header">
-              <span>Profile Health</span>
-              <strong>${completionPercent}%</strong>
-            </div>
-            <div class="donor-meter-bar">
-              <div class="donor-meter-fill" style="width: ${completionPercent}%;"></div>
-            </div>
-            <p class="donor-meter-note">
-              ${completionPercent === 100 ? "✓ Your profile is fully complete and indexed." : "Complete optional history to optimize compatibility."}
-            </p>
+          <div class="donor-hero-actions">
+            <a href="#/donor/edit" class="button button-outline" style="font-size:0.88rem; padding:8px 16px;">
+              Edit Profile
+            </a>
+            <a href="#/donor/availability" class="button button-primary" style="font-size:0.88rem; padding:8px 16px;">
+              Update Status
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- 2. Profile Summary Statistics -->
-      <div class="donor-stats-grid">
-        <div class="donor-stat-card">
-          <div class="donor-stat-card-top">
-            <span class="donor-stat-label">Blood Type</span>
-            <div class="donor-stat-icon-bubble red">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="donor-stat-value" style="color: #c51e24;">${donor.bloodGroup}</div>
-          <p class="donor-stat-desc">Certified voluntary blood group profile</p>
-        </div>
-
-        <div class="donor-stat-card">
-          <div class="donor-stat-card-top">
-            <span class="donor-stat-label">Availability</span>
-            <div class="donor-stat-icon-bubble green">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-          </div>
-          <div class="donor-stat-value" style="font-size: 1.25rem; color: ${isAvailable ? "#16a36a" : "#64748b"};">
-            ${isAvailable ? "Ready" : "Paused"}
-          </div>
-          <p class="donor-stat-desc">${isAvailable ? "Active for emergency hospital matching" : "Temporarily paused from new alerts"}</p>
-        </div>
-
-        <div class="donor-stat-card">
-          <div class="donor-stat-card-top">
-            <span class="donor-stat-label">Profile Depth</span>
-            <div class="donor-stat-icon-bubble blue">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-          </div>
-          <div class="donor-stat-value">${completionPercent}%</div>
-          <p class="donor-stat-desc">Verified contact & location credentials</p>
-        </div>
-
-        <div class="donor-stat-card">
-          <div class="donor-stat-card-top">
-            <span class="donor-stat-label">Discovery Mode</span>
-            <div class="donor-stat-icon-bubble purple">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="donor-stat-value" style="font-size: 1.25rem;">
-            ${donor.publicDiscoveryConsent ? "Public" : "Private"}
-          </div>
-          <p class="donor-stat-desc">${donor.publicDiscoveryConsent ? "Visible to patients and blood banks" : "Hidden from search directory"}</p>
-        </div>
-      </div>
-
-      <!-- 3. Quick Action Hub -->
-      <div class="donor-actions-grid">
-        <a href="#/donor/edit" class="donor-action-card">
-          <div>
-            <div class="donor-action-header">
-              <div class="donor-action-bubble red">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-              </div>
-            </div>
-            <h4 class="donor-action-title">Edit Profile</h4>
-            <p class="donor-action-desc">Update your residential address, PIN code, age, and preferred communication channel.</p>
-          </div>
-          <div class="donor-action-footer">
-            <span>Manage Profile</span>
-            <span class="donor-action-arrow">→</span>
-          </div>
-        </a>
-
-        <a href="#/donor/availability" class="donor-action-card">
-          <div>
-            <div class="donor-action-header">
-              <div class="donor-action-bubble teal">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-              </div>
-            </div>
-            <h4 class="donor-action-title">Availability Status</h4>
-            <p class="donor-action-desc">Instantly toggle whether you are available to receive donation calls and hospital requests.</p>
-          </div>
-          <div class="donor-action-footer">
-            <span>Change Status</span>
-            <span class="donor-action-arrow">→</span>
-          </div>
-        </a>
-
-        <a href="#/donor/consent" class="donor-action-card">
-          <div>
-            <div class="donor-action-header">
-              <div class="donor-action-bubble blue">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  <path d="M9 12l2 2 4-4"></path>
-                </svg>
-              </div>
-            </div>
-            <h4 class="donor-action-title">Privacy & Consent</h4>
-            <p class="donor-action-desc">Configure public discovery, emergency alert permissions, and contact sharing rules.</p>
-          </div>
-          <div class="donor-action-footer">
-            <span>Manage Consents</span>
-            <span class="donor-action-arrow">→</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- 4. Two-Column Structured Profile & Interactive Privacy Section -->
+      <!-- 2. Two-Column Structured Profile & Privacy Controls -->
       <div class="donor-dashboard-split">
         
         <!-- Section A: Structured Donor Details -->
         <div class="donor-panel">
           <div class="donor-panel-header">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              Donor Specifications
-            </h3>
-            <a href="#/donor/edit" style="font-size:0.82rem; font-weight:700; color:var(--primary); text-decoration:none;">Edit Details</a>
+            <h3>Donor Details</h3>
+            <a href="#/donor/edit" class="donor-panel-link">Edit</a>
           </div>
 
           <div class="donor-info-list">
             <div class="donor-info-row">
-              <span class="donor-info-key">Registered Name</span>
+              <span class="donor-info-key">Full Name</span>
               <span class="donor-info-val">${escapeHtml(user.fullName || "Volunteer Donor")}</span>
             </div>
 
             <div class="donor-info-row">
               <span class="donor-info-key">Blood Group</span>
-              <span class="donor-info-val" style="color:#c51e24; font-weight:800;">${donor.bloodGroup}</span>
+              <span class="donor-info-val" style="color:var(--primary); font-weight:700;">${donor.bloodGroup}</span>
             </div>
 
             <div class="donor-info-row">
@@ -1270,32 +1113,28 @@ function renderActiveDashboard(container, donor) {
             </div>
 
             <div class="donor-info-row">
-              <span class="donor-info-key">City / District</span>
-              <span class="donor-info-val">${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.district || donor.location.city)}</span>
+              <span class="donor-info-key">City & State</span>
+              <span class="donor-info-val">${escapeHtml(donor.location.city)}, ${escapeHtml(donor.location.state)}</span>
             </div>
 
             <div class="donor-info-row">
-              <span class="donor-info-key">State & PIN</span>
-              <span class="donor-info-val">${escapeHtml(donor.location.state)} · ${donor.location.pinCode}</span>
+              <span class="donor-info-key">PIN Code</span>
+              <span class="donor-info-val">${donor.location.pinCode}</span>
             </div>
 
             <div class="donor-info-row">
-              <span class="donor-info-key">Preferred Channel</span>
+              <span class="donor-info-key">Preferred Contact</span>
               <span class="donor-info-val">
                 ${
-                  donor.preferredContactMethod === "IN_APP" ? "In-App Notification (Safest)" :
-                  donor.preferredContactMethod === "EMAIL" ? "Direct Email" : "Phone / WhatsApp"
+                  donor.preferredContactMethod === "IN_APP" ? "In-App Notification" :
+                  donor.preferredContactMethod === "EMAIL" ? "Email" : "Phone / WhatsApp"
                 }
               </span>
             </div>
 
             <div class="donor-info-row">
-              <span class="donor-info-key">Last Donation Date</span>
-              <span class="donor-info-val" style="display:flex; align-items:center; gap:6px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
+              <span class="donor-info-key">Last Donation</span>
+              <span class="donor-info-val">
                 ${donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString() : "Not Recorded"}
               </span>
             </div>
@@ -1305,21 +1144,15 @@ function renderActiveDashboard(container, donor) {
         <!-- Section B: Live Privacy & Consent Engine -->
         <div class="donor-panel">
           <div class="donor-panel-header">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a36a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <path d="M9 12l2 2 4-4"></path>
-              </svg>
-              Privacy & Consent Controls
-            </h3>
-            <span style="font-size:0.75rem; color:var(--text-muted); background:#f1f5f9; padding:3px 8px; border-radius:6px; font-weight:600;">Active Guard</span>
+            <h3>Privacy & Permissions</h3>
+            <a href="#/donor/consent" class="donor-panel-link">Preferences</a>
           </div>
 
           <!-- 1. Public Discovery Toggle -->
           <div class="donor-toggle-item">
             <div class="donor-toggle-text">
-              <strong>1. Public Donor Discovery</strong>
-              <p>Allows verified patients and hospitals in your city to find your blood group in directory searches.</p>
+              <strong>Public Donor Discovery</strong>
+              <p>Show your profile and blood group in directory searches.</p>
             </div>
             <label class="donor-switch" title="Toggle Public Discovery">
               <input type="checkbox" id="dashToggleDiscovery" ${donor.publicDiscoveryConsent ? "checked" : ""}>
@@ -1330,8 +1163,8 @@ function renderActiveDashboard(container, donor) {
           <!-- 2. Notification Consent Toggle -->
           <div class="donor-toggle-item">
             <div class="donor-toggle-text">
-              <strong>2. Urgent Donation Alerts</strong>
-              <p>Receive real-time in-app emergency notifications when matching blood requests are opened near you.</p>
+              <strong>Emergency Alerts</strong>
+              <p>Receive alerts when matching blood requests are posted in your city.</p>
             </div>
             <label class="donor-switch" title="Toggle Notification Consent">
               <input type="checkbox" id="dashToggleNotifications" ${donor.notificationConsent ? "checked" : ""}>
@@ -1342,8 +1175,8 @@ function renderActiveDashboard(container, donor) {
           <!-- 3. Contact Sharing Consent Toggle -->
           <div class="donor-toggle-item">
             <div class="donor-toggle-text">
-              <strong>3. Direct Contact Sharing</strong>
-              <p>Display your contact details on your donor card. When off, communication requires safe in-app alerts.</p>
+              <strong>Direct Contact Sharing</strong>
+              <p>Allow verified requesters to view your phone number or email directly.</p>
             </div>
             <label class="donor-switch" title="Toggle Contact Sharing">
               <input type="checkbox" id="dashToggleContact" ${donor.contactSharingConsent ? "checked" : ""}>
@@ -1351,13 +1184,13 @@ function renderActiveDashboard(container, donor) {
             </label>
           </div>
 
-          <div style="margin-top: 16px; padding: 12px 14px; background: #fff5f5; border-radius: 10px; border-left: 3px solid #c51e24; display: flex; align-items: center; gap: 10px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c51e24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <div class="donor-consent-notice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
-            <p style="font-size: 0.78rem; color: #7f1d1d; margin: 0; line-height: 1.4;">
-              All privacy toggles save instantly to your account using the verified RaktDal consent API.
-            </p>
+            <span>Changes save automatically to your profile.</span>
           </div>
 
         </div>
