@@ -74,23 +74,42 @@ export const notificationViews = {
         return;
       }
 
-      container.innerHTML = items.map(n => `
+      container.innerHTML = items.map(n => {
+        let actionLink = "";
+        if (n.relatedEntityType === "BloodRequest" && n.relatedEntityId) {
+          actionLink = `<div style="margin-top: 10px;">
+            <a href="#/requests/${n.relatedEntityId}" class="button" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+              <span>🩸 View Request & Contact Donor</span>
+            </a>
+          </div>`;
+        } else if (n.type === "REQUEST_RESPONSE_RECEIVED" && (n.metadata?.requestId || n.relatedEntityId)) {
+          const reqId = n.metadata?.requestId || n.relatedEntityId;
+          actionLink = `<div style="margin-top: 10px;">
+            <a href="#/requests/${reqId}" class="button" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+              <span>🩸 View Request & Contact Donor</span>
+            </a>
+          </div>`;
+        }
+
+        return `
         <div class="request-card" style="margin-bottom: 12px; padding: 16px; border-left: 4px solid ${n.isRead ? '#cbd5e1' : 'var(--red)'}; background: ${n.isRead ? '#ffffff' : '#fff5f5'};">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
-            <div>
+            <div style="flex: 1;">
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                 <span class="badge" style="font-size: 0.7rem; background: ${n.isRead ? '#f1f5f9' : '#fee2e2'}; color: ${n.isRead ? '#475569' : '#991b1b'};">${n.type.replace(/_/g, " ")}</span>
                 <span style="font-size: 0.78rem; color: var(--text-muted);">${new Date(n.createdAt).toLocaleDateString()}</span>
               </div>
               <h4 style="margin: 0 0 6px; font-size: 1rem; color: var(--text-main);">${n.title}</h4>
               <p style="margin: 0; font-size: 0.88rem; color: #475569; line-height: 1.5;">${n.message}</p>
+              ${actionLink}
             </div>
             ${!n.isRead ? `
               <button class="mark-single-read-btn" data-id="${n._id}" style="background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.76rem; cursor: pointer; color: var(--text-muted); white-space: nowrap;">Mark Read</button>
             ` : ""}
           </div>
         </div>
-      `).join("");
+      `;
+      }).join("");
 
       container.querySelectorAll(".mark-single-read-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {

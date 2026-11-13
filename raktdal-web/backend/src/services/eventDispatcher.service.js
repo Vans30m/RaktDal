@@ -56,13 +56,25 @@ class EventDispatcher {
         }
       } else if (eventName === "request_response.submitted") {
         if (eventData.requesterUserId && eventData.response) {
+          const donorName = eventData.response.sharedContactInfo?.fullName || "A volunteer donor";
+          const donorPhone = eventData.response.sharedContactInfo?.phone;
+          const donorEmail = eventData.response.sharedContactInfo?.email;
+          const units = eventData.response.unitsOffered || 1;
+          const contactSnippet = donorPhone ? ` Phone: ${donorPhone}.` : (donorEmail ? ` Email: ${donorEmail}.` : "");
+
           await NotificationService.notifyUser({
             userId: eventData.requesterUserId,
             type: "REQUEST_RESPONSE_RECEIVED",
-            title: "New Volunteer Response Received",
-            message: `A volunteer has responded to your blood request for ${eventData.bloodGroup || "blood"}.`,
-            relatedEntityType: "RequestResponse",
-            relatedEntityId: eventData.response._id,
+            title: `🩸 Donor Response: ${donorName} offered ${units} Unit(s)`,
+            message: `${donorName} is ready to donate ${units} unit(s) for your blood request (${eventData.bloodGroup || "blood"}).${contactSnippet} Click "View Request & Contact Donor" to see full details.`,
+            relatedEntityType: "BloodRequest",
+            relatedEntityId: eventData.requestId,
+            metadata: {
+              requestId: String(eventData.requestId),
+              responseId: String(eventData.response._id),
+              donorPhone: donorPhone || "",
+              donorEmail: donorEmail || ""
+            },
             priority: "HIGH"
           });
         }

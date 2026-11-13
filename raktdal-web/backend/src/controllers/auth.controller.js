@@ -776,7 +776,7 @@ export async function resendOtp(req, res) {
   }
 }
 
-// Allowed client origin pattern for development & production
+// Allowed client origin & base path for development & production
 function getRedirectOrigin(req) {
   const referer = req.headers?.referer || req.headers?.origin;
   if (referer) {
@@ -784,6 +784,10 @@ function getRedirectOrigin(req) {
       const url = new URL(referer);
       // If client initiated from localhost or 127.0.0.1 on any port (e.g. 3000, 5500, 5173, 5000), preserve it
       if (!env.isProduction && /^(localhost|127\.0\.0\.1)$/.test(url.hostname)) {
+        // If referer path contains /raktdal-web/frontend, preserve it in the origin prefix
+        if (url.pathname.includes("/raktdal-web/frontend")) {
+          return `${url.protocol}//${url.host}/raktdal-web/frontend`;
+        }
         return `${url.protocol}//${url.host}`;
       }
     } catch (_e) {}
@@ -833,7 +837,8 @@ export async function handleGoogleCallback(req, res) {
     try {
       const parsed = new URL(savedOrigin);
       if (!env.isProduction && /^(localhost|127\.0\.0\.1)$/.test(parsed.hostname)) {
-        targetOrigin = `${parsed.protocol}//${parsed.host}`;
+        const basePath = parsed.pathname.replace(/\/$/, "");
+        targetOrigin = `${parsed.protocol}//${parsed.host}${basePath}`;
       } else if (savedOrigin === env.frontendUrl) {
         targetOrigin = savedOrigin;
       }

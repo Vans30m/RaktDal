@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=/raktdal-web/frontend/index.html">
+  <title>RaktDal - Redirecting</title>
+  <script>
+    // Forward full path, query params, and hash to the frontend application
+    var search = window.location.search || '';
+    var hash = window.location.hash || '';
+    window.location.replace('/raktdal-web/frontend/index.html' + search + hash);
+  </script>
+</head>
+<body>
+  <p style="font-family: sans-serif; text-align: center; margin-top: 50px;">
+    Redirecting to <a href="/raktdal-web/frontend/index.html">RaktDal Application</a>...
+  </p>
+</body>
+</html>
+

@@ -646,16 +646,36 @@ async renderBloodRequests(params) {
       document.querySelectorAll(".mark-fulfilled-btn, #markFulfilledBtn").forEach(btn => {
         btn.addEventListener("click", async () => {
           if (confirm("Mark this blood request as fulfilled?")) {
-            await api.updateRequestStatus(requestId, "FULFILLED", "Fulfilled by user");
-            this.renderBloodRequestDetail(requestId);
+            try {
+              const res = await api.updateRequestStatus(requestId, "FULFILLED", "Fulfilled by user");
+              const data = await res.json().catch(() => ({}));
+              if (res.ok && data.success) {
+                toast.success("Blood request successfully marked as fulfilled.");
+                this.renderBloodRequestDetail(requestId);
+              } else {
+                toast.error(data.message || "Failed to update request status.");
+              }
+            } catch (err) {
+              toast.error(err.message || "Network error updating request.");
+            }
           }
         });
       });
 
       document.getElementById("cancelRequestBtn")?.addEventListener("click", async () => {
         if (confirm("Are you sure you want to cancel this blood request?")) {
-          await api.updateRequestStatus(requestId, "CANCELLED", "Cancelled by requester");
-          this.renderBloodRequestDetail(requestId);
+          try {
+            const res = await api.updateRequestStatus(requestId, "CANCELLED", "Cancelled by requester");
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success) {
+              toast.success("Blood request has been cancelled.");
+              this.renderBloodRequestDetail(requestId);
+            } else {
+              toast.error(data.message || "Failed to cancel request.");
+            }
+          } catch (err) {
+            toast.error(err.message || "Network error cancelling request.");
+          }
         }
       });
 
