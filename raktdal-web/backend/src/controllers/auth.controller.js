@@ -776,6 +776,21 @@ export async function resendOtp(req, res) {
   }
 }
 
+// Allowed client origin pattern for development & production
+function getRedirectOrigin(req) {
+  const referer = req.headers?.referer || req.headers?.origin;
+  if (referer) {
+    try {
+      const url = new URL(referer);
+      // If client initiated from localhost or 127.0.0.1 on any port (e.g. 3000, 5500, 5173, 5000), preserve it
+      if (!env.isProduction && /^(localhost|127\.0\.0\.1)$/.test(url.hostname)) {
+        return `${url.protocol}//${url.host}`;
+      }
+    } catch (_e) {}
+  }
+  return env.frontendUrl;
+}
+
 /**
  * Google Login Kickoff
  * GET /api/v1/auth/google
@@ -785,9 +800,13 @@ export function initiateGoogleLogin(req, res) {
     const state = crypto.randomBytes(32).toString("hex");
     const { verifier, challenge } = generatePkcePair();
 
-    // Store state and code_verifier in short-lived HttpOnly cookies
+    // Capture the origin the user actually came from (e.g. port 3000, 5500, 5173, etc.)
+    const clientOrigin = getRedirectOrigin(req);
+
+    // Store state, code_verifier, and client origin in short-lived HttpOnly cookies
     res.cookie("oauth_state", state, getCookieOptions({ maxAge: 10 * 60 * 1000 }));
     res.cookie("oauth_code_verifier", verifier, getCookieOptions({ maxAge: 10 * 60 * 1000 }));
+    res.cookie("oauth_client_origin", clientOrigin, getCookieOptions({ maxAge: 10 * 60 * 1000 }));
 
     const authUrl = generateGoogleAuthUrl({
       state,
@@ -797,7 +816,8 @@ export function initiateGoogleLogin(req, res) {
     return res.redirect(authUrl);
   } catch (err) {
     console.error("Failed to initiate Google OAuth:", err.message);
-    return res.redirect(`${env.frontendUrl}/pages/login.html?error=oauth_init_failed`);
+    const fallbackOrigin = getRedirectOrigin(req);
+    return res.redirect(`${fallbackOrigin}/index.html#/login?error=oauth_init_failed`);
   }
 }
 
@@ -806,11 +826,25 @@ export function initiateGoogleLogin(req, res) {
  * GET /api/v1/auth/google/callback
  */
 export async function handleGoogleCallback(req, res) {
+  // Determine redirect origin (from cookie saved during kickoff, or fallback)
+  let targetOrigin = env.frontendUrl;
+  const savedOrigin = req.cookies?.oauth_client_origin;
+  if (savedOrigin) {
+    try {
+      const parsed = new URL(savedOrigin);
+      if (!env.isProduction && /^(localhost|127\.0\.0\.1)$/.test(parsed.hostname)) {
+        targetOrigin = `${parsed.protocol}//${parsed.host}`;
+      } else if (savedOrigin === env.frontendUrl) {
+        targetOrigin = savedOrigin;
+      }
+    } catch (_e) {}
+  }
+
   try {
     const { code, state, error } = req.query;
 
     if (error || !code) {
-      return res.redirect(`${env.frontendUrl}/index.html#/login?error=cancelled`);
+      return res.redirect(`${targetOrigin}/index.html#/login?error=cancelled`);
     }
 
     const savedState = req.cookies?.oauth_state;
@@ -819,15 +853,16 @@ export async function handleGoogleCallback(req, res) {
     // Clear OAuth transaction cookies immediately
     res.clearCookie("oauth_state", getCookieOptions());
     res.clearCookie("oauth_code_verifier", getCookieOptions());
+    res.clearCookie("oauth_client_origin", getCookieOptions());
 
     if (!savedState || typeof state !== "string" || savedState !== state) {
       console.warn("OAuth state validation failed: state mismatch or missing cookie.");
-      return res.redirect(`${env.frontendUrl}/index.html#/login?error=invalid_state`);
+      return res.redirect(`${targetOrigin}/index.html#/login?error=invalid_state`);
     }
 
     if (!savedVerifier || typeof savedVerifier !== "string") {
       console.warn("PKCE code_verifier is missing from cookies.");
-      return res.redirect(`${env.frontendUrl}/index.html#/login?error=invalid_pkce`);
+      return res.redirect(`${targetOrigin}/index.html#/login?error=invalid_pkce`);
     }
 
     // Exchange code for tokens and verify Google ID token
@@ -838,7 +873,7 @@ export async function handleGoogleCallback(req, res) {
 
     if (!payload.email || !payload.sub) {
       console.warn("Google ID token missing essential claims (email or sub).");
-      return res.redirect(`${env.frontendUrl}/index.html#/login?error=invalid_account`);
+      return res.redirect(`${targetOrigin}/index.html#/login?error=invalid_account`);
     }
 
     // Lookup user by immutable Google Subject ID ('sub') first
@@ -860,7 +895,7 @@ export async function handleGoogleCallback(req, res) {
         if (existingUserWithEmail.googleSubject && existingUserWithEmail.googleSubject !== payload.sub) {
           // Conflict: Email belongs to an account linked to a different Google Subject
           console.warn("Prevented unsafe account linking: sub mismatch on existing email.");
-          return res.redirect(`${env.frontendUrl}/index.html#/login?error=identity_conflict`);
+          return res.redirect(`${targetOrigin}/index.html#/login?error=identity_conflict`);
         }
         // Link Google Subject to the existing record
         existingUserWithEmail.googleSubject = payload.sub;
@@ -886,7 +921,7 @@ export async function handleGoogleCallback(req, res) {
     }
 
     if (user.accountStatus !== "ACTIVE") {
-      return res.redirect(`${env.frontendUrl}/index.html#/login?error=account_suspended`);
+      return res.redirect(`${targetOrigin}/index.html#/login?error=account_suspended`);
     }
 
     user.lastLoginAt = new Date();
@@ -907,10 +942,10 @@ export async function handleGoogleCallback(req, res) {
     res.cookie("accessToken", accessToken, getCookieOptions({ maxAge: ACCESS_TOKEN_MAX_AGE }));
     res.cookie("refreshToken", rawRefreshToken, getCookieOptions({ maxAge: REFRESH_TOKEN_MAX_AGE }));
 
-    return res.redirect(`${env.frontendUrl}/index.html#/auth/callback?status=success`);
+    return res.redirect(`${targetOrigin}/index.html#/auth/callback?status=success`);
   } catch (err) {
     console.error("Google OAuth callback error:", err.message);
-    return res.redirect(`${env.frontendUrl}/index.html#/login?error=auth_failed`);
+    return res.redirect(`${targetOrigin}/index.html#/login?error=auth_failed`);
   }
 }
 
