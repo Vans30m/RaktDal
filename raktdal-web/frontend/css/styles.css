@@ -875,28 +875,33 @@ nav a.active::after {
 .hero-disclaimer-wrapper {
   grid-column: 1 / -1;
   width: 100%;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .hero-disclaimer-card {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
-  background: var(--red-light);
-  border: 1px solid var(--red-border);
+  background: #fff5f5;
+  border: 1px solid #fecaca;
   border-radius: 12px;
-  padding: 16px 20px;
-  color: var(--red-dark);
-  font-size: 0.88rem;
+  padding: 12px 20px;
+  color: #991b1b;
+  font-size: 0.86rem;
   line-height: 1.5;
   width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+  max-width: 960px;
+  box-shadow: 0 1px 3px rgba(185, 28, 28, 0.04);
+}
+
+.hero-disclaimer-card strong {
+  color: #7f1d1d;
+  font-weight: 700;
 }
 
 .disclaimer-icon {
   flex-shrink: 0;
-  margin-top: 1px;
+  color: #b91c1c;
 }
 
 .hero-visual-col {
