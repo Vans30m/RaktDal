@@ -26,8 +26,9 @@ export const notificationViews = {
           </div>
         </div>
 
-        <div id="notifListContainer">
-          <div class="spinner" style="margin: 32px auto;"></div>
+        <div id="notifListContainer" style="text-align: center; width: 100%;">
+          <div class="spinner" style="margin: 32px auto 12px;"></div>
+          <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0 auto;">Loading notifications...</p>
         </div>
       </div>
     `;

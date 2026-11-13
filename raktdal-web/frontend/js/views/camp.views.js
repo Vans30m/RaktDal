@@ -61,8 +61,9 @@ export const campViews = {
           </form>
         </div>
 
-        <div id="campsListContainer">
-          <div class="spinner" style="margin: 40px auto;"></div>
+        <div id="campsListContainer" style="text-align: center; width: 100%;">
+          <div class="spinner" style="margin: 40px auto 12px;"></div>
+          <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0 auto;">Searching donation camps...</p>
         </div>
       </div>
     `;
