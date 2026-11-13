@@ -172,7 +172,7 @@ export const homeViews = {
 
             <div class="how-cards-grid">
               <!-- Card 1 -->
-              <div class="feature-card scroll-reveal stagger-1">
+              <a href="#/find-blood" class="feature-card scroll-reveal stagger-1 text-card-link">
                 <div class="card-step-badge">01</div>
                 <div class="card-icon-bubble">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -184,10 +184,14 @@ export const homeViews = {
                 <p class="card-text">
                   Search opted-in voluntary donors by blood group, city, or PIN code with granular privacy controls.
                 </p>
-              </div>
+                <div class="card-action-cue">
+                  <span>Explore Donors</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
+              </a>
 
               <!-- Card 2 -->
-              <div class="feature-card scroll-reveal stagger-2">
+              <a href="#/requests" class="feature-card scroll-reveal stagger-2 text-card-link">
                 <div class="card-step-badge">02</div>
                 <div class="card-icon-bubble">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -201,10 +205,14 @@ export const homeViews = {
                 <p class="card-text">
                   Post urgent or scheduled blood requirements with hospital details and verified medical contacts.
                 </p>
-              </div>
+                <div class="card-action-cue">
+                  <span>View Requests</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
+              </a>
 
               <!-- Card 3 -->
-              <div class="feature-card scroll-reveal stagger-3">
+              <a href="#/donor/register" class="feature-card scroll-reveal stagger-3 text-card-link">
                 <div class="card-step-badge">03</div>
                 <div class="card-icon-bubble">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -218,10 +226,14 @@ export const homeViews = {
                 <p class="card-text">
                   Register your blood type, set your availability schedule, and choose your preferred contact methods.
                 </p>
-              </div>
+                <div class="card-action-cue">
+                  <span>Register Now</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
+              </a>
 
               <!-- Card 4 -->
-              <div class="feature-card scroll-reveal stagger-4">
+              <a href="#/camps" class="feature-card scroll-reveal stagger-4 text-card-link">
                 <div class="card-step-badge">04</div>
                 <div class="card-icon-bubble">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -235,7 +247,11 @@ export const homeViews = {
                 <p class="card-text">
                   Coordinate community blood drives, partner with recognized blood banks, and notify nearby donors.
                 </p>
-              </div>
+                <div class="card-action-cue">
+                  <span>Explore Camps</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                </div>
+              </a>
             </div>
           </div>
         </section>
@@ -460,9 +476,9 @@ export const homeViews = {
             </div>
 
             <!-- Column 4: Important Information -->
-            <div class="footer-col">
+            <div class="footer-col footer-col-important">
               <h4 class="footer-col-title">Important Information</h4>
-              <ul class="footer-nav-list">
+              <ul class="footer-nav-list footer-nav-list-grid">
                 <li><a href="#/privacy">Privacy Policy</a></li>
                 <li><a href="#/terms">Terms and Conditions</a></li>
                 <li><a href="#/disclaimer">Medical Disclaimer</a></li>
