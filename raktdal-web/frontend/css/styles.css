@@ -2395,6 +2395,49 @@ nav a.active::after {
   .how-cards-grid,
   .explore-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .feature-card,
+  .explore-card {
+    padding: 18px 16px;
+    border-radius: 14px;
+  }
+
+  .card-icon-bubble,
+  .explore-icon-box {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+  }
+
+  .card-icon-bubble svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .card-step-badge {
+    top: 14px;
+    right: 14px;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+
+  .card-title,
+  .explore-title {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .card-text,
+  .explore-desc {
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .explore-card-header {
+    margin-bottom: 10px;
   }
 
   .hero-cta-group {
@@ -2407,7 +2450,7 @@ nav a.active::after {
   }
 
   .landing-section {
-    padding: 44px 0;
+    padding: 36px 0;
   }
 
   .stat-cards-grid {
