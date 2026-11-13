@@ -38,6 +38,10 @@ class AuthStateManager {
     });
   }
 
+  isAuthenticated() {
+    return Boolean(this.user);
+  }
+
   getState() {
     return {
       user: this.user,

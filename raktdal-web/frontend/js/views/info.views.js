@@ -2576,8 +2576,28 @@ export const infoViews = {
       });
     }
 
-    // 3. ScrollSpy for Sticky Table of Contents
+    // 3. Smooth In-Page Scrolling for TOC Links (prevent full hash route transition)
     const tocLinks = container.querySelectorAll(".privacy-toc-link");
+    tocLinks.forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const href = link.getAttribute("href");
+        if (href && href.startsWith("#")) {
+          const targetEl = container.querySelector(href);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            tocLinks.forEach(l => l.classList.remove("active"));
+            link.classList.add("active");
+            if (mobileSelect) {
+              mobileSelect.value = href;
+            }
+          }
+        }
+      });
+    });
+
+    // 4. ScrollSpy for Sticky Table of Contents
     const sections = container.querySelectorAll(".policy-card");
     if (sections.length && tocLinks.length && "IntersectionObserver" in window) {
       const observer = new IntersectionObserver((entries) => {
@@ -2597,7 +2617,7 @@ export const infoViews = {
           }
         });
       }, {
-        rootMargin: "-20% 0px -60% 0px",
+        rootMargin: "-15% 0px -70% 0px",
         threshold: 0
       });
 

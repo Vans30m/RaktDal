@@ -417,6 +417,7 @@ export class Router {
   }
 
   async refreshNotificationBadge(checkIncomingAlerts = false) {
+    if (!authState.isAuthenticated()) return;
     try {
       const badge = document.getElementById("navNotifBadge");
       const res = await api.getUnreadNotificationCount();
@@ -500,8 +501,10 @@ export class Router {
     }
 
     this.updateActiveNav();
-    this.refreshNotificationBadge();
     const state = authState.getState();
+    if (state.isAuthenticated) {
+      this.refreshNotificationBadge();
+    }
 
     // Wait for initial auth inspection to complete before running guards
     if (state.loading && !state.initialized) {
