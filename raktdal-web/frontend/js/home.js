@@ -379,7 +379,6 @@ export const homeViews = {
               <div class="cta-inner-content">
                 <div class="cta-tag-wrapper">
                   <span class="cta-tag">
-                    <span class="cta-tag-dot"></span>
                     Join Our Community Network
                   </span>
                 </div>
