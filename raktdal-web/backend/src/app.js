@@ -104,7 +104,10 @@ app.use(helmet({
       upgradeInsecureRequests: env.isProduction ? [] : null
     }
   },
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
+  crossOriginResourcePolicy: false,
+  originAgentCluster: false
 }));
 app.use(cookieParser());
 

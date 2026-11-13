@@ -175,39 +175,28 @@ export class Router {
     const hostname = window.location.hostname;
     const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
 
-    // Set cookie on host and domains
-    const domains = [null];
-    if (!isLocal) {
-      domains.push(hostname);
-      // Also set on parent domain if not directly onrender.com
-      const hostParts = hostname.split(".");
-      if (hostParts.length > 2) {
-        domains.push("." + hostParts.slice(-2).join("."));
-      }
-    }
-
     const clearCookie = (name) => {
-      domains.forEach(d => {
-        const domAttr = d ? `; domain=${d}` : "";
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${domAttr}`;
-      });
+      // Clear host-only cookie
       document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      // Clear with domain attributes
+      if (!isLocal) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname};`;
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${hostname};`;
+      }
     };
 
     if (langCode === "en") {
       clearCookie("googtrans");
     } else {
       const transVal = `/en/${langCode}`;
-      // Set without domain (host-only) as required by HTTPS on Render subdomains
+      // Set host-only cookie (crucial for onrender.com subdomains)
       document.cookie = `googtrans=${transVal}; path=/;`;
-      domains.forEach(d => {
-        if (d) {
-          document.cookie = `googtrans=${transVal}; path=/; domain=${d};`;
-        }
-      });
+      if (!isLocal) {
+        document.cookie = `googtrans=${transVal}; path=/; domain=${hostname};`;
+      }
     }
 
-    // If Google translate select element is already present in DOM, trigger change directly as well
+    // Trigger select element in DOM directly if already rendered
     const selectEl = document.querySelector(".goog-te-combo");
     if (selectEl) {
       selectEl.value = langCode;
