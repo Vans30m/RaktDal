@@ -355,31 +355,55 @@ export const homeViews = {
         <section class="landing-section section-cta" aria-labelledby="ctaHeadline">
           <div class="landing-container">
             <div class="cta-banner-card scroll-reveal">
+              <div class="cta-bg-glow"></div>
               <div class="cta-decorative-circle circle-1"></div>
               <div class="cta-decorative-circle circle-2"></div>
+              <div class="cta-decorative-circle circle-3"></div>
               
               <div class="cta-inner-content">
-                <span class="cta-tag">Join Our Community Network</span>
+                <div class="cta-tag-wrapper">
+                  <span class="cta-tag">
+                    <span class="cta-tag-dot"></span>
+                    Join Our Community Network
+                  </span>
+                </div>
                 <h2 id="ctaHeadline" class="cta-heading">Be Someone's Reason to Smile.</h2>
                 <p class="cta-supporting-text">
-                  Your willingness to help can make a meaningful difference. Join RaktDal and support responsible blood donation coordination.
+                  Your willingness to help can make a meaningful difference. Join RaktDal and support responsible blood donation coordination across India.
                 </p>
                 <div class="cta-buttons-row">
-                  <a href="#/donor/register" class="button button-lg button-white shadow-hover">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <a href="#/donor/register" class="button button-lg button-white shadow-hover cta-primary-btn">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                     </svg>
-                    Become a Donor
+                    <span>Become a Donor</span>
                   </a>
-                  <a href="#/requests" class="button button-lg button-outline-white shadow-hover">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <a href="#/requests" class="button button-lg button-outline-white shadow-hover cta-secondary-btn">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 2 14 8 20 8"></polyline>
                       <line x1="16" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                     </svg>
-                    Explore Blood Requests
+                    <span>Explore Blood Requests</span>
                   </a>
+                </div>
+
+                <div class="cta-trust-badges">
+                  <span class="cta-trust-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    100% Free & Open
+                  </span>
+                  <span class="cta-trust-dot">•</span>
+                  <span class="cta-trust-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    Verified Donors
+                  </span>
+                  <span class="cta-trust-dot">•</span>
+                  <span class="cta-trust-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Instant Response
+                  </span>
                 </div>
               </div>
             </div>

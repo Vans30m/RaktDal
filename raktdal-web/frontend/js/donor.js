@@ -140,16 +140,6 @@ export const donorViews = {
 
       let { donors, pagination } = data.data || { donors: [], pagination: {} };
 
-      // Ensure logged in user's own donor profile is not shown in find donors list
-      const auth = authState.getState();
-      const currentUserId = auth?.user?._id || auth?.user?.id;
-      if (currentUserId && Array.isArray(donors)) {
-        donors = donors.filter(d => {
-          const dUserId = d.userId?._id || d.userId || d.donor?.userId || d.user?._id || d.user?.id;
-          return !dUserId || String(dUserId) !== String(currentUserId);
-        });
-      }
-
       if (!donors || donors.length === 0) {
         resultsEl.innerHTML = `
           <div class="auth-card" style="text-align: center; padding: 40px 20px;">
@@ -323,22 +313,29 @@ export const donorViews = {
     }
 
     container.innerHTML = `
-      <div class="requests-container" style="max-width: 800px; margin: 0 auto; padding: 20px 16px;">
-        <section class="donor-search-header" style="text-align: center; margin-bottom: 28px;">
-          <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
-            Direct Volunteer Coordination
-          </p>
-          <h1 style="font-size: 2.2rem; margin: 4px 0 8px;">Register as a Blood Donor</h1>
-          <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-            Help save lives in your community by joining the voluntary donor network.
-          </p>
+      <div class="find-donors-container">
+        <!-- 1. Hero Section - Matching Find Donors Theme -->
+        <section class="find-donors-hero-section" aria-labelledby="registerDonorHeading">
+          <div class="find-donors-hero-inner">
+            <span class="find-donors-badge">
+              Direct Volunteer Coordination
+            </span>
+            <h1 id="registerDonorHeading" class="find-donors-hero-title">
+              Register as a <span class="accent-text">Blood Donor</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Help save lives in your community by joining the voluntary donor network.
+            </p>
+          </div>
         </section>
 
-        <div class="auth-card" style="max-width: 800px; margin: 0 auto; text-align: left; padding: 32px 28px;">
+        <!-- 2. Main Content Wrapper -->
+        <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
+          <div class="auth-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
 
-        <div id="createDonorMsg"></div>
+          <div id="createDonorMsg"></div>
 
-        <form id="createDonorForm" novalidate>
+          <form id="createDonorForm" novalidate>
           <div class="responsive-form-row">
             <div class="form-group">
               <label class="form-label" for="donorBloodGroup">Blood Group *</label>
@@ -585,21 +582,29 @@ export const donorViews = {
    */
   async renderEditProfile(container) {
     container.innerHTML = `
-      <div class="requests-container" style="max-width: 800px; margin: 0 auto; padding: 20px 16px;">
-        <section class="donor-search-header" style="text-align: center; margin-bottom: 28px;">
-          <p class="eyebrow" style="color: var(--red); font-size: 0.8rem; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase;">
-            Direct Volunteer Coordination
-          </p>
-          <h1 style="font-size: 2.2rem; margin: 4px 0 8px;">Edit Donor Profile</h1>
-          <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-            Update your location and donation details.
-          </p>
+      <div class="find-donors-container">
+        <!-- 1. Hero Section - Matching Find Donors Theme -->
+        <section class="find-donors-hero-section" aria-labelledby="editDonorHeading">
+          <div class="find-donors-hero-inner">
+            <span class="find-donors-badge">
+              Direct Volunteer Coordination
+            </span>
+            <h1 id="editDonorHeading" class="find-donors-hero-title">
+              Edit <span class="accent-text">Donor Profile</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Update your location and donation details.
+            </p>
+          </div>
         </section>
 
-        <div class="auth-card" style="max-width: 800px; margin: 0 auto; text-align: left; padding: 32px 28px;">
-          <div id="editDonorMsg"></div>
-          <div id="editDonorFormContainer">
-            <div style="text-align:center; padding:30px;"><div class="spinner"></div></div>
+        <!-- 2. Main Content Wrapper -->
+        <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
+          <div class="auth-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
+            <div id="editDonorMsg"></div>
+            <div id="editDonorFormContainer">
+              <div style="text-align:center; padding:30px;"><div class="spinner"></div></div>
+            </div>
           </div>
         </div>
       </div>
