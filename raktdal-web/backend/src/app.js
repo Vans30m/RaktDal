@@ -37,6 +37,15 @@ app.use(helmet({
         "https://*.google.com",
         "https://*.gstatic.com"
       ],
+      scriptSrcElem: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://accounts.google.com",
+        "https://translate.google.com",
+        "https://translate.googleapis.com",
+        "https://*.google.com",
+        "https://*.gstatic.com"
+      ],
       connectSrc: [
         "'self'",
         "https://accounts.google.com",
@@ -44,6 +53,7 @@ app.use(helmet({
         "https://translate.google.com",
         "https://*.google.com",
         "https://*.googleapis.com",
+        "https://*.gstatic.com",
         "http://localhost:*",
         "http://127.0.0.1:*"
       ],
@@ -52,11 +62,22 @@ app.use(helmet({
         "'unsafe-inline'",
         "https://fonts.googleapis.com",
         "https://translate.googleapis.com",
+        "https://translate.google.com",
+        "https://*.google.com",
+        "https://*.gstatic.com"
+      ],
+      styleSrcElem: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+        "https://translate.googleapis.com",
+        "https://translate.google.com",
         "https://*.google.com",
         "https://*.gstatic.com"
       ],
       fontSrc: [
         "'self'",
+        "data:",
         "https://fonts.gstatic.com",
         "https://*.gstatic.com"
       ],
@@ -76,6 +97,7 @@ app.use(helmet({
         "'self'",
         "https://accounts.google.com",
         "https://translate.google.com",
+        "https://translate.googleapis.com",
         "https://*.google.com"
       ],
       objectSrc: ["'none'"],

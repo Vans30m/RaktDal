@@ -11,7 +11,8 @@
   <title>RaktDal | Blood Donation & Donor Coordination</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="./css/styles.css">
   <script>
     // Automatically use same origin in production, or localhost:5000 in local development
@@ -84,12 +85,16 @@
   <div id="google_translate_element" style="display:none;" aria-hidden="true"></div>
   <script type="text/javascript">
     function googleTranslateElementInit() {
-      if (window.google && window.google.translate) {
-        new google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,hi,bn,mr,te,ta,pa,gu',
-          autoDisplay: false
-        }, 'google_translate_element');
+      try {
+        if (window.google && window.google.translate) {
+          new window.google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,hi,bn,mr,te,ta,pa,gu',
+            autoDisplay: false
+          }, 'google_translate_element');
+        }
+      } catch (err) {
+        console.warn('Google Translate initialization failed:', err);
       }
     }
   </script>

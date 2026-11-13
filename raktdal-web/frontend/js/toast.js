@@ -175,4 +175,3 @@ class ToastService {
 }
 
 export const toast = new ToastService();
-
