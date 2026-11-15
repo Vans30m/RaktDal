@@ -1,7 +1,7 @@
 /**
  * Language Manager & State Synchronization for RaktDal
- * Controls full-page Google Translate via background script & cookies
- * while completely suppressing Google default UI widgets, banners, and tooltips.
+ * Identical architecture to Xplorism: controls full-page Google Translate via background
+ * script, cookies & combo trigger while completely hiding Google UI widgets, banners, and tooltips.
  */
 
 export const SUPPORTED_LANGUAGES = [
@@ -34,19 +34,15 @@ class LanguageManager {
     this.isInitialized = false;
   }
 
-  /**
-   * Resolves language from cookies or localStorage, falling back to 'en'
-   */
   resolveInitialLanguage() {
-    const match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
-    if (match) {
-      try {
-        const parts = decodeURIComponent(match[1]).split("/");
-        const lang = parts[parts.length - 1];
-        if (lang && SUPPORTED_LANGUAGES.some(l => l.code === lang)) {
-          return lang;
-        }
-      } catch (_e) {}
+    // Check googtrans cookie first
+    const match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]*)/);
+    if (match && match[1]) {
+      const parts = decodeURIComponent(match[1]).split("/");
+      const targetLang = parts[parts.length - 1];
+      if (targetLang && SUPPORTED_LANGUAGES.some(l => l.code === targetLang)) {
+        return targetLang;
+      }
     }
     const saved = localStorage.getItem(this.storageKey);
     if (saved && SUPPORTED_LANGUAGES.some(l => l.code === saved)) {
@@ -56,189 +52,140 @@ class LanguageManager {
   }
 
   /**
-   * Initializes script injection, background element & body lock mutation observer
+   * Helper to set googtrans cookie across both root path and domain (matching Xplorism)
+   */
+  setGoogleTranslateCookie(targetLang) {
+    try {
+      const cookieValue = targetLang === "en" ? "" : `/en/${targetLang}`;
+      const expires = targetLang === "en" ? "Thu, 01 Jan 1970 00:00:00 GMT" : "Fri, 31 Dec 2099 23:59:59 GMT";
+      const hostname = window.location.hostname;
+
+      // Set cookie on current path & root path
+      document.cookie = `googtrans=${cookieValue}; path=/; expires=${expires}`;
+      document.cookie = `googtrans=${cookieValue}; path=/; domain=${hostname}; expires=${expires}`;
+
+      // If domain has multiple segments, also set on root domain
+      const hostParts = hostname.split(".");
+      if (hostParts.length > 2) {
+        const rootDomain = "." + hostParts.slice(-2).join(".");
+        document.cookie = `googtrans=${cookieValue}; path=/; domain=${rootDomain}; expires=${expires}`;
+      }
+    } catch (e) {
+      console.warn("Could not set googtrans cookie:", e);
+    }
+  }
+
+  /**
+   * Programmatically trigger Google Translate combo selection without needing page reload
+   */
+  triggerGoogleTranslateCombo(targetLang) {
+    const trigger = () => {
+      const combo = document.querySelector(".goog-te-combo");
+      if (combo) {
+        if (combo.value !== targetLang) {
+          combo.value = targetLang;
+          combo.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        return true;
+      }
+      return false;
+    };
+
+    if (!trigger()) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (trigger() || attempts >= 25) {
+          clearInterval(interval);
+        }
+      }, 200);
+    }
+  }
+
+  /**
+   * Main setup
    */
   init() {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    this.ensureTranslateContainer();
-    this.setupMutationObserver();
-    this.injectGoogleTranslateScript();
-    this.syncCookieWithCurrentLang();
-  }
-
-  /**
-   * Ensures the hidden off-screen translate container is mounted
-   */
-  ensureTranslateContainer() {
-    let el = document.getElementById("google_translate_element");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "google_translate_element";
-      el.setAttribute("aria-hidden", "true");
-      document.body.appendChild(el);
+    // 1. Ensure hidden mount container exists
+    let translateDiv = document.getElementById("google_translate_element");
+    if (!translateDiv) {
+      translateDiv = document.createElement("div");
+      translateDiv.id = "google_translate_element";
+      translateDiv.style.display = "none";
+      translateDiv.style.visibility = "hidden";
+      translateDiv.style.position = "absolute";
+      translateDiv.style.top = "-9999px";
+      document.body.appendChild(translateDiv);
     }
-    el.style.cssText = "display: none !important; position: absolute !important; top: -9999px !important; left: -9999px !important; width: 0 !important; height: 0 !important; opacity: 0 !important; pointer-events: none !important;";
-  }
 
-  /**
-   * Injects the official Google Translate element script once
-   */
-  injectGoogleTranslateScript() {
-    // Setup global callback
+    // 2. Global init callback for Google Translate
     window.googleTranslateElementInit = () => {
       try {
-        if (window.google && window.google.translate) {
-          new window.google.translate.TranslateElement({
-            pageLanguage: "en",
-            includedLanguages: INCLUDED_LANG_CODES,
-            autoDisplay: false
-          }, "google_translate_element");
+        if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+          new window.google.translate.TranslateElement(
+            {
+              pageLanguage: "en",
+              includedLanguages: INCLUDED_LANG_CODES,
+              autoDisplay: false
+            },
+            "google_translate_element"
+          );
+
+          // Once initialized, apply current language if set
+          const currentLang = localStorage.getItem(this.storageKey) || "en";
+          if (currentLang && currentLang !== "en") {
+            this.setGoogleTranslateCookie(currentLang);
+            this.triggerGoogleTranslateCombo(currentLang);
+          }
         }
       } catch (err) {
         console.warn("Google Translate initialization error:", err);
       }
     };
 
+    // 3. Inject script safely avoiding duplicate injections
     const scriptId = "google-translate-script";
     if (!document.getElementById(scriptId)) {
       const script = document.createElement("script");
       script.id = scriptId;
-      script.type = "text/javascript";
       script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       script.async = true;
+      script.defer = true;
       document.head.appendChild(script);
+    } else if (window.google && window.google.translate) {
+      window.googleTranslateElementInit();
     }
-  }
 
-  /**
-   * Lightweight MutationObserver to strictly prevent Google from pushing down body/html
-   * with inline 'top' styles or injecting visible banners
-   */
-  setupMutationObserver() {
-    if (this.observer) return;
-
-    const resetStyles = () => {
+    // 4. MutationObserver to prevent Google Translate from adding inline 'top' style to body/html
+    this.observer = new MutationObserver(() => {
       if (document.body && document.body.style.top && document.body.style.top !== "0px") {
         document.body.style.top = "0px";
       }
       if (document.documentElement && document.documentElement.style.top && document.documentElement.style.top !== "0px") {
         document.documentElement.style.top = "0px";
       }
-    };
-
-    this.observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        if (m.type === "attributes" && m.attributeName === "style") {
-          resetStyles();
-        }
-      }
     });
 
     if (document.body) {
-      this.observer.observe(document.body, { attributes: true, attributeFilter: ["style"] });
+      this.observer.observe(document.body, { attributes: true, attributeFilter: ["style", "class"] });
     }
     if (document.documentElement) {
-      this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
+      this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] });
     }
   }
 
-  /**
-   * Synchronize cookie with current language on load if mismatch
-   */
-  syncCookieWithCurrentLang() {
-    if (this.currentLanguage === "en") {
-      this.clearGoogtransCookie();
-    } else {
-      this.writeGoogtransCookie(this.currentLanguage);
-    }
-  }
-
-  /**
-   * Write host-only and domain cookies for googtrans
-   */
-  writeGoogtransCookie(langCode) {
-    const transVal = `/en/${langCode}`;
-    const hostname = window.location.hostname;
-    const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
-
-    // Host-only cookie (path=/) - essential for subdomains like *.onrender.com
-    document.cookie = `googtrans=${transVal}; path=/;`;
-
-    // Also set with domain when not running on localhost
-    if (!isLocal) {
-      document.cookie = `googtrans=${transVal}; path=/; domain=${hostname};`;
-      const parts = hostname.split(".");
-      if (parts.length > 2 && !hostname.endsWith("onrender.com")) {
-        document.cookie = `googtrans=${transVal}; path=/; domain=.${parts.slice(-2).join(".")};`;
-      }
-    }
-  }
-
-  /**
-   * Clear googtrans cookie across all domain scopes
-   */
-  clearGoogtransCookie() {
-    const hostname = window.location.hostname;
-    const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
-
-    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    if (!isLocal) {
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname};`;
-      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${hostname};`;
-      const parts = hostname.split(".");
-      if (parts.length > 2 && !hostname.endsWith("onrender.com")) {
-        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${parts.slice(-2).join(".")};`;
-      }
-    }
-  }
-
-  /**
-   * Set target website language and trigger live DOM translation
-   */
-  setLanguage(langCode) {
-    if (!SUPPORTED_LANGUAGES.some(l => l.code === langCode)) {
-      langCode = "en";
-    }
-
-    this.currentLanguage = langCode;
-    localStorage.setItem(this.storageKey, langCode);
-
-    if (langCode === "en") {
-      this.clearGoogtransCookie();
-    } else {
-      this.writeGoogtransCookie(langCode);
-    }
-
+  setLanguage(newLang) {
+    if (!newLang) return;
+    this.currentLanguage = newLang;
+    localStorage.setItem(this.storageKey, newLang);
+    this.setGoogleTranslateCookie(newLang);
+    this.triggerGoogleTranslateCombo(newLang);
     this.notifyListeners();
-
-    // Programmatically dispatch change event to Google Translate combo box
-    this.dispatchComboEvent(langCode, 10);
   }
 
-  /**
-   * Programmatically finds .goog-te-combo and fires change event, with polling retry
-   */
-  dispatchComboEvent(langCode, retriesLeft = 10) {
-    const combo = document.querySelector(".goog-te-combo");
-    if (combo) {
-      combo.value = langCode;
-      combo.dispatchEvent(new Event("change", { bubbles: true }));
-    } else if (retriesLeft > 0) {
-      setTimeout(() => this.dispatchComboEvent(langCode, retriesLeft - 1), 150);
-      return;
-    }
-
-    // If change didn't trigger full reload or combo is not yet ready, perform clean reload
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
-  }
-
-  /**
-   * Fallback translation resolver: returns the key or default string
-   */
   t(key, fallback) {
     return fallback !== undefined ? fallback : key;
   }
@@ -265,9 +212,6 @@ class LanguageManager {
 
 export const languageManager = new LanguageManager();
 
-/**
- * Hook / Consumer helper for components
- */
 export function useLanguage() {
   return {
     language: languageManager.getCurrentLanguage(),
@@ -276,4 +220,3 @@ export function useLanguage() {
     supportedLanguages: SUPPORTED_LANGUAGES
   };
 }
-

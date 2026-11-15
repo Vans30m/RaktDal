@@ -1351,7 +1351,11 @@ function openDonorAlertModal(donorId, donorName, donorBg, donorCity) {
 
   const close = () => { modal.innerHTML = ""; };
   document.getElementById("closeAlertModalBtn")?.addEventListener("click", close);
-  document.getElementById("alertModalBackdrop")?.addEventListener("click", close);
+  document.getElementById("alertModalBackdrop")?.addEventListener("click", (e) => {
+    if (e.target === document.getElementById("alertModalBackdrop")) {
+      close();
+    }
+  });
 
   document.getElementById("sendDonorAlertForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();

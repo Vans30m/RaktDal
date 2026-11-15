@@ -775,7 +775,11 @@ async renderBloodRequests(params) {
 
     const close = () => { container.innerHTML = ""; };
     document.getElementById("closeModalBtn")?.addEventListener("click", close);
-    document.getElementById("modalBackdrop")?.addEventListener("click", close);
+    document.getElementById("modalBackdrop")?.addEventListener("click", (e) => {
+      if (e.target === document.getElementById("modalBackdrop")) {
+        close();
+      }
+    });
 
     document.getElementById("donationResponseForm")?.addEventListener("submit", async (e) => {
       e.preventDefault();
