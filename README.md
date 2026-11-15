@@ -16,7 +16,7 @@
 
 **RaktDal** is an enterprise-grade, privacy-by-design voluntary blood donation, blood bank inventory tracking, and emergency coordination platform across India — accessible as a responsive Single Page Application (SPA) with PWA support and as a native desktop executable via Electron.
 
-[Live Demo](https://raktdal.onrender.com) · [Report a Bug](https://github.com/Vans30m/RaktDal/issues) · [License](LICENSE)
+[Live Demo](https://raktdal.onrender.com) · [Report a Bug](https://github.com/Vans30m/RaktDal/issues)
 
 </div>
 

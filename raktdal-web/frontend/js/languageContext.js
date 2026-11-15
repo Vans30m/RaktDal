@@ -16,11 +16,7 @@ export const SUPPORTED_LANGUAGES = [
   { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ" },
   { code: "ml", name: "Malayalam", nativeName: "മലയാളം" },
   { code: "or", name: "Odia", nativeName: "ଓଡ଼ିଆ" },
-  { code: "ur", name: "Urdu", nativeName: "اردو" },
-  { code: "es", name: "Spanish", nativeName: "Español" },
-  { code: "fr", name: "French", nativeName: "Français" },
-  { code: "de", name: "German", nativeName: "Deutsch" },
-  { code: "ar", name: "Arabic", nativeName: "العربية" }
+  { code: "ur", name: "Urdu", nativeName: "اردو" }
 ];
 
 export const INCLUDED_LANG_CODES = SUPPORTED_LANGUAGES.map(l => l.code).join(",");
@@ -206,7 +202,7 @@ class LanguageManager {
   }
 
   getCurrentLanguage() {
-    return this.currentLanguage;
+    return this.resolveInitialLanguage();
   }
 }
 

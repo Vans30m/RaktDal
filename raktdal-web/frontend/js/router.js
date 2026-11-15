@@ -120,6 +120,11 @@ export class Router {
   setupLanguageSelector() {
     this.renderLanguageSelector();
 
+    // Subscribe to language changes so the checkmark and label always reflect the active language
+    languageManager.subscribe(() => {
+      this.renderLanguageSelector();
+    });
+
     // Close language selector when clicking outside
     document.addEventListener("click", (e) => {
       if (!e.target.closest("#langSelectorWrapper")) {
@@ -176,8 +181,8 @@ export class Router {
     dropdown.innerHTML = SUPPORTED_LANGUAGES.map(lang => {
       const isSelected = lang.code === currentMeta.code;
       return `
-        <button class="lang-option-item ${isSelected ? 'active' : ''}" data-lang="${lang.code}" role="menuitem" aria-label="${lang.name} (${lang.nativeName})">
-          <span>${lang.nativeName} <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(${lang.name})</small></span>
+        <button class="lang-option-item notranslate ${isSelected ? 'active' : ''}" data-lang="${lang.code}" role="menuitem" aria-label="${lang.name} (${lang.nativeName})" translate="no">
+          <span><span class="notranslate" translate="no">${lang.nativeName}</span> <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(${lang.name})</small></span>
           ${isSelected ? '<span class="lang-check-icon">✓</span>' : ''}
         </button>
       `;
