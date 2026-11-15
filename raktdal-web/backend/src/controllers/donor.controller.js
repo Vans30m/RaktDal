@@ -471,10 +471,8 @@ export async function searchDonors(req, res) {
       publicDiscoveryConsent: true // ONLY show donors who consented to public discovery
     };
 
-    // If user is authenticated, exclude their own profile so they never see themselves in donor discovery
-    if (req.user?._id) {
-      filter.userId = { $ne: req.user._id };
-    }
+    // Note: Do not exclude authenticated user from search results so users can verify their own public listing
+
 
     // Validate & apply bloodGroup filter
     if (bloodGroup) {

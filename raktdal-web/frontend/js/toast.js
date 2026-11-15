@@ -172,6 +172,95 @@ class ToastService {
   urgent(message, title = "Urgent Request") {
     this.show({ title, message, type: "urgent", duration: 7000 });
   }
+
+  /**
+   * Accessible, custom styled confirmation dialog
+   * @param {object} options
+   * @returns {Promise<boolean>}
+   */
+  confirm({
+    title = "Confirm Action",
+    message = "Are you sure you want to proceed?",
+    confirmText = "Confirm",
+    cancelText = "Cancel",
+    confirmVariant = "danger" // "danger" | "primary"
+  } = {}) {
+    return new Promise((resolve) => {
+      const existing = document.getElementById("raktdalConfirmModal");
+      if (existing) existing.remove();
+
+      const backdrop = document.createElement("div");
+      backdrop.id = "raktdalConfirmModal";
+      backdrop.className = "modal-backdrop custom-confirm-backdrop";
+
+      const isDanger = confirmVariant === "danger";
+      const iconSvg = isDanger ? `
+        <div style="width:44px; height:44px; border-radius:50%; background:#fee2e2; color:#dc2626; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+      ` : `
+        <div style="width:44px; height:44px; border-radius:50%; background:#e0f2fe; color:#0284c7; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+      `;
+
+      backdrop.innerHTML = `
+        <div class="modal-content custom-confirm-modal" style="max-width: 440px; border-radius: 18px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); text-align: left; animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+          <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom: 20px;">
+            ${iconSvg}
+            <div style="flex:1;">
+              <h3 style="margin: 0 0 6px; font-size: 1.15rem; font-weight: 800; color: var(--navy); line-height: 1.3;">${title}</h3>
+              <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">${message}</p>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button id="customConfirmCancelBtn" class="button button-outline" style="min-width: 90px; padding: 8px 16px; font-size: 0.88rem; border-radius: 10px;">
+              ${cancelText}
+            </button>
+            <button id="customConfirmOkBtn" class="button ${isDanger ? 'button-primary' : 'button-primary'}" style="min-width: 90px; padding: 8px 18px; font-size: 0.88rem; border-radius: 10px; ${isDanger ? 'background:#dc2626; border-color:#dc2626;' : ''}">
+              ${confirmText}
+            </button>
+          </div>
+        </div>
+      `;
+
+      const cleanup = (result) => {
+        backdrop.style.opacity = "0";
+        backdrop.style.transition = "opacity 0.15s ease";
+        setTimeout(() => backdrop.remove(), 150);
+        resolve(result);
+      };
+
+      backdrop.querySelector("#customConfirmCancelBtn")?.addEventListener("click", () => cleanup(false));
+      backdrop.querySelector("#customConfirmOkBtn")?.addEventListener("click", () => cleanup(true));
+
+      // Click outside to cancel
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) cleanup(false);
+      });
+
+      // Escape key to cancel
+      const escListener = (e) => {
+        if (e.key === "Escape") {
+          document.removeEventListener("keydown", escListener);
+          cleanup(false);
+        }
+      };
+      document.addEventListener("keydown", escListener);
+
+      document.body.appendChild(backdrop);
+      // Auto focus primary confirmation action
+      setTimeout(() => backdrop.querySelector("#customConfirmOkBtn")?.focus(), 50);
+    });
+  }
 }
 
 export const toast = new ToastService();

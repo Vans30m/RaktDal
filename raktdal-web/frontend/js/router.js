@@ -269,7 +269,7 @@ export class Router {
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            <span id="navNotifBadge" class="notif-bell-badge" style="display: none;">0</span>
+            <span id="navNotifBadge" class="notif-bell-badge">0</span>
           </a>
 
           <div class="user-menu-wrapper">
@@ -369,11 +369,13 @@ export class Router {
       const count = data.data?.unreadCount || 0;
 
       if (badge) {
+        badge.style.display = "flex";
         if (count > 0) {
           badge.textContent = count > 99 ? "99+" : count;
-          badge.style.display = "flex";
+          badge.classList.add("badge-has-unread");
         } else {
-          badge.style.display = "none";
+          badge.textContent = "0";
+          badge.classList.remove("badge-has-unread");
         }
       }
 
