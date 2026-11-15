@@ -276,7 +276,9 @@ export class Router {
             <button id="userMenuTrigger" class="user-menu-trigger" aria-haspopup="true" aria-expanded="${this.isMenuOpen}">
               ${u.profileImage ? `<img src="${u.profileImage}" class="user-nav-avatar" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-nav-avatar\\'>${initial}</div>';">` : `<div class="user-nav-avatar">${initial}</div>`}
               <span>${u.fullName.split(" ")[0]}</span>
-              <span style="font-size:0.7rem; color:var(--text-muted);">▼</span>
+              <svg class="user-menu-arrow-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </button>
 
             <div id="userMenuDropdown" class="user-menu-dropdown ${this.isMenuOpen ? "show" : ""}" role="menu">
@@ -290,25 +292,18 @@ export class Router {
               </div>
 
               <div class="user-menu-items">
-                <a href="#/notifications" class="user-menu-item">
+                <a href="#/requests/my" class="user-menu-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    <path d="M12 2c-4 6-6.5 9-6.5 12a6.5 6.5 0 0 0 13 0c0-3-2.5-6-6.5-12z"></path>
                   </svg>
-                  Notifications
+                  My Blood Requests
                 </a>
                 <a href="#/profile" class="user-menu-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  Profile & Sessions
-                </a>
-                <a href="#/requests/my" class="user-menu-item">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2c-4 6-6.5 9-6.5 12a6.5 6.5 0 0 0 13 0c0-3-2.5-6-6.5-12z"></path>
-                  </svg>
-                  My Blood Requests
+                  Profile &amp; Sessions
                 </a>
                 ${state.isAdmin ? `
                   <a href="#/admin" class="user-menu-item" style="color:#0369a1; font-weight:600;">

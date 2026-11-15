@@ -40,7 +40,10 @@ export const notificationViews = {
       try {
         await api.markAllNotificationsAsRead();
         toast.show("All notifications marked as read.", "success");
-        this.renderNotificationCenter();
+        if (window.router?.refreshNotificationBadge) {
+          window.router.refreshNotificationBadge();
+        }
+        notificationViews.renderNotificationCenter.call(this);
       } catch (err) {
         toast.show(err.message || "Failed to update notifications.", "error");
       }
@@ -125,7 +128,10 @@ export const notificationViews = {
               throw new Error(errData.message || `Failed with status ${res.status}`);
             }
             toast.show("Notification marked as read.", "success");
-            this.renderNotificationCenter();
+            if (window.router?.refreshNotificationBadge) {
+              window.router.refreshNotificationBadge();
+            }
+            notificationViews.renderNotificationCenter.call(this);
           } catch (err) {
             target.disabled = false;
             target.textContent = "Mark Read";
