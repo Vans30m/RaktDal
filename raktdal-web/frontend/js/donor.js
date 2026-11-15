@@ -140,6 +140,15 @@ export const donorViews = {
 
       let { donors, pagination } = data.data || { donors: [], pagination: {} };
 
+      // Ensure logged-in user never sees themselves in the donor directory
+      const currentUserId = authState.getState().user?._id;
+      if (currentUserId && Array.isArray(donors)) {
+        donors = donors.filter(d => {
+          const donorUid = d.userId?._id || d.userId;
+          return String(donorUid) !== String(currentUserId);
+        });
+      }
+
       if (!donors || donors.length === 0) {
         resultsEl.innerHTML = `
           <div class="auth-card" style="text-align: center; padding: 40px 20px;">

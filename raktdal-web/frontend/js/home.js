@@ -438,9 +438,9 @@ export const homeViews = {
           <div class="footer-columns-grid">
             <!-- Column 1: Brand -->
             <div class="footer-col col-brand">
-              <a class="brand brand-light" href="#/" aria-label="RaktDal home">
+              <a class="brand brand-light notranslate" href="#/" aria-label="RaktDal home">
                 <img src="assets/logo-removebg.png" style="height: 32px; width: 32px; object-fit: contain;" alt="RaktDal Logo">
-                <span class="brand-text">RaktDal</span>
+                <span class="brand-text notranslate">RaktDal</span>
               </a>
               <p class="footer-about-text">
                 Connecting people, donors, and verified organizations for responsible blood donation coordination across India.

@@ -1,13 +1,5 @@
-export const SUPPORTED_LANGUAGES = [
-  { code: "en", name: "English", nativeName: "English" },
-  { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
-  { code: "bn", name: "Bengali", nativeName: "বাংলা" },
-  { code: "mr", name: "Marathi", nativeName: "मराठी" },
-  { code: "te", name: "Telugu", nativeName: "తెలుగు" },
-  { code: "ta", name: "Tamil", nativeName: "தமிழ்" },
-  { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ" },
-  { code: "gu", name: "Gujarati", nativeName: "ગુજરાતી" }
-];
+import { SUPPORTED_LANGUAGES, languageManager } from "./languageContext.js";
+export { SUPPORTED_LANGUAGES };
 /**
  * Centralized Hash Router and Route Protection for RaktDal
  *
@@ -162,48 +154,11 @@ export class Router {
   }
 
   getCurrentLang() {
-    const match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
-    if (match) {
-      const parts = decodeURIComponent(match[1]).split("/");
-      return parts[parts.length - 1] || "en";
-    }
-    return localStorage.getItem("raktdal_lang") || "en";
+    return languageManager.getCurrentLanguage();
   }
 
   setWebsiteLanguage(langCode) {
-    localStorage.setItem("raktdal_lang", langCode);
-    const hostname = window.location.hostname;
-    const isLocal = hostname === "localhost" || hostname === "127.0.0.1";
-
-    const clearCookie = (name) => {
-      // Clear host-only cookie
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      // Clear with domain attributes
-      if (!isLocal) {
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname};`;
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${hostname};`;
-      }
-    };
-
-    if (langCode === "en") {
-      clearCookie("googtrans");
-    } else {
-      const transVal = `/en/${langCode}`;
-      // Set host-only cookie (crucial for onrender.com subdomains)
-      document.cookie = `googtrans=${transVal}; path=/;`;
-      if (!isLocal) {
-        document.cookie = `googtrans=${transVal}; path=/; domain=${hostname};`;
-      }
-    }
-
-    // Trigger select element in DOM directly if already rendered
-    const selectEl = document.querySelector(".goog-te-combo");
-    if (selectEl) {
-      selectEl.value = langCode;
-      selectEl.dispatchEvent(new Event("change"));
-    }
-
-    window.location.reload();
+    languageManager.setLanguage(langCode);
   }
 
   renderLanguageSelector() {

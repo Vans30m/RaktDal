@@ -471,8 +471,8 @@ export async function searchDonors(req, res) {
       publicDiscoveryConsent: true // ONLY show donors who consented to public discovery
     };
 
-    // If caller explicitly asks to exclude current user, exclude them (otherwise donors can see their own listing in directory)
-    if (req.user?._id && req.query.excludeSelf === "true") {
+    // If user is authenticated, exclude their own profile so they never see themselves in donor discovery
+    if (req.user?._id) {
       filter.userId = { $ne: req.user._id };
     }
 

@@ -20,8 +20,17 @@ async renderBloodRequests(params) {
 
       const res = await api.getBloodRequests(queryObj);
       const data = await res.json();
-      const requests = (data.success && data.data && data.data.requests) ? data.data.requests : [];
+      let requests = (data.success && data.data && data.data.requests) ? data.data.requests : [];
       const state = authState.getState();
+
+      // Ensure the logged-in user never sees their own blood request in the general/volunteer browse feed
+      const currentUserId = state.user?._id;
+      if (currentUserId && Array.isArray(requests)) {
+        requests = requests.filter(r => {
+          const creatorId = r.createdByUserId?._id || r.createdByUserId;
+          return String(creatorId) !== String(currentUserId);
+        });
+      }
 
       this.appContainer.innerHTML = `
         <div class="find-donors-hero-section">

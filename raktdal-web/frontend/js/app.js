@@ -4,6 +4,7 @@
 import { authState } from "./auth.js";
 import { Router } from "./router.js";
 import { realtimeClient } from "./realtime.js";
+import { languageManager } from "./languageContext.js";
 
 // Initialize i18n, Router and Auth State
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,7 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     yearEl.textContent = new Date().getFullYear();
   }
 
-  // 1. Initialize internationalization before rendering any UI
+  // 1. Initialize full-page Google translation engine & background observer
+  languageManager.init();
   
   // 2. Initialize router
   const router = new Router("app", "authNavContainer");

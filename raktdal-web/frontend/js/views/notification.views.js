@@ -80,14 +80,14 @@ export const notificationViews = {
         if (n.relatedEntityType === "BloodRequest" && n.relatedEntityId) {
           actionLink = `<div style="margin-top: 10px;">
             <a href="#/requests/${n.relatedEntityId}" class="button" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-              <span>🩸 View Request & Contact Donor</span>
+              <span>View Request & Contact Donor</span>
             </a>
           </div>`;
         } else if (n.type === "REQUEST_RESPONSE_RECEIVED" && (n.metadata?.requestId || n.relatedEntityId)) {
           const reqId = n.metadata?.requestId || n.relatedEntityId;
           actionLink = `<div style="margin-top: 10px;">
             <a href="#/requests/${reqId}" class="button" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-              <span>🩸 View Request & Contact Donor</span>
+              <span>View Request & Contact Donor</span>
             </a>
           </div>`;
         }

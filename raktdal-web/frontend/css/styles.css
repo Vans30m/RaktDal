@@ -2910,18 +2910,50 @@ body.pwa-standalone .site-header {
   }
 }
 
-/* Hide Google Translate top banner, tooltip, and widget frames completely */
+/* ==========================================================================
+   TOTAL SUPPRESSION OF GOOGLE TRANSLATE DEFAULT UI, BANNERS, & TOOLTIPS
+   ========================================================================== */
+#google_translate_element,
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
 iframe.goog-te-banner-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-y6EKec,
+.VIpgJd-ZVi9od-aZ2wEe-OVi4kf,
+.VIpgJd-ZVi9od-vH1Gmf,
+iframe[id^=":1.container"],
+iframe[id^=":2.container"],
+iframe[id*="google_translate"],
 #goog-gt-tt,
-.goog-te-balloon-frame {
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip-bottom,
+.goog-tooltip-top {
   display: none !important;
   visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -9999 !important;
 }
 
+/* Prevent Google Translate from highlighting translated words on hover or click */
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  border: none !important;
+}
+
+/* Lock body and html to top: 0px to prevent Google Translate pushing UI downwards */
+html,
 body {
   top: 0px !important;
+  margin-top: 0px !important;
   position: static !important;
 }
 
@@ -2929,8 +2961,9 @@ body {
   display: none !important;
 }
 
-#google_translate_element {
-  display: none !important;
+/* Class applied to brand names, medical terms, IDs, or sensitive strings that must NEVER be translated */
+.notranslate {
+  translate: no !important;
 }
 
 /* ==========================================================================

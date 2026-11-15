@@ -214,8 +214,8 @@ export async function getBloodRequests(req, res) {
 
     const filter = {};
 
-    // Exclude own requests if requested or if user is viewing volunteer feed
-    if (req.user?._id && (excludeMine === "true" || excludeMine === true)) {
+    // Exclude own requests if user is logged in (a user should not see their own requests in public discovery feed)
+    if (req.user?._id) {
       filter.createdByUserId = { $ne: req.user._id };
     }
 
