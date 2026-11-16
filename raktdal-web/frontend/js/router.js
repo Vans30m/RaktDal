@@ -614,7 +614,10 @@ export class Router {
         this.renderNotifications();
         break;
       case "/notifications/settings":
-        this.renderNotificationSettings();
+        // Redirect to notifications view and immediately pop up the settings modal
+        this.renderNotifications().then(() => {
+          notificationViews.openNotificationSettingsModal();
+        });
         break;
       case "/profile":
         this.renderProfile();

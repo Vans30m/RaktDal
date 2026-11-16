@@ -5,30 +5,56 @@ import { icons } from "../icons.js";
 export const notificationViews = {
   async renderNotificationCenter() {
     this.appContainer.innerHTML = `
-      <div class="requests-container" style="max-width: 820px; margin: 0 auto; padding: 24px 16px;">
-        <div style="margin-bottom: 16px;">
-          <a href="#/" id="notifBackBtn" class="button button-outline" style="font-size: 0.85rem; padding: 5px 12px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            <span>Back to Home</span>
-          </a>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
-          <div>
-            <h2 style="margin: 0; font-size: 1.6rem; color: var(--text-main); font-weight: 800;">Notifications</h2>
-            <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.92rem;">Stay informed about blood requests, donor responses, and verification alerts.</p>
+      <div class="find-donors-container notif-center-page">
+        <!-- 1. Hero Section matching Find Donors -->
+        <section class="find-donors-hero-section" aria-labelledby="notifHeading">
+          <div class="find-donors-hero-inner">
+            <span class="find-donors-badge">
+              Real-Time Activity &amp; Alerts
+            </span>
+            <h1 id="notifHeading" class="find-donors-hero-title">
+              Your <span class="accent-text">Notifications</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Stay informed about urgent blood requests, volunteer donor responses, and account updates.
+            </p>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <button id="markAllReadBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px;">Mark all as read</button>
-            <a href="#/notifications/settings" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px;">Settings</a>
-          </div>
-        </div>
+        </section>
 
-        <div id="notifListContainer" style="text-align: center; width: 100%;">
-          <div class="spinner" style="margin: 32px auto 12px;"></div>
-          <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0 auto;">Loading notifications...</p>
+        <!-- 2. Main Content Wrapper -->
+        <div class="find-donors-body-wrapper" style="max-width: 900px;">
+          <!-- Controls Bar Card -->
+          <div class="find-donors-search-card" style="margin-bottom: 20px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <a href="#/" id="notifBackBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Back to Home</span>
+              </a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <button id="markAllReadBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 16px; border-radius: 8px; font-weight: 600;">
+                Mark All as Read
+              </button>
+              <button id="openNotifSettingsModalBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Notification Cards List -->
+          <div id="notifListContainer" style="width: 100%;">
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+              <div class="spinner" style="margin: 0 auto 12px;"></div>
+              Loading notifications...
+            </div>
+          </div>
         </div>
       </div>
     `;
@@ -49,6 +75,11 @@ export const notificationViews = {
       }
     });
 
+    // Open Notification Settings Popup Modal
+    document.getElementById("openNotifSettingsModalBtn")?.addEventListener("click", () => {
+      notificationViews.openNotificationSettingsModal();
+    });
+
     try {
       const res = await api.getNotifications(1, 40);
       if (!res.ok) {
@@ -65,14 +96,15 @@ export const notificationViews = {
 
       if (items.length === 0) {
         container.innerHTML = `
-          <div class="auth-card" style="padding: 40px 24px; text-align: center;">
-            <div style="margin: 0 auto 14px; color: var(--text-muted); display:flex; justify-content:center;">
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-    </svg></div>
-            <h3 style="margin: 0 0 6px; font-size: 1.15rem; color: var(--text-main);">No Notifications</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">You're all caught up! Important alerts and updates will appear here.</p>
+          <div class="find-donors-search-card" style="padding: 48px 24px; text-align: center; border-radius: 18px;">
+            <div style="margin: 0 auto 16px; width: 56px; height: 56px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+            <h3 style="margin: 0 0 8px; font-size: 1.25rem; font-weight: 750; color: var(--navy);">No Notifications</h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0 auto; max-width: 440px; line-height: 1.5;">You're completely caught up! New donor alerts, matching requests, and camp activities will appear right here.</p>
           </div>
         `;
         return;
@@ -81,34 +113,42 @@ export const notificationViews = {
       container.innerHTML = items.map(n => {
         let actionLink = "";
         if (n.relatedEntityType === "BloodRequest" && n.relatedEntityId) {
-          actionLink = `<div style="margin-top: 10px;">
-            <a href="#/requests/${n.relatedEntityId}" class="button" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+          actionLink = `<div style="margin-top: 12px;">
+            <a href="#/requests/${n.relatedEntityId}" class="button button-primary" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px;">
               <span>View Request & Contact Donor</span>
             </a>
           </div>`;
         } else if (n.type === "REQUEST_RESPONSE_RECEIVED" && (n.metadata?.requestId || n.relatedEntityId)) {
           const reqId = n.metadata?.requestId || n.relatedEntityId;
-          actionLink = `<div style="margin-top: 10px;">
-            <a href="#/requests/${reqId}" class="button" style="padding: 4px 12px; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+          actionLink = `<div style="margin-top: 12px;">
+            <a href="#/requests/${reqId}" class="button button-primary" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px;">
               <span>View Request & Contact Donor</span>
             </a>
           </div>`;
         }
 
+        const isUnread = !n.isRead;
         return `
-        <div class="request-card" style="margin-bottom: 12px; padding: 16px; border-left: 4px solid ${n.isRead ? '#cbd5e1' : 'var(--red)'}; background: ${n.isRead ? '#ffffff' : '#fff5f5'};">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+        <div class="find-donors-search-card" style="margin-bottom: 14px; padding: 20px 22px; border-radius: 16px; border-left: 5px solid ${isUnread ? 'var(--red, #b91c1c)' : '#e2e8f0'}; background: ${isUnread ? '#fffbfb' : '#ffffff'}; transition: transform 0.15s ease, box-shadow 0.15s ease; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
             <div style="flex: 1;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                <span class="badge" style="font-size: 0.7rem; background: ${n.isRead ? '#f1f5f9' : '#fee2e2'}; color: ${n.isRead ? '#475569' : '#991b1b'};">${n.type.replace(/_/g, " ")}</span>
-                <span style="font-size: 0.78rem; color: var(--text-muted);">${new Date(n.createdAt).toLocaleDateString()}</span>
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+                <span class="badge" style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 6px; background: ${isUnread ? '#fee2e2' : '#f1f5f9'}; color: ${isUnread ? '#991b1b' : '#475569'};">
+                  ${n.type.replace(/_/g, " ")}
+                </span>
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">
+                  ${new Date(n.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                </span>
+                ${isUnread ? `<span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#dc2626;" title="Unread"></span>` : ""}
               </div>
-              <h4 style="margin: 0 0 6px; font-size: 1rem; color: var(--text-main);">${n.title}</h4>
-              <p style="margin: 0; font-size: 0.88rem; color: #475569; line-height: 1.5;">${n.message}</p>
+              <h4 style="margin: 0 0 8px; font-size: 1.05rem; font-weight: 750; color: var(--navy); line-height: 1.35;">${n.title}</h4>
+              <p style="margin: 0; font-size: 0.9rem; color: #475569; line-height: 1.6;">${n.message}</p>
               ${actionLink}
             </div>
-            ${!n.isRead ? `
-              <button class="mark-single-read-btn" data-id="${n._id}" style="background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.76rem; cursor: pointer; color: var(--text-muted); white-space: nowrap;">Mark Read</button>
+            ${isUnread ? `
+              <button class="mark-single-read-btn button button-outline" data-id="${n._id}" style="font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 8px; white-space: nowrap; flex-shrink: 0;">
+                Mark Read
+              </button>
             ` : ""}
           </div>
         </div>
@@ -121,7 +161,12 @@ export const notificationViews = {
           const id = target.dataset.id;
           target.disabled = true;
           target.textContent = "Updating...";
-          try {
+          // Open Notification Settings Popup Modal
+    document.getElementById("openNotifSettingsModalBtn")?.addEventListener("click", () => {
+      notificationViews.openNotificationSettingsModal();
+    });
+
+    try {
             const res = await api.markNotificationAsRead(id);
             if (!res.ok) {
               const errData = await res.json().catch(() => ({}));
@@ -146,45 +191,79 @@ export const notificationViews = {
 
   async renderNotificationSettings() {
     this.appContainer.innerHTML = `
-      <div class="requests-container" style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-          <a href="#/notifications" class="button button-outline" style="padding:6px 12px; font-size:0.85rem;">← Back</a>
-          <h2 style="margin:0; font-size:1.4rem; font-weight:800;">Notification Preferences</h2>
-        </div>
+      <div class="find-donors-container notif-settings-page">
+        <!-- Hero Section matching Find Donors -->
+        <section class="find-donors-hero-section" aria-labelledby="notifSettingsHeading">
+          <div class="find-donors-hero-inner">
+            <span class="find-donors-badge">
+              Communication Preferences
+            </span>
+            <h1 id="notifSettingsHeading" class="find-donors-hero-title">
+              Notification <span class="accent-text">Settings</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Control which alerts you receive and choose your preferred delivery channels.
+            </p>
+          </div>
+        </section>
 
-        <div class="auth-card" style="text-align:left; padding:24px;">
-          <h3 style="margin:0 0 16px; font-size:1.05rem; border-bottom:1px solid var(--border); padding-bottom:8px;">Channels</h3>
-          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-              <input type="checkbox" id="prefInApp" checked disabled>
-              <span><strong>In-App Notifications</strong> (Mandatory core alerts)</span>
-            </label>
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-              <input type="checkbox" id="prefEmail" checked>
-              <span><strong>Email Notifications</strong> (Important transactional updates)</span>
-            </label>
+        <!-- Main Content Wrapper -->
+        <div class="find-donors-body-wrapper" style="max-width: 680px;">
+          <div style="margin-bottom: 16px;">
+            <a href="#/notifications" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>Back to Notifications</span>
+            </a>
           </div>
 
-          <h3 style="margin:0 0 16px; font-size:1.05rem; border-bottom:1px solid var(--border); padding-bottom:8px;">Alert Categories</h3>
-          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:28px;">
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-              <input type="checkbox" id="catRequests" checked>
-              <span>Blood requests near your location</span>
-            </label>
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-              <input type="checkbox" id="catResponses" checked>
-              <span>Donor responses to your requests</span>
-            </label>
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-              <input type="checkbox" id="catCamps" checked>
-              <span>Donation camps & registration updates</span>
-            </label>
-          </div>
+          <div class="find-donors-search-card" style="text-align: left; padding: 28px; border-radius: 18px;">
+            <h3 style="margin: 0 0 16px; font-size: 1.15rem; font-weight: 750; color: var(--navy); border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+              Delivery Channels
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 26px;">
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.92rem; color: #334155;">
+                <input type="checkbox" id="prefInApp" checked disabled style="width: 17px; height: 17px; accent-color: var(--primary);">
+                <span><strong>In-App Notifications</strong> (Mandatory core alerts &amp; real-time bell)</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.92rem; color: #334155;">
+                <input type="checkbox" id="prefEmail" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+                <span><strong>Email Notifications</strong> (Brevo transactional alerts &amp; donor contact details)</span>
+              </label>
+            </div>
 
-          <button id="savePreferencesBtn" class="button" style="width:100%;">Save Preferences</button>
+            <h3 style="margin: 0 0 16px; font-size: 1.15rem; font-weight: 750; color: var(--navy); border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+              Alert Categories
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px;">
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.92rem; color: #334155;">
+                <input type="checkbox" id="catRequests" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+                <span>Urgent blood requests matching your group &amp; city</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.92rem; color: #334155;">
+                <input type="checkbox" id="catResponses" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+                <span>Donor responses to your blood requests</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 0.92rem; color: #334155;">
+                <input type="checkbox" id="catCamps" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+                <span>Blood donation camps &amp; registration updates</span>
+              </label>
+            </div>
+
+            <button id="savePreferencesBtn" class="button button-primary" style="width: 100%; padding: 10px 18px; font-weight: 700; border-radius: 10px;">
+              Save Preferences
+            </button>
+          </div>
         </div>
       </div>
     `;
+
+    // Open Notification Settings Popup Modal
+    document.getElementById("openNotifSettingsModalBtn")?.addEventListener("click", () => {
+      notificationViews.openNotificationSettingsModal();
+    });
 
     try {
       const res = await api.getNotificationPreferences();
@@ -214,6 +293,152 @@ export const notificationViews = {
         toast.show("Preferences saved successfully.", "success");
       } catch (err) {
         toast.show(err.message || "Failed to update preferences.", "error");
+      }
+    });
+  },
+
+  /**
+   * Opens Notification Settings in an elegant modal popup
+   */
+  async openNotificationSettingsModal() {
+    let modal = document.getElementById("notifSettingsModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "notifSettingsModal";
+      modal.className = "modal-backdrop";
+      document.body.appendChild(modal);
+    }
+
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.background = "rgba(15, 23, 42, 0.45)";
+    modal.style.backdropFilter = "blur(4px)";
+    modal.style.zIndex = "9999";
+
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 520px; width: 92%; border-radius: 20px; padding: 28px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); text-align: left; background: #ffffff; animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+          <div>
+            <div style="display:inline-flex; align-items:center; gap:6px; background:#fee2e2; color:#c51f26; font-size:0.72rem; font-weight:750; text-transform:uppercase; letter-spacing:0.06em; padding:3px 10px; border-radius:9999px; margin-bottom:6px;">
+              Preferences
+            </div>
+            <h3 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: var(--navy);">Notification Settings</h3>
+            <p style="margin: 4px 0 0; font-size: 0.88rem; color: var(--text-muted);">Manage your real-time alerts and delivery channels.</p>
+          </div>
+          <button id="closeNotifModalBtn" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8; padding: 4px; border-radius: 6px; line-height: 1;" title="Close" aria-label="Close">
+            ✕
+          </button>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <h4 style="margin: 0 0 12px; font-size: 0.95rem; font-weight: 750; color: var(--navy); border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+            Delivery Channels
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #334155;">
+              <input type="checkbox" id="modalPrefInApp" checked disabled style="width: 17px; height: 17px; accent-color: var(--primary);">
+              <span><strong>In-App Notifications</strong> (Mandatory alert bell &amp; center)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #334155;">
+              <input type="checkbox" id="modalPrefEmail" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+              <span><strong>Email Notifications</strong> (Brevo transactional delivery)</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <h4 style="margin: 0 0 12px; font-size: 0.95rem; font-weight: 750; color: var(--navy); border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+            Alert Categories
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #334155;">
+              <input type="checkbox" id="modalCatRequests" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+              <span>Urgent blood requests near your location</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #334155;">
+              <input type="checkbox" id="modalCatResponses" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+              <span>Donor responses to your blood requests</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #334155;">
+              <input type="checkbox" id="modalCatCamps" checked style="width: 17px; height: 17px; accent-color: var(--primary);">
+              <span>Blood donation camps &amp; registration updates</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button id="cancelNotifModalBtn" class="button button-outline" style="padding: 8px 18px; border-radius: 10px; font-size: 0.88rem; font-weight: 600;">
+            Cancel
+          </button>
+          <button id="saveNotifModalBtn" class="button button-primary" style="padding: 8px 20px; border-radius: 10px; font-size: 0.88rem; font-weight: 700;">
+            Save Preferences
+          </button>
+        </div>
+      </div>
+    `;
+
+    const close = () => {
+      modal.style.display = "none";
+    };
+
+    document.getElementById("closeNotifModalBtn")?.addEventListener("click", close);
+    document.getElementById("cancelNotifModalBtn")?.addEventListener("click", close);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) close();
+    });
+
+    // Populate initial preferences
+    try {
+      const res = await api.getNotificationPreferences();
+      const data = await res.json();
+      const pref = data.data?.preferences;
+      if (pref) {
+        const emailEl = document.getElementById("modalPrefEmail");
+        const reqEl = document.getElementById("modalCatRequests");
+        const respEl = document.getElementById("modalCatResponses");
+        const campEl = document.getElementById("modalCatCamps");
+
+        if (emailEl) emailEl.checked = pref.channels?.email ?? true;
+        if (reqEl) reqEl.checked = pref.categories?.bloodRequests ?? true;
+        if (respEl) respEl.checked = pref.categories?.donorResponses ?? true;
+        if (campEl) campEl.checked = pref.categories?.camps ?? true;
+      }
+    } catch (e) {}
+
+    document.getElementById("saveNotifModalBtn")?.addEventListener("click", async () => {
+      const saveBtn = document.getElementById("saveNotifModalBtn");
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
+      }
+
+      try {
+        const payload = {
+          channels: {
+            email: document.getElementById("modalPrefEmail")?.checked ?? true
+          },
+          categories: {
+            bloodRequests: document.getElementById("modalCatRequests")?.checked ?? true,
+            donorResponses: document.getElementById("modalCatResponses")?.checked ?? true,
+            camps: document.getElementById("modalCatCamps")?.checked ?? true
+          }
+        };
+        await api.updateNotificationPreferences(payload);
+        toast.show("Notification preferences updated!", "success");
+        close();
+      } catch (err) {
+        toast.show(err.message || "Failed to update preferences.", "error");
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save Preferences";
+        }
       }
     });
   }
