@@ -73,11 +73,20 @@ export class NotificationService {
       try {
         const user = await User.findById(userId).select("email fullName");
         if (user && user.email) {
+          // Always use the live production deployment URL for email links so recipients can access the app from any device
+          const baseUrl = (env.deployedUrl || "https://raktdal.onrender.com").replace(/\/+$/, "");
+          let fullActionUrl = null;
+          if (emailOptions.actionUrl) {
+            fullActionUrl = emailOptions.actionUrl.startsWith("http")
+              ? emailOptions.actionUrl
+              : `${baseUrl}/${emailOptions.actionUrl.replace(/^\/+/, "")}`;
+          }
+
           const emailHtml = renderEmailTemplate({
             title: emailOptions.subject || title,
             subtitle: emailOptions.subtitle || null,
             bodyHtml: emailOptions.bodyHtml || `<p>${escapeHtml(message)}</p>`,
-            actionUrl: emailOptions.actionUrl ? `${env.frontendUrl}${emailOptions.actionUrl}` : null,
+            actionUrl: fullActionUrl,
             actionText: emailOptions.actionText || null
           });
 
@@ -90,7 +99,7 @@ export class NotificationService {
               to_name: user.fullName || "User",
               title: emailOptions.subject || title,
               message: message,
-              action_url: emailOptions.actionUrl ? `${env.frontendUrl}${emailOptions.actionUrl}` : ""
+              action_url: fullActionUrl || baseUrl
             },
             templateId: emailOptions.templateId || null
           });

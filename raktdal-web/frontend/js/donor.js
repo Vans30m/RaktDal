@@ -1430,9 +1430,9 @@ function openDonorAlertModal(donorId, donorName, donorBg, donorCity) {
   modal.innerHTML = `
     <div class="modal-backdrop" id="alertModalBackdrop" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;">
       <div class="modal-content auth-card" onclick="event.stopPropagation()" style="max-width:480px; width:90%; padding:24px; text-align:left; background:#fff; border-radius:12px;">
-        <h3 style="margin:0 0 6px 0; font-size:1.25rem;">🔔 Send In-App Alert to ${donorName}</h3>
+        <h3 style="margin:0 0 6px 0; font-size:1.25rem;">🔔 Send Emergency Alert to ${donorName}</h3>
         <p style="color:var(--text-muted); font-size:0.88rem; margin:0 0 16px 0;">
-          This will trigger an urgent in-app notification directly into the donor's alert center.
+          This will immediately deliver an urgent in-app notification and an email alert to the donor.
         </p>
 
         <form id="sendDonorAlertForm" style="display:flex; flex-direction:column; gap:12px;">

@@ -150,7 +150,8 @@ export async function sendOtpEmail({ email, otp }) {
  * Sends Password Reset email with link and reset token
  */
 export async function sendPasswordResetEmail({ email, resetToken }) {
-  const resetUrl = `${env.frontendUrl}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
+  const baseUrl = (env.deployedUrl || env.frontendUrl || "https://raktdal.onrender.com").replace(/\/+$/, "");
+  const resetUrl = `${baseUrl}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
 
   try {
     await dispatchEmail({
