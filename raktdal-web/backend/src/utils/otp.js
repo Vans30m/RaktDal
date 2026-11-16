@@ -35,45 +35,14 @@ export function hashOtp(otp) {
 }
 
 /**
- * Sends email using EmailJS, Gmail SMTP (Nodemailer), Resend, or falls back to dev terminal simulation
+ * Sends email using Gmail SMTP (Nodemailer), Resend, or falls back to dev terminal simulation
  */
 async function dispatchEmail({ to, toName = "", subject, html, templateParams = {}, templateId = null }) {
   const from = env.smtpUser ? `RaktDal <${env.smtpUser}>` : env.emailFrom;
 
   // In development, if providers throw or are restricted, gracefully fallback to terminal
   try {
-    // Priority 1: EmailJS if configured
-    if (env.emailjsServiceId && (templateId || env.emailjsTemplateId) && env.emailjsPublicKey) {
-      const payload = {
-        service_id: env.emailjsServiceId,
-        template_id: templateId || env.emailjsTemplateId,
-        user_id: env.emailjsPublicKey,
-        template_params: {
-          to_email: to,
-          email: to,
-          to_name: toName,
-          name: toName,
-          subject: subject,
-          message: html,
-          html_content: html,
-          ...templateParams
-        }
-      };
-      if (env.emailjsPrivateKey) {
-        payload.accessToken = env.emailjsPrivateKey;
-      }
-      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (response.ok) {
-        return { success: true, id: `emailjs-${Date.now()}` };
-      }
-      console.warn(`[OTP] EmailJS failed (${response.status}):`, await response.text());
-    }
-
-    // Priority 2: Gmail SMTP (Sends to ANY email address)
+    // Priority 1: Gmail SMTP (Sends to ANY email address)
     if (transporter) {
       const info = await transporter.sendMail({
         from,

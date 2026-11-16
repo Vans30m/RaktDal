@@ -95,82 +95,13 @@ export function renderEmailTemplate({ title, subtitle, bodyHtml, actionUrl = nul
 }
 
 /**
- * Send email via EmailJS REST API
- * Supports standard parameters: to_email, to_name, subject, message, html_content
- */
-export async function sendEmailViaEmailJS({
-  to,
-  toName = "",
-  subject,
-  html,
-  templateParams = {},
-  templateId = null
-}) {
-  const serviceId = env.emailjsServiceId;
-  const targetTemplateId = templateId || env.emailjsTemplateId;
-  const publicKey = env.emailjsPublicKey;
-  const privateKey = env.emailjsPrivateKey;
-
-  if (!serviceId || !targetTemplateId || !publicKey) {
-    throw new Error("EmailJS configuration is missing serviceId, templateId, or publicKey.");
-  }
-
-  const payload = {
-    service_id: serviceId,
-    template_id: targetTemplateId,
-    user_id: publicKey,
-    template_params: {
-      to_email: to,
-      email: to,
-      to_name: toName,
-      name: toName,
-      subject: subject,
-      message: html,
-      html_content: html,
-      ...templateParams
-    }
-  };
-
-  if (privateKey) {
-    payload.accessToken = privateKey;
-  }
-
-  const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`EmailJS send failed (${response.status}): ${errorText}`);
-  }
-
-  return { success: true, provider: "emailjs", messageId: `emailjs-${Date.now()}` };
-}
-
-/**
- * Low-level email dispatcher (EmailJS -> Gmail SMTP -> Resend -> Dev fallback)
+ * Low-level email dispatcher (Gmail SMTP -> Resend -> Dev fallback)
  */
 export async function sendEmail({ to, toName = "", subject, html, templateParams = {}, templateId = null }) {
   const from = env.smtpUser ? `RaktDal <${env.smtpUser}>` : env.emailFrom;
 
   try {
-    // Priority 1: EmailJS if configured
-    if (env.emailjsServiceId && (templateId || env.emailjsTemplateId) && env.emailjsPublicKey) {
-      return await sendEmailViaEmailJS({
-        to,
-        toName,
-        subject,
-        html,
-        templateParams,
-        templateId
-      });
-    }
-
-    // Priority 2: Gmail SMTP
+    // Priority 1: Gmail SMTP
     if (transporter) {
       const info = await transporter.sendMail({ from, to, subject, html });
       return { success: true, provider: "smtp", messageId: info.messageId };
