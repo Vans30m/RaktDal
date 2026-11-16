@@ -29,6 +29,9 @@ export const env = {
   // Resend
   resendApiKey: process.env.RESEND_API_KEY || "",
 
+  // Brevo
+  brevoApiKey: process.env.BREVO_API_KEY || "",
+
   // Gmail SMTP
   smtpUser: process.env.SMTP_USER || "",
   smtpPass: process.env.SMTP_PASS || ""

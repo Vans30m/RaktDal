@@ -168,10 +168,26 @@ export async function login(req, res) {
     }
 
     if (!user.emailVerifiedAt) {
+      // Auto-dispatch a fresh OTP so the user can verify immediately
+      try {
+        await EmailOtp.updateMany({ email: user.email, isUsed: false }, { isUsed: true });
+        const rawOtp = generateSixDigitOtp();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        await EmailOtp.create({
+          userId: user._id,
+          email: user.email,
+          otpHash: hashOtp(rawOtp),
+          expiresAt
+        });
+        await sendOtpEmail({ email: user.email, otp: rawOtp });
+      } catch (otpErr) {
+        console.warn("[AUTH] Auto-resend OTP on unverified login error:", otpErr.message);
+      }
+
       return res.status(403).json({
         success: false,
-        message: "Email is not verified. Please verify your email before signing in.",
-        error: { code: "EMAIL_NOT_VERIFIED" }
+        message: "Email is not verified. A fresh 6-digit verification code has been sent to your email.",
+        error: { code: "EMAIL_NOT_VERIFIED", email: user.email }
       });
     }
 
@@ -183,28 +199,31 @@ export async function login(req, res) {
       });
     }
 
-    user.lastLoginAt = new Date();
-    await user.save();
+    // Require 6-digit OTP verification for every Sign In
+    try {
+      await EmailOtp.updateMany({ email: user.email, isUsed: false }, { isUsed: true });
+      const rawOtp = generateSixDigitOtp();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    const userAgent = req.headers["user-agent"] || "Unknown Device";
-    const ipAddress = req.ip || req.connection?.remoteAddress || "Unknown IP";
+      await EmailOtp.create({
+        userId: user._id,
+        email: user.email,
+        otpHash: hashOtp(rawOtp),
+        expiresAt
+      });
 
-    const { rawRefreshToken } = await createSession({
-      userId: user._id,
-      userAgent,
-      ipAddress
-    });
-
-    const accessToken = generateAccessToken(user);
-
-    res.cookie("accessToken", accessToken, getCookieOptions({ maxAge: ACCESS_TOKEN_MAX_AGE }));
-    res.cookie("refreshToken", rawRefreshToken, getCookieOptions({ maxAge: REFRESH_TOKEN_MAX_AGE }));
+      await sendOtpEmail({ email: user.email, otp: rawOtp });
+    } catch (otpErr) {
+      console.warn("[AUTH] Login OTP dispatch error:", otpErr.message);
+    }
 
     return res.json({
       success: true,
-      message: "Login successful.",
+      message: "Credentials verified! A 6-digit verification code has been sent to your email.",
+      requiresOtp: true,
       data: {
-        user: user.toPublicProfile()
+        email: user.email,
+        requiresOtp: true
       }
     });
   } catch (err) {
@@ -681,7 +700,23 @@ export async function verifyEmailOtp(req, res) {
     if (user) {
       const wasAlreadyVerified = Boolean(user.emailVerifiedAt);
       user.emailVerifiedAt = new Date();
+      user.lastLoginAt = new Date();
       await user.save();
+
+      // Automatically create session and issue authentication cookies
+      const userAgent = req.headers["user-agent"] || "Unknown Device";
+      const ipAddress = req.ip || req.connection?.remoteAddress || "Unknown IP";
+
+      const { rawRefreshToken } = await createSession({
+        userId: user._id,
+        userAgent,
+        ipAddress
+      });
+
+      const accessToken = generateAccessToken(user);
+
+      res.cookie("accessToken", accessToken, getCookieOptions({ maxAge: ACCESS_TOKEN_MAX_AGE }));
+      res.cookie("refreshToken", rawRefreshToken, getCookieOptions({ maxAge: REFRESH_TOKEN_MAX_AGE }));
 
       // If newly verified, send welcome email notification
       if (!wasAlreadyVerified) {
@@ -724,7 +759,10 @@ export async function verifyEmailOtp(req, res) {
 
     return res.json({
       success: true,
-      message: "Email verified successfully."
+      message: "Email verified successfully.",
+      data: {
+        user: user ? user.toPublicProfile() : null
+      }
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: "Error verifying email." });
@@ -750,7 +788,24 @@ export async function resendOtp(req, res) {
     }
 
     if (user.emailVerifiedAt) {
-      return res.status(400).json({ success: false, message: "Email is already verified." });
+      // Allow resending login OTP as well
+      await EmailOtp.updateMany({ email, isUsed: false }, { isUsed: true });
+      const rawOtp = generateSixDigitOtp();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+      await EmailOtp.create({
+        userId: user._id,
+        email,
+        otpHash: hashOtp(rawOtp),
+        expiresAt
+      });
+
+      await sendOtpEmail({ email, otp: rawOtp });
+
+      return res.json({
+        success: true,
+        message: "A fresh verification code has been sent to your email."
+      });
     }
 
     await EmailOtp.updateMany({ email, isUsed: false }, { isUsed: true });

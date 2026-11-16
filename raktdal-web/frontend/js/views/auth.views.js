@@ -148,6 +148,16 @@ renderLogin(params) {
         const data = await res.json();
 
         if (res.ok) {
+          if (data.requiresOtp || data.data?.requiresOtp) {
+            const targetEmail = data.data?.email || email;
+            localStorage.setItem("raktdal_pending_email", targetEmail);
+            toast.info("A 6-digit verification code has been sent to your email.", "Enter OTP");
+            setTimeout(() => {
+              window.location.hash = "#/verify-email?email=" + encodeURIComponent(targetEmail);
+            }, 300);
+            return;
+          }
+
           const user = data.data?.user;
           if (user) {
             authState.setUser(user);
@@ -160,6 +170,15 @@ renderLogin(params) {
             window.location.hash = "#/";
           }, 400);
         } else {
+          if (data.error?.code === "EMAIL_NOT_VERIFIED") {
+            const unverifiedEmail = data.error.email || email;
+            localStorage.setItem("raktdal_pending_email", unverifiedEmail);
+            toast.info("A fresh verification code was sent to your email.");
+            setTimeout(() => {
+              window.location.hash = "#/verify-email?email=" + encodeURIComponent(unverifiedEmail);
+            }, 600);
+            return;
+          }
           const errMsg = data.message || "Invalid credentials.";
           msgEl.innerHTML = `<div class="alert alert-error">${errMsg}</div>`;
           toast.error(errMsg, "Sign In Failed");
@@ -286,8 +305,17 @@ renderLogin(params) {
 
         <form id="verifyOtpForm" style="margin-top: 20px; text-align: left;">
           <div class="form-group">
-            <label class="form-label" for="verifyEmailInput">Email Address</label>
-            <input type="email" id="verifyEmailInput" class="form-input" value="${emailParam}" required>
+            <label class="form-label" for="verifyEmailInput" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Email Address</span>
+              <span style="font-size:0.75rem; color:var(--text-muted); display:inline-flex; align-items:center; gap:4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Locked
+              </span>
+            </label>
+            <input type="email" id="verifyEmailInput" class="form-input" value="${emailParam}" readonly required style="background: #f1f5f9; color: #475569; cursor: not-allowed; border-color: #cbd5e1; font-weight: 500;">
           </div>
 
           <div class="form-group">

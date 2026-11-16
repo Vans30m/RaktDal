@@ -2,6 +2,8 @@ import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import { env } from "../config/env.js";
 
+const hasValidBrevoKey = Boolean(env.brevoApiKey && env.brevoApiKey.startsWith("xkeysib-"));
+
 const hasValidResendKey = env.resendApiKey && !env.resendApiKey.startsWith("re_your_");
 const resend = hasValidResendKey ? new Resend(env.resendApiKey) : null;
 
@@ -95,13 +97,41 @@ export function renderEmailTemplate({ title, subtitle, bodyHtml, actionUrl = nul
 }
 
 /**
- * Low-level email dispatcher (Gmail SMTP -> Resend -> Dev fallback)
+ * Low-level email dispatcher (Brevo -> Gmail SMTP -> Resend -> Dev fallback)
  */
 export async function sendEmail({ to, toName = "", subject, html, templateParams = {}, templateId = null }) {
   const from = env.smtpUser ? `RaktDal <${env.smtpUser}>` : env.emailFrom;
 
   try {
-    // Priority 1: Gmail SMTP
+    // Priority 1: Brevo Transactional REST API
+    if (hasValidBrevoKey) {
+      const senderMatch = env.emailFrom.match(/(.*)<(.*)>/);
+      const senderName = senderMatch ? senderMatch[1].trim() : "RaktDal";
+      const senderEmail = senderMatch ? senderMatch[2].trim() : env.emailFrom;
+
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "api-key": env.brevoApiKey,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          sender: { name: senderName, email: senderEmail },
+          to: [{ email: to, name: toName || undefined }],
+          subject,
+          htmlContent: html
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to deliver email through Brevo");
+      }
+      return { success: true, provider: "brevo", messageId: result.messageId };
+    }
+
+    // Priority 2: Gmail SMTP
     if (transporter) {
       const info = await transporter.sendMail({ from, to, subject, html });
       return { success: true, provider: "smtp", messageId: info.messageId };

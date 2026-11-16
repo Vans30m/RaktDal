@@ -3,6 +3,8 @@ import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import { env } from "../config/env.js";
 
+const hasValidBrevoKey = Boolean(env.brevoApiKey && env.brevoApiKey.startsWith("xkeysib-"));
+
 // 1. Resend Client (used if RESEND_API_KEY is provided and not a placeholder)
 const hasValidResendKey = env.resendApiKey && !env.resendApiKey.startsWith("re_your_");
 const resend = hasValidResendKey ? new Resend(env.resendApiKey) : null;
@@ -35,14 +37,42 @@ export function hashOtp(otp) {
 }
 
 /**
- * Sends email using Gmail SMTP (Nodemailer), Resend, or falls back to dev terminal simulation
+ * Sends email using Brevo API, Gmail SMTP (Nodemailer), Resend, or falls back to dev terminal simulation
  */
 async function dispatchEmail({ to, toName = "", subject, html, templateParams = {}, templateId = null }) {
   const from = env.smtpUser ? `RaktDal <${env.smtpUser}>` : env.emailFrom;
 
   // In development, if providers throw or are restricted, gracefully fallback to terminal
   try {
-    // Priority 1: Gmail SMTP (Sends to ANY email address)
+    // Priority 1: Brevo Transactional REST API
+    if (hasValidBrevoKey) {
+      const senderMatch = env.emailFrom.match(/(.*)<(.*)>/);
+      const senderName = senderMatch ? senderMatch[1].trim() : "RaktDal";
+      const senderEmail = senderMatch ? senderMatch[2].trim() : env.emailFrom;
+
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "api-key": env.brevoApiKey,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          sender: { name: senderName, email: senderEmail },
+          to: [{ email: to, name: toName || undefined }],
+          subject,
+          htmlContent: html
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to deliver email through Brevo");
+      }
+      return { success: true, id: result.messageId };
+    }
+
+    // Priority 2: Gmail SMTP (Sends to ANY email address)
     if (transporter) {
       const info = await transporter.sendMail({
         from,
@@ -90,15 +120,6 @@ async function dispatchEmail({ to, toName = "", subject, html, templateParams = 
  * Sends OTP email - ALWAYS logs prominently to terminal in development!
  */
 export async function sendOtpEmail({ email, otp }) {
-  // Always print loud and clear in dev terminal for instant testing
-  if (env.nodeEnv !== "production") {
-    console.log(`\n======================================================`);
-    console.log(`🔥 [DEV OTP VERIFICATION] 🔥`);
-    console.log(`Email: ${email}`);
-    console.log(`OTP Code: >>> ${otp} <<<`);
-    console.log(`======================================================\n`);
-  }
-
   try {
     await dispatchEmail({
       to: email,
@@ -116,7 +137,7 @@ export async function sendOtpEmail({ email, otp }) {
     });
   } catch (err) {
     if (env.nodeEnv !== "production") {
-      console.warn(`[OTP] Resend rejected external recipient, but OTP is printed above for dev testing.`);
+      console.warn(`[OTP] Email delivery notice:`, err.message);
     } else {
       throw err;
     }
@@ -130,15 +151,6 @@ export async function sendOtpEmail({ email, otp }) {
  */
 export async function sendPasswordResetEmail({ email, resetToken }) {
   const resetUrl = `${env.frontendUrl}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
-
-  if (env.nodeEnv !== "production") {
-    console.log(`\n======================================================`);
-    console.log(`🔑 [DEV PASSWORD RESET] 🔑`);
-    console.log(`Email: ${email}`);
-    console.log(`Reset URL: ${resetUrl}`);
-    console.log(`Reset Token: >>> ${resetToken} <<<`);
-    console.log(`======================================================\n`);
-  }
 
   try {
     await dispatchEmail({
@@ -163,7 +175,7 @@ export async function sendPasswordResetEmail({ email, resetToken }) {
     });
   } catch (err) {
     if (env.nodeEnv !== "production") {
-      console.warn(`[RESET] Resend rejected external recipient, but Reset Token is printed above for dev testing.`);
+      console.warn(`[RESET] Email delivery notice:`, err.message);
     } else {
       throw err;
     }
