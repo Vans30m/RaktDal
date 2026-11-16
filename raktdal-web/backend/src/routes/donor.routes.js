@@ -12,6 +12,7 @@ import { verifyCsrf } from "../utils/security.js";
 import { Organization } from "../models/Organization.js";
 import { CampService } from "../services/camp.service.js";
 import { createRateLimiter } from "../middleware/rateLimiter.js";
+import { escapeHtml } from "../services/email.service.js";
 
 const searchLimiter = createRateLimiter({
   windowMs: 5 * 60 * 1000,
@@ -168,6 +169,24 @@ router.post("/:donorProfileId/alert", authenticate, verifyCsrf, async (req, res)
         hospitalName,
         bloodGroup: bloodGroup || profile.bloodGroup,
         city: city || profile.location.city
+      },
+      emailOptions: {
+        subject: alertTitle,
+        subtitle: `Urgent blood request from ${requester.fullName} in ${city || profile.location.city}`,
+        bodyHtml: `
+          <p>Hello <strong>${escapeHtml(profile.userId.fullName || "Donor")}</strong>,</p>
+          <p>An urgent blood donation alert has been sent to you on RaktDal by <strong>${escapeHtml(requester.fullName)}</strong>.</p>
+          <table cellpadding="6" style="width: 100%; border-collapse: collapse; margin: 16px 0; background: #f8fafc; border-radius: 6px;">
+            <tr><td style="color:#64748b; width:130px;">Blood Group:</td><td><strong style="color:#b91c1c; font-size:16px;">${escapeHtml(bloodGroup || profile.bloodGroup)}</strong></td></tr>
+            <tr><td style="color:#64748b;">Hospital:</td><td><strong>${escapeHtml(hospitalName || "Local Facility")}</strong></td></tr>
+            <tr><td style="color:#64748b;">Location:</td><td><strong>${escapeHtml(city || profile.location.city)}</strong></td></tr>
+            <tr><td style="color:#64748b;">Requester Contact:</td><td><strong style="color:#0f172a;">${escapeHtml(contactNumber || requester.phoneNumber || requester.email || "Contact via app")}</strong></td></tr>
+            ${message ? `<tr><td style="color:#64748b;">Note / Context:</td><td><em>${escapeHtml(message)}</em></td></tr>` : ""}
+          </table>
+          <p>If you are available to donate, please reach out to the requester immediately or open your RaktDal dashboard.</p>
+        `,
+        actionUrl: `#/notifications`,
+        actionText: "View Alert Details"
       }
     });
 

@@ -75,7 +75,24 @@ class EventDispatcher {
               donorPhone: donorPhone || "",
               donorEmail: donorEmail || ""
             },
-            priority: "HIGH"
+            priority: "HIGH",
+            emailOptions: {
+              subject: `🩸 Donor Response Received: ${donorName} offered ${units} Unit(s)`,
+              subtitle: `A volunteer donor has stepped forward to assist with your blood request.`,
+              bodyHtml: `
+                <p>Hello,</p>
+                <p>Great news! A volunteer donor has offered to help fulfill your blood request on RaktDal.</p>
+                <table cellpadding="6" style="width: 100%; border-collapse: collapse; margin: 16px 0; background: #f8fafc; border-radius: 6px;">
+                  <tr><td style="color:#64748b; width:130px;">Donor Name:</td><td><strong>${escapeHtml(donorName)}</strong></td></tr>
+                  <tr><td style="color:#64748b;">Units Offered:</td><td><strong>${units} Unit(s)</strong></td></tr>
+                  ${donorPhone ? `<tr><td style="color:#64748b;">Donor Phone:</td><td><a href="tel:${escapeHtml(donorPhone)}" style="color:#b91c1c; font-weight:600;">${escapeHtml(donorPhone)}</a></td></tr>` : ""}
+                  ${donorEmail ? `<tr><td style="color:#64748b;">Donor Email:</td><td><a href="mailto:${escapeHtml(donorEmail)}" style="color:#b91c1c; font-weight:600;">${escapeHtml(donorEmail)}</a></td></tr>` : ""}
+                </table>
+                <p>Please contact the donor directly or view your request dashboard to coordinate donation logistics.</p>
+              `,
+              actionUrl: `#/requests/my`,
+              actionText: "View My Blood Requests"
+            }
           });
         }
       } else if (eventName === "camp.registered") {

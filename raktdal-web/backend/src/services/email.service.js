@@ -152,18 +152,10 @@ export async function sendEmail({ to, toName = "", subject, html, templateParams
     }
   } catch (deliveryError) {
     if (env.nodeEnv !== "production") {
-      console.warn(`[EMAIL DELIVERY NOTICE] Primary email provider failed (${deliveryError.message}). Fallback to dev log.`);
-      return { success: true, provider: "dev-fallback", messageId: "dev-simulated-fallback-id" };
+      console.warn(`[EMAIL DELIVERY NOTICE] Delivery error (${deliveryError.message}).`);
+      return { success: false, provider: "error", error: deliveryError.message };
     }
     throw deliveryError;
-  }
-
-  if (env.nodeEnv !== "production") {
-    console.log(`\n========================================`);
-    console.log(`[DEV NOTIFICATION EMAIL] To: ${to}`);
-    console.log(`[DEV NOTIFICATION EMAIL] Subject: ${subject}`);
-    console.log(`========================================\n`);
-    return { success: true, provider: "dev-simulation", messageId: "dev-simulated-id" };
   }
 
   throw new Error("No email service configured.");
