@@ -366,7 +366,7 @@ export class Router {
       const badge = document.getElementById("navNotifBadge");
       const res = await api.getUnreadNotificationCount();
       const data = await res.json();
-      const count = data.data?.unreadCount || 0;
+      const count = Number(data.unreadCount ?? data.data?.unreadCount ?? 0);
 
       if (badge) {
         badge.style.display = "flex";

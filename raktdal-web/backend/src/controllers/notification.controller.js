@@ -52,7 +52,7 @@ export async function getUnreadCount(req, res) {
       userId: req.user._id,
       isRead: false
     });
-    return sendSuccess(res, { unreadCount: count }, "Unread notification count retrieved.");
+    return sendSuccess(res, { data: { unreadCount: count }, unreadCount: count }, "Unread notification count retrieved.");
   } catch (err) {
     return sendError(res, err.message, 500);
   }
