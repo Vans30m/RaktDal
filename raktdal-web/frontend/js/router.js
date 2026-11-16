@@ -77,6 +77,15 @@ export class Router {
       }
     });
 
+    // Close mobile nav on ESC key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (this.isMobileNavOpen) this.closeMobileNav();
+        if (this.isMenuOpen) this.closeUserMenu();
+        this.closeLanguageSelector();
+      }
+    });
+
     // Header scroll appearance treatment
     window.addEventListener("scroll", () => {
       const header = document.getElementById("siteHeader");
@@ -100,14 +109,22 @@ export class Router {
   setupMobileNav() {
     const toggleBtn = document.getElementById("mobileNavToggle");
     const mainNav = document.getElementById("mainNav");
+    const overlay = document.getElementById("mobileNavOverlay");
+
     if (toggleBtn && mainNav) {
       toggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this.isMobileNavOpen = !this.isMobileNavOpen;
         mainNav.classList.toggle("mobile-open", this.isMobileNavOpen);
+        if (overlay) overlay.classList.toggle("show", this.isMobileNavOpen);
         document.body.classList.toggle("nav-open-lock", this.isMobileNavOpen);
         toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
       });
+
+      // Close mobile menu when clicking outside overlay
+      if (overlay) {
+        overlay.addEventListener("click", () => this.closeMobileNav());
+      }
 
       // Close mobile menu when selecting any link
       mainNav.querySelectorAll("a").forEach(a => {
@@ -178,10 +195,10 @@ export class Router {
       currentLabel.textContent = currentMeta.nativeName;
     }
 
-    dropdown.innerHTML = SUPPORTED_LANGUAGES.map(lang => {
+    dropdown.innerHTML = SUPPORTED_LANGUAGES.map((lang, index) => {
       const isSelected = lang.code === currentMeta.code;
       return `
-        <button class="lang-option-item notranslate ${isSelected ? 'active' : ''}" data-lang="${lang.code}" role="menuitem" aria-label="${lang.name} (${lang.nativeName})" translate="no">
+        <button class="lang-option-item notranslate ${isSelected ? 'active' : ''}" data-lang="${lang.code}" role="menuitem" tabindex="-1" aria-label="${lang.name} (${lang.nativeName})" translate="no">
           <span><span class="notranslate" translate="no">${lang.nativeName}</span> <small style="color:var(--text-muted); font-size:0.75rem; margin-left:4px;">(${lang.name})</small></span>
           ${isSelected ? '<span class="lang-check-icon">✓</span>' : ''}
         </button>
@@ -193,14 +210,41 @@ export class Router {
         e.stopPropagation();
         this.toggleLanguageSelector();
       };
+
+      triggerBtn.onkeydown = (e) => {
+        if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.toggleLanguageSelector();
+          const firstOption = dropdown.querySelector(".lang-option-item");
+          firstOption?.focus();
+        }
+      };
     }
 
-    dropdown.querySelectorAll(".lang-option-item").forEach(item => {
+    const items = dropdown.querySelectorAll(".lang-option-item");
+    items.forEach((item, idx) => {
       item.onclick = (e) => {
         e.stopPropagation();
         const code = item.getAttribute("data-lang");
         this.closeLanguageSelector();
         this.setWebsiteLanguage(code);
+        triggerBtn?.focus();
+      };
+
+      item.onkeydown = (e) => {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          const next = items[idx + 1] || items[0];
+          next.focus();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          const prev = items[idx - 1] || items[items.length - 1];
+          prev.focus();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          this.closeLanguageSelector();
+          triggerBtn?.focus();
+        }
       };
     });
   }
@@ -209,7 +253,9 @@ export class Router {
     this.isMobileNavOpen = false;
     const mainNav = document.getElementById("mainNav");
     const toggleBtn = document.getElementById("mobileNavToggle");
+    const overlay = document.getElementById("mobileNavOverlay");
     if (mainNav) mainNav.classList.remove("mobile-open");
+    if (overlay) overlay.classList.remove("show");
     document.body.classList.remove("nav-open-lock");
     if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
   }
@@ -292,6 +338,10 @@ export class Router {
               </div>
 
               <div class="user-menu-items">
+                <a href="#/requests/create" class="user-menu-item user-menu-emergency-item" style="color: #dc2626; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; margin-bottom: 4px;">
+                  <span class="emergency-pulse-dot" style="width:7px; height:7px;" aria-hidden="true"></span>
+                  <span>Emergency Request</span>
+                </a>
                 <a href="#/requests/my" class="user-menu-item">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2c-4 6-6.5 9-6.5 12a6.5 6.5 0 0 0 13 0c0-3-2.5-6-6.5-12z"></path>
@@ -350,10 +400,10 @@ export class Router {
       this.navContainer.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px;">
           <a href="#/login" class="button button-outline" style="padding:7px 14px; font-size:0.88rem;">
-            Sign in
+            Sign In
           </a>
-          <a href="#/register" class="button" style="padding:7px 14px; font-size:0.88rem;">
-            Register
+          <a href="#/register" class="button button-primary" style="padding:7px 14px; font-size:0.88rem;">
+            Join / Sign Up
           </a>
         </div>
       `;
@@ -598,9 +648,31 @@ export class Router {
         infoViews.renderHelp(this.appContainer);
         break;
       default:
-        this.renderHome();
+        this.renderNotFound(path);
         break;
     }
+  }
+
+  renderNotFound(path) {
+    this.appContainer.innerHTML = `
+      <div class="landing-container" style="padding: 72px 20px 84px;">
+        <div class="auth-card" style="max-width: 560px; text-align: center; margin: 0 auto; padding: 48px 24px; border-radius: 20px;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: #fee2e2; color: var(--red); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 1.8rem; font-weight: 800;">
+            404
+          </div>
+          <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin: 0 0 10px;">Page Not Found</h1>
+          <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin: 0 auto 28px; max-width: 440px;">
+            The requested blood donation resource or page <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.88rem; color:var(--text-main);">${escapeHtml(path || window.location.hash)}</code> could not be found.
+          </p>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <a href="#/" class="button button-primary" style="padding: 10px 22px;">Return to Homepage</a>
+            <a href="#/find-blood" class="button button-outline" style="padding: 10px 22px;">Search Donors</a>
+            <a href="#/requests" class="button button-outline" style="padding: 10px 22px;">Emergency Requests</a>
+          </div>
+        </div>
+      </div>
+    `;
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   renderLoader(message = "Loading...") {

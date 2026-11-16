@@ -167,12 +167,153 @@ a {
   object-fit: contain;
 }
 
+/* Screen Reader Only Utility (WCAG compliant) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Header Brand Logo CLS fix */
+.brand-header-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Emergency Header Fast-Action Pill */
+.header-emergency-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1.5px solid #fecaca;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px -1px rgba(220, 38, 38, 0.12);
+}
+
+.header-emergency-pill:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  transform: translateY(-1px);
+}
+
+.emergency-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #dc2626;
+  box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  animation: pulseEmergencyDot 2s infinite;
+  flex-shrink: 0;
+}
+
+.header-emergency-pill:hover .emergency-pulse-dot {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+}
+
+@keyframes pulseEmergencyDot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+
+/* Mobile Nav Backdrop Overlay */
+.mobile-nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 95;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.mobile-nav-backdrop.show {
+  display: block;
+  opacity: 1;
+}
+
+.mobile-only-emergency {
+  display: none;
+}
+
+/* Initial Route Hydration Skeleton Loader */
+.initial-app-skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  width: 100%;
+}
+
+.skeleton-pulse-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+}
+
+.skeleton-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3.5px solid #fee2e2;
+  border-top-color: #dc2626;
+  border-radius: 50%;
+  animation: spinnerRotate 0.8s linear infinite;
+}
+
+.skeleton-text {
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  animation: pulseOpacity 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 nav {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   color: var(--text-muted);
-  font-size: 0.92rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
+  align-items: center;
 }
 
 nav a {
@@ -2305,21 +2446,69 @@ nav a.active::after {
     background: #ffffff;
     flex-direction: column;
     padding: 20px 24px;
-    gap: 16px;
+    gap: 8px;
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.15);
+    z-index: 110;
   }
 
   .site-header nav a {
-    padding: 8px 0;
-    font-size: 1.05rem;
+    padding: 10px 14px;
+    font-size: 1rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
     min-height: 44px;
+    border-radius: 8px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .site-header nav a:hover {
+    background-color: #f8fafc;
+  }
+
+  .site-header nav a.active {
+    background-color: #fef2f2;
+    color: var(--red);
+  }
+
+  .site-header nav a.active::after {
+    display: none;
+  }
+
+  .mobile-only-emergency {
+    display: block;
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .mobile-emergency-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .header-emergency-pill {
+    display: none;
   }
 
   .site-header nav.mobile-open {
     display: flex;
+    animation: slideDownNav 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideDownNav {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 

@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer-when-downgrade">
   <meta name="theme-color" content="#b91c1c">
-  <link rel="shortcut icon" href="assets/logo-removebg.png" type="image/x-icon">
+  <link rel="icon" type="image/png" href="assets/logo-removebg.png">
+  <link rel="shortcut icon" href="assets/logo-removebg.png" type="image/png">
   <meta name="description" content="RaktDal - Blood Donation and Donor Coordination Platform">
   <title>RaktDal | Blood Donation & Donor Coordination</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,40 +25,51 @@
 
 <body>
   <header class="site-header" id="siteHeader">
-    <a class="brand notranslate" href="#/" aria-label="RaktDal home"><img src="assets/logo-removebg.png" style="height: 40px;"
-        alt="RaktDal Logo"> <span class="notranslate">RaktDal</span></a>
+    <a class="brand notranslate" href="#/" aria-label="RaktDal home">
+      <img src="assets/logo-removebg.png" width="40" height="40" alt="RaktDal Logo" class="brand-header-logo">
+      <span class="notranslate">RaktDal</span>
+    </a>
 
-    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mainNav">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-        stroke-linecap="round" stroke-linejoin="round">
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="3" y1="12" x2="21" y2="12"></line>
         <line x1="3" y1="6" x2="21" y2="6"></line>
         <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
     </button>
+    
     <nav id="mainNav" aria-label="Main navigation">
       <a href="#/" data-route="/">Home</a>
       <a href="#/find-blood" data-route="/find-blood">Find Donors</a>
       <a href="#/donor/register" data-route="/donor/register">Donate Blood</a>
       <a href="#/requests" data-route="/requests">Blood Requests</a>
       <a href="#/blood-banks" data-route="/blood-banks">Blood Banks</a>
-      <a href="#/camps" data-route="/camps">Donation Camps</a>
+      <a href="#/camps" data-route="/camps">Camps</a>
+      <div class="mobile-only-emergency">
+        <a href="#/requests/create" class="button button-primary mobile-emergency-btn">
+          🚨 Request Blood Urgently
+        </a>
+      </div>
     </nav>
 
+    <!-- Mobile Nav Backdrop Overlay for accessible focus management & smooth tap-to-dismiss -->
+    <div id="mobileNavOverlay" class="mobile-nav-backdrop" aria-hidden="true"></div>
+
     <div class="nav-actions-group">
-      <!-- Language Selector Dropdown -->
+      <!-- Language Selector Dropdown with Accessible ARIA -->
       <div class="lang-selector-wrapper" id="langSelectorWrapper">
-        <button id="langSelectorBtn" class="lang-selector-btn notranslate" aria-haspopup="true" aria-expanded="false"
+        <button id="langSelectorBtn" class="lang-selector-btn notranslate" aria-haspopup="menu" aria-expanded="false" aria-controls="langDropdown"
           aria-label="Select Language" title="Select Language" translate="no">
           <svg class="lang-globe-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
           </svg>
           <span id="currentLangLabel" class="current-lang-text notranslate" translate="no">English</span>
           <svg class="lang-arrow-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
@@ -70,14 +82,25 @@
             Sign In
           </a>
           <a href="#/register" class="button" style="padding:7px 14px; font-size:0.88rem;">
-            Register
+            Join / Sign Up
           </a>
         </div>
       </div>
     </div>
   </header> 
 
-  <main id="app" class="main-content" aria-live="polite"><!-- Dynamic SPA Views --></main>
+  <!-- Dedicated ARIA Live Region for Screen-Reader Announcements (WCAG AA Compliant) -->
+  <div id="a11yAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Main Route Container with Instant Skeleton / Branded Spinner Loader -->
+  <main id="app" class="main-content">
+    <div class="initial-app-skeleton" id="initialAppSkeleton">
+      <div class="skeleton-pulse-wrap">
+        <div class="skeleton-spinner"></div>
+        <p class="skeleton-text">Connecting to RaktDal Network...</p>
+      </div>
+    </div>
+  </main>
 
   <div id="globalSiteFooter"></div>
 

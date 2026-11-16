@@ -186,100 +186,120 @@ async renderBloodRequests(params) {
 
   renderCreateBloodRequest() {
     this.appContainer.innerHTML = `
-      <div class="auth-card" style="max-width:680px; text-align:left;">
-        <h2 style="margin:0 0 6px 0;">Create Blood Request</h2>
-        <p class="subtitle" style="margin-bottom:24px;">
-          Submit a new requirement for urgent or planned transfusion needs. All requests are verified for safety.
-        </p>
-
-        <form id="createRequestForm" style="display:flex; flex-direction:column; gap:16px;">
-          <div class="responsive-form-row">
-            <div>
-              <label class="filter-label" for="reqBloodGroup">Blood Group *</label>
-              <select id="reqBloodGroup" class="filter-select" style="width:100%; margin-top:4px;" required>
-                <option value="">Select Group</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            </div>
-            <div>
-              <label class="filter-label" for="reqComponent">Component *</label>
-              <select id="reqComponent" class="filter-select" style="width:100%; margin-top:4px;" required>
-                <option value="WHOLE_BLOOD">Whole Blood</option>
-                <option value="PACKED_RED_CELLS">Packed Red Cells</option>
-                <option value="PLATELETS">Platelets</option>
-                <option value="PLASMA">Fresh Frozen Plasma</option>
-                <option value="CRYOPRECIPITATE">Cryoprecipitate</option>
-              </select>
-            </div>
+      <div class="find-donors-container">
+        <!-- 1. Hero Section - Matching RaktDal Theme -->
+        <section class="find-donors-hero-section" aria-labelledby="createReqHeading">
+          <div class="find-donors-hero-inner">
+            <span class="find-donors-badge">
+              URGENT &amp; PLANNED TRANSFUSIONS
+            </span>
+            <h1 id="createReqHeading" class="find-donors-hero-title">
+              Create <span class="accent-text">Blood Request</span>
+            </h1>
+            <p class="find-donors-hero-sub">
+              Submit a new requirement for urgent or planned transfusion needs. All requests are verified for safety.
+            </p>
           </div>
+        </section>
 
-          <div class="responsive-form-row">
-            <div>
-              <label class="filter-label" for="reqUnits">Units Required (Max 50) *</label>
-              <input type="number" id="reqUnits" class="filter-input" style="width:100%; margin-top:4px;" min="1" max="50" value="1" required>
-            </div>
-            <div>
-              <label class="filter-label" for="reqUrgency">Urgency Level *</label>
-              <select id="reqUrgency" class="filter-select" style="width:100%; margin-top:4px;" required>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-                <option value="CRITICAL">Critical</option>
-                <option value="LOW">Low</option>
-              </select>
-            </div>
+        <!-- 2. Main Form Wrapper -->
+        <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
+          <div class="auth-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
+
+            <div id="requestFormError" class="alert alert-error" style="display:none; margin-bottom: 20px;"></div>
+
+            <form id="createRequestForm" style="display:flex; flex-direction:column; gap:16px;">
+              <div class="responsive-form-row">
+                <div class="form-group">
+                  <label class="form-label" for="reqBloodGroup">Blood Group *</label>
+                  <select id="reqBloodGroup" class="form-input" required>
+                    <option value="">Select Group</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="reqComponent">Component *</label>
+                  <select id="reqComponent" class="form-input" required>
+                    <option value="WHOLE_BLOOD">Whole Blood</option>
+                    <option value="PACKED_RED_CELLS">Packed Red Cells</option>
+                    <option value="PLATELETS">Platelets</option>
+                    <option value="PLASMA">Fresh Frozen Plasma</option>
+                    <option value="CRYOPRECIPITATE">Cryoprecipitate</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="responsive-form-row">
+                <div class="form-group">
+                  <label class="form-label" for="reqUnits">Units Required (Max 50) *</label>
+                  <input type="number" id="reqUnits" class="form-input" min="1" max="50" value="1" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="reqUrgency">Urgency Level *</label>
+                  <select id="reqUrgency" class="form-input" required>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="CRITICAL">Critical</option>
+                    <option value="LOW">Low</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reqHospital">Hospital / Healthcare Facility *</label>
+                <input type="text" id="reqHospital" class="form-input" placeholder="e.g. AIIMS Delhi" required>
+              </div>
+
+              <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 4px 0 8px;">
+                <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Hospital Location</h4>
+
+                <div class="responsive-form-row-3">
+                  <div class="form-group" style="position:relative;">
+                    <label class="form-label" for="reqCity">City *</label>
+                    <input type="text" id="reqCity" class="form-input" placeholder="e.g. Chandigarh, Delhi" autocomplete="off" required>
+                    <div id="citySuggestions" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border, #cbd5e1); border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:200px; overflow-y:auto; z-index:99; display:none;"></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="reqState">State *</label>
+                    <input type="text" id="reqState" class="form-input" placeholder="State" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="reqPin">Pin Code *</label>
+                    <input type="text" id="reqPin" class="form-input" placeholder="6-digit PIN" maxlength="6" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="responsive-form-row">
+                <div class="form-group">
+                  <label class="form-label" for="reqDeadline">Required By (Date & Time) *</label>
+                  <input type="datetime-local" id="reqDeadline" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="reqPatient">Patient Identifier / Hospital Bed No. *</label>
+                  <input type="text" id="reqPatient" class="form-input" placeholder="e.g. IPD-9021 or Ward-4B" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reqDesc">Clinical Context / Special Notes (Optional)</label>
+                <textarea id="reqDesc" class="form-input" style="height:90px;" placeholder="Any additional notes or hospital contact details..."></textarea>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
+                <a href="#/requests" class="button button-outline">Cancel</a>
+                <button type="submit" id="submitRequestBtn" class="button button-primary" style="padding:10px 24px;">Submit Blood Request</button>
+              </div>
+            </form>
           </div>
-
-          <div>
-            <label class="filter-label" for="reqHospital">Hospital / Healthcare Facility *</label>
-            <input type="text" id="reqHospital" class="filter-input" style="width:100%; margin-top:4px;" placeholder="e.g. AIIMS Delhi" required>
-          </div>
-
-          <div class="responsive-form-row-3">
-            <div style="position:relative;">
-              <label class="filter-label" for="reqCity">City *</label>
-              <input type="text" id="reqCity" class="filter-input" style="width:100%; margin-top:4px;" placeholder="e.g. Chandigarh, Delhi" autocomplete="off" required>
-              <div id="citySuggestions" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border, #cbd5e1); border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-height:200px; overflow-y:auto; z-index:99; display:none;"></div>
-            </div>
-            <div>
-              <label class="filter-label" for="reqState">State *</label>
-              <input type="text" id="reqState" class="filter-input" style="width:100%; margin-top:4px;" placeholder="State" required>
-            </div>
-            <div>
-              <label class="filter-label" for="reqPin">Pin Code *</label>
-              <input type="text" id="reqPin" class="filter-input" style="width:100%; margin-top:4px;" placeholder="6-digit PIN" maxlength="6" required>
-            </div>
-          </div>
-
-          <div class="responsive-form-row">
-            <div>
-              <label class="filter-label" for="reqDeadline">Required By (Date & Time) *</label>
-              <input type="datetime-local" id="reqDeadline" class="filter-input" style="width:100%; margin-top:4px;" required>
-            </div>
-            <div>
-              <label class="filter-label" for="reqPatient">Patient Identifier / Hospital Bed No. *</label>
-              <input type="text" id="reqPatient" class="filter-input" style="width:100%; margin-top:4px;" placeholder="e.g. IPD-9021 or Ward-4B" required>
-            </div>
-          </div>
-
-          <div>
-            <label class="filter-label" for="reqDesc">Clinical Context / Special Notes (Optional)</label>
-            <textarea id="reqDesc" class="filter-input" style="width:100%; margin-top:4px; height:80px;" placeholder="Any additional notes or hospital contact details..."></textarea>
-          </div>
-
-          <div id="requestFormError" style="color:#dc2626; font-size:0.88rem; display:none;"></div>
-
-          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
-            <a href="#/requests" class="button button-outline">Cancel</a>
-            <button type="submit" id="submitRequestBtn" class="button">Submit Request</button>
-          </div>
-        </form>
+        </div>
       </div>
     `;
 
