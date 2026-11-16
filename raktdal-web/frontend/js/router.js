@@ -392,9 +392,18 @@ export class Router {
         });
       });
 
-      document.getElementById("userMenuLogoutBtn")?.addEventListener("click", () => {
+      document.getElementById("userMenuLogoutBtn")?.addEventListener("click", async () => {
         this.closeUserMenu();
-        authState.logout();
+        const confirmed = await toast.confirm({
+          title: "Sign Out",
+          message: "Are you sure you want to sign out of your RaktDal account?",
+          confirmText: "Sign Out",
+          cancelText: "Stay Signed In",
+          confirmVariant: "danger"
+        });
+        if (confirmed) {
+          authState.logout();
+        }
       });
     } else {
       this.navContainer.innerHTML = `

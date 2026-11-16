@@ -12,6 +12,35 @@ export const GOOGLE_ICON_SVG = `
   </svg>
 `;
 
+export const EYE_OPEN_SVG = `
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+    <circle cx="12" cy="12" r="3"></circle>
+  </svg>
+`;
+
+export const EYE_OFF_SVG = `
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+    <line x1="1" y1="1" x2="23" y2="23"></line>
+  </svg>
+`;
+
+export function setupPasswordToggle(inputId, toggleBtnId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(toggleBtnId);
+  if (!input || !btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const isPassword = input.type === "password";
+    input.type = isPassword ? "text" : "password";
+    btn.innerHTML = isPassword ? EYE_OFF_SVG : EYE_OPEN_SVG;
+    btn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+    btn.setAttribute("title", isPassword ? "Hide password" : "Show password");
+  });
+}
+
 export const authViews = {
 renderLogin(params) {
     const error = params.get("error");
@@ -59,7 +88,12 @@ renderLogin(params) {
 
           <div class="form-group">
             <label class="form-label" for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password">
+            <div class="password-input-wrapper">
+              <input type="password" id="loginPassword" class="form-input" required placeholder="Enter your password">
+              <button type="button" id="loginPasswordToggle" class="password-toggle-btn" aria-label="Show password" title="Show password">
+                ${EYE_OPEN_SVG}
+              </button>
+            </div>
           </div>
 
           <button type="submit" id="loginSubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
@@ -92,6 +126,8 @@ renderLogin(params) {
     const clearMsg = () => { const m = document.getElementById("loginMsg"); if (m) m.innerHTML = ""; };
     emailInput?.addEventListener("input", clearMsg);
     passwordInput?.addEventListener("input", clearMsg);
+
+    setupPasswordToggle("loginPassword", "loginPasswordToggle");
 
     document.getElementById("spaLoginForm")?.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -162,7 +198,12 @@ renderLogin(params) {
 
           <div class="form-group">
             <label class="form-label" for="regPassword">Password</label>
-            <input type="password" id="regPassword" class="form-input" required minlength="8" placeholder="At least 8 characters">
+            <div class="password-input-wrapper">
+              <input type="password" id="regPassword" class="form-input" required minlength="8" placeholder="At least 8 characters">
+              <button type="button" id="regPasswordToggle" class="password-toggle-btn" aria-label="Show password" title="Show password">
+                ${EYE_OPEN_SVG}
+              </button>
+            </div>
           </div>
 
           <button type="submit" id="regSubmitBtn" class="button" style="width: 100%; margin-top: 10px;">
@@ -188,6 +229,8 @@ renderLogin(params) {
         </p>
       </div>
     `;
+
+    setupPasswordToggle("regPassword", "regPasswordToggle");
 
     document.getElementById("spaRegisterForm")?.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -724,15 +767,30 @@ renderLogin(params) {
           <form id="changePasswordForm">
             <div class="form-group" style="margin-bottom:14px;">
               <label class="form-label" for="currentPasswordInput">Current Password</label>
-              <input type="password" id="currentPasswordInput" class="form-input" placeholder="Enter current password" required>
+              <div class="password-input-wrapper">
+                <input type="password" id="currentPasswordInput" class="form-input" placeholder="Enter current password" required>
+                <button type="button" id="currentPasswordToggle" class="password-toggle-btn" aria-label="Show password" title="Show password">
+                  ${EYE_OPEN_SVG}
+                </button>
+              </div>
             </div>
             <div class="form-group" style="margin-bottom:14px;">
               <label class="form-label" for="newPasswordInput">New Password</label>
-              <input type="password" id="newPasswordInput" class="form-input" placeholder="At least 8 characters" minlength="8" required>
+              <div class="password-input-wrapper">
+                <input type="password" id="newPasswordInput" class="form-input" placeholder="At least 8 characters" minlength="8" required>
+                <button type="button" id="newPasswordToggle" class="password-toggle-btn" aria-label="Show password" title="Show password">
+                  ${EYE_OPEN_SVG}
+                </button>
+              </div>
             </div>
             <div class="form-group" style="margin-bottom:20px;">
               <label class="form-label" for="confirmPasswordInput">Confirm New Password</label>
-              <input type="password" id="confirmPasswordInput" class="form-input" placeholder="Re-enter new password" minlength="8" required>
+              <div class="password-input-wrapper">
+                <input type="password" id="confirmPasswordInput" class="form-input" placeholder="Re-enter new password" minlength="8" required>
+                <button type="button" id="confirmPasswordToggle" class="password-toggle-btn" aria-label="Show password" title="Show password">
+                  ${EYE_OPEN_SVG}
+                </button>
+              </div>
             </div>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
               <button type="button" id="cancelChangePasswordModalBtn" class="button button-outline" style="padding:8px 16px;">Cancel</button>
@@ -812,6 +870,10 @@ renderLogin(params) {
     const pwdForm = document.getElementById("changePasswordForm");
     const pwdMsg = document.getElementById("changePasswordMsg");
 
+    setupPasswordToggle("currentPasswordInput", "currentPasswordToggle");
+    setupPasswordToggle("newPasswordInput", "newPasswordToggle");
+    setupPasswordToggle("confirmPasswordInput", "confirmPasswordToggle");
+
     const hidePwdModal = () => {
       if (pwdModal) pwdModal.style.display = "none";
       if (pwdMsg) {
@@ -888,14 +950,29 @@ renderLogin(params) {
     });
 
     // Sign out handlers
-    document.getElementById("profileSignOutBtn")?.addEventListener("click", () => {
-      authState.logout();
+    document.getElementById("profileSignOutBtn")?.addEventListener("click", async () => {
+      const confirmed = await toast.confirm({
+        title: "Sign Out",
+        message: "Are you sure you want to sign out from this device?",
+        confirmText: "Sign Out",
+        cancelText: "Stay Signed In",
+        confirmVariant: "danger"
+      });
+      if (confirmed) {
+        authState.logout();
+      }
     });
 
     const handleSignOutAll = async () => {
-      if (!confirm("Are you sure you want to sign out from all devices? You will need to log back in.")) {
-        return;
-      }
+      const confirmed = await toast.confirm({
+        title: "Sign Out All Sessions",
+        message: "Are you sure you want to sign out from all active devices and sessions? You will need to log back in.",
+        confirmText: "Sign Out All",
+        cancelText: "Cancel",
+        confirmVariant: "danger"
+      });
+      if (!confirmed) return;
+
       try {
         await api.logoutAll();
       } catch (err) {}
