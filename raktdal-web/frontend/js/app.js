@@ -23,10 +23,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 3. Fetch initial auth session
   await authState.init();
 
-  // 4. Connect real-time WebSocket for instant alert popups
+  // 4. Connect real-time WebSocket for instant alert popups and background sync
   authState.subscribe((state) => {
     if (state.isAuthenticated) {
       realtimeClient.connect();
+      router.startNotificationPolling();
+      router.refreshNotificationBadge();
     } else {
       realtimeClient.disconnect();
     }

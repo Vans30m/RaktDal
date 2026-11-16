@@ -140,15 +140,6 @@ export const donorViews = {
 
       let { donors, pagination } = data.data || { donors: [], pagination: {} };
 
-      // Ensure logged-in user never sees themselves in the donor directory
-      const currentUserId = authState.getState().user?._id;
-      if (currentUserId && Array.isArray(donors)) {
-        donors = donors.filter(d => {
-          const donorUid = d.userId?._id || d.userId;
-          return String(donorUid) !== String(currentUserId);
-        });
-      }
-
       if (!donors || donors.length === 0) {
         resultsEl.innerHTML = `
           <div class="auth-card" style="text-align: center; padding: 40px 20px;">
@@ -1088,9 +1079,9 @@ function renderActiveDashboard(container, donor) {
             <a href="#/donor/edit" class="button button-outline" style="font-size:0.88rem; padding:8px 16px;">
               Edit Profile
             </a>
-            <a href="#/donor/availability" class="button button-primary" style="font-size:0.88rem; padding:8px 16px;">
+            <button type="button" id="dashUpdateStatusBtn" class="button button-primary" style="font-size:0.88rem; padding:8px 16px; cursor:pointer;">
               Update Status
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -1213,6 +1204,134 @@ function renderActiveDashboard(container, donor) {
   attachConsentToggleHandler("dashToggleDiscovery", donor, "publicDiscoveryConsent", container);
   attachConsentToggleHandler("dashToggleNotifications", donor, "notificationConsent", container);
   attachConsentToggleHandler("dashToggleContact", donor, "contactSharingConsent", container);
+
+  // Attach modal popup trigger for Update Status
+  const updateStatusBtn = document.getElementById("dashUpdateStatusBtn");
+  if (updateStatusBtn) {
+    updateStatusBtn.addEventListener("click", () => {
+      openAvailabilityModal(donor, (updatedStatus) => {
+        donor.availabilityStatus = updatedStatus;
+        const isNowAvailable = updatedStatus === "AVAILABLE";
+        const pill = container.querySelector(".donor-status-pill.available, .donor-status-pill.unavailable");
+        if (pill) {
+          pill.className = `donor-status-pill ${isNowAvailable ? "available" : "unavailable"}`;
+          pill.textContent = isNowAvailable ? "Available to Donate" : "Currently Unavailable";
+        }
+      });
+    });
+  }
+}
+
+/**
+ * Custom Modal Popup for Updating Donor Availability Status
+ */
+function openAvailabilityModal(donor, onUpdate) {
+  const existing = document.getElementById("donorAvailabilityModal");
+  if (existing) existing.remove();
+
+  const isAvailable = donor.availabilityStatus === "AVAILABLE";
+
+  const backdrop = document.createElement("div");
+  backdrop.id = "donorAvailabilityModal";
+  backdrop.className = "modal-backdrop custom-confirm-backdrop";
+
+  backdrop.innerHTML = `
+    <div class="modal-content" style="max-width: 480px; border-radius: 18px; padding: 26px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); text-align: left; animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 8px;">
+        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--navy); line-height: 1.3;">Availability Status</h3>
+        <button type="button" id="closeAvailModalBtn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:color 0.15s ease;" title="Close dialog">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <p style="margin: 0 0 18px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+        Quickly toggle whether you can respond to urgent blood donation calls.
+      </p>
+
+      <div id="modalAvailCard" style="background: var(--bg-card, #f8fafc); border: 1px solid var(--border, #e2e8f0); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+        <div style="font-weight: 700; font-size: 1.05rem; color: ${isAvailable ? "var(--success, #16a34a)" : "var(--text-muted, #64748b)"}; display:flex; align-items:center; gap:8px;">
+          <span>${isAvailable ? "● AVAILABLE TO DONATE" : "○ CURRENTLY UNAVAILABLE"}</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted, #64748b); margin: 6px 0 0; line-height: 1.45;">
+          ${isAvailable ? "You appear in search results as ready to donate." : "You are hidden from emergency matching until you re-enable availability."}
+        </p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button type="button" id="modalToggleAvailBtn" class="button ${isAvailable ? "button-outline" : "button-primary"}" style="width: 100%; padding: 10px 16px; font-size: 0.92rem; font-weight:600; border-radius:10px; cursor:pointer;">
+          ${isAvailable ? "Set Status to UNAVAILABLE" : "Set Status to AVAILABLE"}
+        </button>
+        <button type="button" id="modalCancelAvailBtn" class="button button-outline" style="width: 100%; padding: 9px 16px; font-size: 0.88rem; border-radius:10px; cursor:pointer;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(backdrop);
+
+  const cleanup = () => {
+    backdrop.style.opacity = "0";
+    backdrop.style.transition = "opacity 0.15s ease";
+    setTimeout(() => backdrop.remove(), 150);
+  };
+
+  backdrop.querySelector("#closeAvailModalBtn")?.addEventListener("click", cleanup);
+  backdrop.querySelector("#modalCancelAvailBtn")?.addEventListener("click", cleanup);
+
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) cleanup();
+  });
+
+  const onKey = (e) => {
+    if (e.key === "Escape") {
+      cleanup();
+      document.removeEventListener("keydown", onKey);
+    }
+  };
+  document.addEventListener("keydown", onKey);
+
+  const toggleBtn = backdrop.querySelector("#modalToggleAvailBtn");
+  toggleBtn?.addEventListener("click", async () => {
+    const nextStatus = isAvailable ? "UNAVAILABLE" : "AVAILABLE";
+    toggleBtn.disabled = true;
+    toggleBtn.textContent = "Updating...";
+
+    try {
+      const res = await api.updateDonorAvailability(nextStatus);
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.show({
+          title: "Status Updated",
+          message: data.message || `Availability set to ${nextStatus.toLowerCase()}.`,
+          type: "success"
+        });
+        if (typeof onUpdate === "function") {
+          onUpdate(nextStatus);
+        }
+        cleanup();
+      } else {
+        toast.show({
+          title: "Update Failed",
+          message: data.message || "Could not update availability status.",
+          type: "error"
+        });
+        toggleBtn.disabled = false;
+        toggleBtn.textContent = isAvailable ? "Set Status to UNAVAILABLE" : "Set Status to AVAILABLE";
+      }
+    } catch (err) {
+      toast.show({
+        title: "Network Error",
+        message: "Failed to connect to server. Please try again.",
+        type: "error"
+      });
+      toggleBtn.disabled = false;
+      toggleBtn.textContent = isAvailable ? "Set Status to UNAVAILABLE" : "Set Status to AVAILABLE";
+    }
+  });
 }
 
 /**

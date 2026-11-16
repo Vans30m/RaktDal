@@ -654,7 +654,13 @@ async renderBloodRequests(params) {
       // Handle requester actions
       document.querySelectorAll(".mark-fulfilled-btn, #markFulfilledBtn").forEach(btn => {
         btn.addEventListener("click", async () => {
-          if (confirm("Mark this blood request as fulfilled?")) {
+          const ok = await toast.confirm({
+            title: "Mark as Fulfilled?",
+            message: "Mark this blood request as fulfilled? This will inform responding donors that requirements have been met.",
+            confirmText: "Mark Fulfilled",
+            confirmVariant: "primary"
+          });
+          if (ok) {
             try {
               const res = await api.updateRequestStatus(requestId, "FULFILLED", "Fulfilled by user");
               const data = await res.json().catch(() => ({}));
@@ -672,7 +678,13 @@ async renderBloodRequests(params) {
       });
 
       document.getElementById("cancelRequestBtn")?.addEventListener("click", async () => {
-        if (confirm("Are you sure you want to cancel this blood request?")) {
+        const ok = await toast.confirm({
+          title: "Cancel Blood Request?",
+          message: "Are you sure you want to cancel this blood request? It will no longer be visible as active.",
+          confirmText: "Yes, Cancel Request",
+          confirmVariant: "danger"
+        });
+        if (ok) {
           try {
             const res = await api.updateRequestStatus(requestId, "CANCELLED", "Cancelled by requester");
             const data = await res.json().catch(() => ({}));
@@ -689,7 +701,13 @@ async renderBloodRequests(params) {
       });
 
       document.getElementById("deleteRequestBtn")?.addEventListener("click", async () => {
-        if (confirm("Permanently delete this blood request? This action cannot be undone.")) {
+        const ok = await toast.confirm({
+          title: "Permanently Delete Request?",
+          message: "Permanently delete this blood request? This action cannot be undone.",
+          confirmText: "Delete Permanently",
+          confirmVariant: "danger"
+        });
+        if (ok) {
           try {
             const res = await api.deleteBloodRequest(requestId);
             const data = await res.json();
@@ -928,7 +946,14 @@ async renderBloodRequests(params) {
         btn.addEventListener("click", async (e) => {
           e.stopPropagation();
           const reqId = btn.getAttribute("data-id");
-          if (confirm("Are you sure you want to delete this blood request?")) {
+          const ok = await toast.confirm({
+            title: "Delete Blood Request?",
+            message: "Are you sure you want to delete this blood request? This action will permanently remove it from active donor searches.",
+            confirmText: "Delete Request",
+            cancelText: "Keep Request",
+            confirmVariant: "danger"
+          });
+          if (ok) {
             try {
               const res = await api.deleteBloodRequest(reqId);
               const data = await res.json();
