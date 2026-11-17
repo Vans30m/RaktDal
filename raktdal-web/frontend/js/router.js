@@ -108,6 +108,7 @@ export class Router {
 
   setupMobileNav() {
     const toggleBtn = document.getElementById("mobileNavToggle");
+    const closeBtn = document.getElementById("mobileNavCloseBtn");
     const mainNav = document.getElementById("mainNav");
     const overlay = document.getElementById("mobileNavOverlay");
 
@@ -120,6 +121,13 @@ export class Router {
         document.body.classList.toggle("nav-open-lock", this.isMobileNavOpen);
         toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
       });
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.closeMobileNav();
+        });
+      }
 
       // Close mobile menu when clicking outside overlay
       if (overlay) {
@@ -321,7 +329,7 @@ export class Router {
           <div class="user-menu-wrapper">
             <button id="userMenuTrigger" class="user-menu-trigger" aria-haspopup="true" aria-expanded="${this.isMenuOpen}">
               ${u.profileImage ? `<img src="${u.profileImage}" class="user-nav-avatar" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-nav-avatar\\'>${initial}</div>';">` : `<div class="user-nav-avatar">${initial}</div>`}
-              <span>${u.fullName.split(" ")[0]}</span>
+              <span class="user-menu-name-label">${u.fullName.split(" ")[0]}</span>
               <svg class="user-menu-arrow-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
@@ -338,8 +346,12 @@ export class Router {
               </div>
 
               <div class="user-menu-items">
-                <a href="#/requests/create" class="user-menu-item user-menu-emergency-item" style="color: #dc2626; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; margin-bottom: 4px;">
-                  <span class="emergency-pulse-dot" style="width:7px; height:7px;" aria-hidden="true"></span>
+                <a href="#/requests/create" class="user-menu-item user-menu-emergency-item" style="color: #dc2626; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
                   <span>Emergency Request</span>
                 </a>
                 <a href="#/requests/my" class="user-menu-item">
@@ -407,11 +419,11 @@ export class Router {
       });
     } else {
       this.navContainer.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px;">
-          <a href="#/login" class="button button-outline" style="padding:7px 14px; font-size:0.88rem;">
+        <div class="auth-nav-buttons" style="display:flex; align-items:center; gap:8px;">
+          <a href="#/login" class="button button-outline auth-signin-btn" style="padding:7px 14px; font-size:0.88rem;">
             Sign In
           </a>
-          <a href="#/register" class="button button-primary" style="padding:7px 14px; font-size:0.88rem;">
+          <a href="#/register" class="button button-primary auth-signup-btn" style="padding:7px 14px; font-size:0.88rem;">
             Join / Sign Up
           </a>
         </div>

@@ -22,23 +22,23 @@ export const notificationViews = {
         </section>
 
         <!-- 2. Main Content Wrapper -->
-        <div class="find-donors-body-wrapper" style="max-width: 900px;">
+        <div class="find-donors-body-wrapper notif-body-wrapper" style="max-width: 860px;">
           <!-- Controls Bar Card -->
-          <div class="find-donors-search-card" style="margin-bottom: 20px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <a href="#/" id="notifBackBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+          <div class="find-donors-search-card notif-controls-card">
+            <div class="notif-controls-left">
+              <a href="#/" id="notifBackBtn" class="button button-outline notif-action-btn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12"></line>
                   <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
-                <span>Back to Home</span>
+                <span>Back</span>
               </a>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <button id="markAllReadBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 16px; border-radius: 8px; font-weight: 600;">
+            <div class="notif-controls-right">
+              <button id="markAllReadBtn" class="button button-outline notif-action-btn">
                 Mark All as Read
               </button>
-              <button id="openNotifSettingsModalBtn" class="button button-outline" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+              <button id="openNotifSettingsModalBtn" class="button button-outline notif-action-btn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3"></circle>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -129,26 +129,28 @@ export const notificationViews = {
 
         const isUnread = !n.isRead;
         return `
-        <div class="find-donors-search-card" style="margin-bottom: 14px; padding: 20px 22px; border-radius: 16px; border-left: 5px solid ${isUnread ? 'var(--red, #b91c1c)' : '#e2e8f0'}; background: ${isUnread ? '#fffbfb' : '#ffffff'}; transition: transform 0.15s ease, box-shadow 0.15s ease; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
-            <div style="flex: 1;">
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
-                <span class="badge" style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 6px; background: ${isUnread ? '#fee2e2' : '#f1f5f9'}; color: ${isUnread ? '#991b1b' : '#475569'};">
+        <div class="find-donors-search-card notif-card ${isUnread ? 'is-unread' : 'is-read'}">
+          <div class="notif-card-inner">
+            <div class="notif-card-main">
+              <div class="notif-card-badges">
+                <span class="badge ${isUnread ? 'badge-unread' : 'badge-read'}">
                   ${n.type.replace(/_/g, " ")}
                 </span>
-                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">
+                <span class="notif-card-date">
                   ${new Date(n.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
                 </span>
-                ${isUnread ? `<span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#dc2626;" title="Unread"></span>` : ""}
+                ${isUnread ? `<span class="notif-unread-dot" title="Unread"></span>` : ""}
               </div>
-              <h4 style="margin: 0 0 8px; font-size: 1.05rem; font-weight: 750; color: var(--navy); line-height: 1.35;">${n.title}</h4>
-              <p style="margin: 0; font-size: 0.9rem; color: #475569; line-height: 1.6;">${n.message}</p>
-              ${actionLink}
+              <h4 class="notif-card-title">${n.title}</h4>
+              <p class="notif-card-msg">${n.message}</p>
+              ${actionLink ? `<div class="notif-card-actions">${actionLink}</div>` : ""}
             </div>
             ${isUnread ? `
-              <button class="mark-single-read-btn button button-outline" data-id="${n._id}" style="font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 8px; white-space: nowrap; flex-shrink: 0;">
-                Mark Read
-              </button>
+              <div class="notif-card-side-btn">
+                <button class="mark-single-read-btn button button-outline" data-id="${n._id}">
+                  Mark Read
+                </button>
+              </div>
             ` : ""}
           </div>
         </div>

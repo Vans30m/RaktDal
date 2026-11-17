@@ -39,16 +39,64 @@
       </svg>
     </button>
     
-    <nav id="mainNav" aria-label="Main navigation">
-      <a href="#/" data-route="/">Home</a>
-      <a href="#/find-blood" data-route="/find-blood">Find Donors</a>
-      <a href="#/donor/register" data-route="/donor/register">Donate Blood</a>
-      <a href="#/requests" data-route="/requests">Blood Requests</a>
-      <a href="#/blood-banks" data-route="/blood-banks">Blood Banks</a>
-      <a href="#/camps" data-route="/camps">Camps</a>
+    <nav id="mainNav" class="main-nav" aria-label="Main navigation">
+      <div class="mobile-nav-header">
+        <div class="mobile-nav-brand notranslate" translate="no">
+          <img src="assets/logo-removebg.png" width="32" height="32" alt="RaktDal Logo" class="brand-header-logo">
+          <span>RaktDal</span>
+        </div>
+        <button type="button" class="mobile-nav-close-btn" id="mobileNavCloseBtn" aria-label="Close navigation menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mobile-nav-links">
+        <a href="#/" data-route="/" class="nav-link-item">
+          <svg class="nav-link-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span class="nav-link-label">Home</span>
+        </a>
+        <a href="#/find-blood" data-route="/find-blood" class="nav-link-item">
+          <svg class="nav-link-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span class="nav-link-label">Find Donors</span>
+        </a>
+        <a href="#/donor/register" data-route="/donor/register" class="nav-link-item">
+          <svg class="nav-link-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+          <span class="nav-link-label">Donate Blood</span>
+        </a>
+        <a href="#/requests" data-route="/requests" class="nav-link-item">
+          <svg class="nav-link-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span class="nav-link-label">Blood Requests</span>
+        </a>
+        <a href="#/blood-banks" data-route="/blood-banks" class="nav-link-item">
+          <svg class="nav-link-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path><line x1="10" y1="9" x2="14" y2="9"></line><line x1="12" y1="7" x2="12" y2="11"></line></svg>
+          <span class="nav-link-label">Blood Banks</span>
+        </a>
+        <a href="#/camps" data-route="/camps" class="nav-link-item">
+          <svg class="nav-link-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span class="nav-link-label">Camps</span>
+        </a>
+      </div>
+
+      <div class="mobile-nav-auth-section" id="mobileNavAuthSection">
+        <a href="#/login" class="button button-outline mobile-nav-auth-btn">
+          Sign In
+        </a>
+        <a href="#/register" class="button button-primary mobile-nav-auth-btn">
+          Join / Sign Up
+        </a>
+      </div>
+
       <div class="mobile-only-emergency">
         <a href="#/requests/create" class="button button-primary mobile-emergency-btn">
-          🚨 Request Blood Urgently
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>Request Blood Urgently</span>
         </a>
       </div>
     </nav>
