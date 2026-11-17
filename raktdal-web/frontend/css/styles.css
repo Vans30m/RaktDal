@@ -293,10 +293,10 @@ a {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 115;
+  z-index: 95;
   opacity: 0;
   transition: opacity 0.25s ease;
 }
@@ -384,25 +384,11 @@ nav a.active::after {
 .mobile-nav-toggle {
   display: none;
   background: transparent;
-  border: 1px solid var(--border);
+  border: none;
   cursor: pointer;
   padding: 8px;
   color: var(--text-main);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.mobile-nav-toggle:hover {
-  background: #f1f5f9;
-  border-color: var(--border-hover, #cbd5e1);
-}
-
-.mobile-nav-header {
-  display: none;
-}
-
-.nav-link-icon {
-  display: none;
+  border-radius: 6px;
 }
 
 /* User Menu Dropdown */
@@ -896,180 +882,6 @@ nav a.active::after {
 }
 
 /* Notifications & Alerts */
-.notif-controls-card {
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.notif-controls-left,
-.notif-controls-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.notif-action-btn {
-  font-size: 0.82rem;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.notif-card {
-  margin-bottom: 12px;
-  padding: 16px 18px;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.notif-card.is-unread {
-  border-left: 4px solid var(--red, #b91c1c);
-  background: #fffbfb;
-}
-
-.notif-card.is-read {
-  border-left: 4px solid #e2e8f0;
-  background: #ffffff;
-}
-
-.notif-card-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.notif-card-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.notif-card-badges {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
-}
-
-.badge-unread {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 2px 7px;
-  border-radius: 6px;
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.badge-read {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 2px 7px;
-  border-radius: 6px;
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.notif-card-date {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.notif-unread-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #dc2626;
-}
-
-.notif-card-title {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  font-weight: 750;
-  color: var(--navy);
-  line-height: 1.35;
-}
-
-.notif-card-msg {
-  margin: 0;
-  font-size: 0.88rem;
-  color: #475569;
-  line-height: 1.55;
-  word-break: break-word;
-}
-
-.notif-card-side-btn button {
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-@media (max-width: 600px) {
-  .notif-controls-card {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-
-  .notif-controls-left,
-  .notif-controls-right {
-    width: 100%;
-    display: flex;
-    gap: 6px;
-  }
-
-  .notif-action-btn {
-    font-size: 0.76rem;
-    padding: 6px 10px;
-    flex: 1;
-    justify-content: center;
-  }
-
-  .notif-card {
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-  }
-
-  .notif-card-inner {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .notif-card-side-btn {
-    width: 100%;
-  }
-
-  .notif-card-side-btn button {
-    width: 100%;
-    text-align: center;
-    padding: 7px 12px;
-  }
-
-  .notif-card-title {
-    font-size: 0.94rem;
-  }
-
-  .notif-card-msg {
-    font-size: 0.82rem;
-  }
-}
-
 .alert {
   padding: 12px 14px;
   border-radius: 8px;
@@ -1986,8 +1798,8 @@ nav a.active::after {
 
 @media (max-width: 640px) {
   .donors-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
-    gap: 12px !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
 }
 
@@ -2047,8 +1859,8 @@ nav a.active::after {
 
 @media (max-width: 640px) {
   .requests-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
-    gap: 12px !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
 }
 
@@ -2674,86 +2486,32 @@ nav a.active::after {
     top: 100%;
     left: 0;
     right: 0;
-    width: 100%;
     background: #ffffff;
     flex-direction: column;
-    padding: 16px 20px 20px;
-    gap: 6px;
+    padding: 20px 24px;
+    gap: 8px;
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.15);
     z-index: 110;
-    transform: none;
-    transition: none;
   }
 
-  .site-header nav.mobile-open {
-    display: flex;
-    animation: slideDownMenu 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  @keyframes slideDownMenu {
-    from {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Hide the drawer header inside the top-down dropdown */
-  .mobile-nav-header {
-    display: none;
-  }
-
-  .mobile-nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 100%;
-  }
-
-  .site-header nav a,
-  .site-header nav a.nav-link-item {
-    padding: 11px 16px;
-    font-size: 0.95rem;
+  .site-header nav a {
+    padding: 10px 14px;
+    font-size: 1rem;
     font-weight: 600;
-    color: var(--text-muted);
     display: flex;
     align-items: center;
-    gap: 12px;
     min-height: 44px;
     border-radius: 8px;
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  .site-header nav a .nav-link-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #94a3b8;
-    flex-shrink: 0;
-    transition: color 0.15s ease;
-  }
-
   .site-header nav a:hover {
     background-color: #f8fafc;
-    color: var(--text-main);
-  }
-
-  .site-header nav a:hover .nav-link-icon {
-    color: var(--red);
   }
 
   .site-header nav a.active {
     background-color: #fef2f2;
-    color: var(--red);
-    font-weight: 700;
-    box-shadow: none;
-  }
-
-  .site-header nav a.active .nav-link-icon {
     color: var(--red);
   }
 
@@ -2764,25 +2522,36 @@ nav a.active::after {
   .mobile-only-emergency {
     display: block;
     margin-top: 10px;
-    padding-top: 14px;
+    padding-top: 12px;
     border-top: 1px solid var(--border);
-    width: 100%;
   }
 
   .mobile-emergency-btn {
     width: 100%;
-    display: inline-flex;
-    align-items: center;
     justify-content: center;
-    gap: 8px;
     padding: 12px 18px;
-    font-size: 0.94rem;
+    font-size: 0.95rem;
     font-weight: 700;
-    border-radius: 8px;
   }
 
   .header-emergency-pill {
     display: none;
+  }
+
+  .site-header nav.mobile-open {
+    display: flex;
+    animation: slideDownNav 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideDownNav {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
@@ -3948,126 +3717,26 @@ body {
   }
   .donor-dashboard-split {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-  .donor-hero-content {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
-  .donor-hero-actions {
-    width: 100%;
-    display: flex;
-    gap: 10px;
-  }
-  .donor-hero-actions .button {
-    flex: 1;
-    text-align: center;
-    justify-content: center;
   }
 }
 
 @media (max-width: 640px) {
   .donor-dashboard-wrap {
-    padding: 12px 10px 48px;
+    padding: 16px 12px 48px;
   }
   .donor-hero-card {
-    padding: 18px 16px;
-    border-radius: 14px;
+    padding: 24px 20px;
   }
   .donor-hero-left {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
-    min-width: 0;
+    gap: 16px;
+  }
+  .donor-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .donor-hero-right {
     width: 100%;
-  }
-  .donor-blood-badge-large {
-    width: 52px;
-    height: 52px;
-    font-size: 1.3rem;
-    border-radius: 10px;
-  }
-  .donor-hero-meta {
-    min-width: 0;
-    flex: 1;
-  }
-  .donor-hero-meta h1 {
-    font-size: 1.18rem;
-    word-break: break-word;
-  }
-  .donor-hero-sub {
-    font-size: 0.82rem;
-    gap: 6px;
-  }
-  .donor-status-pill {
-    font-size: 0.7rem;
-    padding: 3px 8px;
-  }
-  .donor-panel {
-    padding: 18px 16px;
-    border-radius: 12px;
-  }
-  .donor-panel-header {
-    padding-bottom: 12px;
-    margin-bottom: 14px;
-  }
-  .donor-panel-header h3 {
-    font-size: 0.98rem;
-  }
-  .donor-info-row {
-    padding: 7px 0;
-    gap: 10px;
-  }
-  .donor-info-key {
-    font-size: 0.82rem;
-  }
-  .donor-info-val {
-    font-size: 0.84rem;
-    max-width: 60%;
-    word-break: break-word;
-  }
-  .donor-toggle-item {
-    padding: 10px 12px;
-    gap: 10px;
-  }
-  .donor-toggle-text strong {
-    font-size: 0.84rem;
-  }
-  .donor-toggle-text p {
-    font-size: 0.74rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .donor-hero-left {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .donor-blood-badge-large {
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
-  }
-  .donor-hero-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .donor-hero-actions .button {
-    width: 100%;
-  }
-  .donor-info-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
-  }
-  .donor-info-val {
-    text-align: left;
-    max-width: 100%;
   }
 }
 
@@ -8506,68 +8175,34 @@ body {
 
 @media (max-width: 768px) {
   .find-donors-hero-section {
-    padding: 18px 14px 14px;
-  }
-  .find-donors-badge {
-    font-size: 0.68rem;
-    padding: 3px 8px;
-    margin-bottom: 6px;
+    padding: 24px 16px 20px;
   }
   .find-donors-hero-title {
-    font-size: 1.35rem;
-    margin: 0 0 4px;
+    font-size: 1.6rem;
   }
   .find-donors-hero-sub {
-    font-size: 0.82rem;
-    line-height: 1.4;
+    font-size: 0.9rem;
   }
   .find-donors-body-wrapper {
-    padding: 12px 10px 40px;
+    padding: 16px 14px 48px;
   }
   .find-donors-search-card {
-    padding: 12px 12px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-  }
-  .find-donors-search-form {
-    gap: 8px;
+    padding: 16px 14px;
+    border-radius: 14px;
   }
   .find-donors-search-form .form-group {
     flex: 1 1 100%;
   }
-  .find-donors-search-form .form-label {
-    font-size: 0.72rem;
-    margin-bottom: 2px;
-  }
-  .find-donors-search-form .form-input {
-    height: 36px;
-    font-size: 0.84rem;
-    padding: 0 8px;
-  }
   .find-donors-btn-group {
     width: 100%;
-    margin-top: 4px;
   }
   .find-donors-btn-group .find-donors-search-btn {
-    flex: 1 1 70%;
-    height: 36px;
-    font-size: 0.84rem;
-  }
-  .find-donors-btn-group .find-donors-reset-btn {
-    height: 36px;
-    font-size: 0.84rem;
+    flex: 1;
   }
   .find-donors-results-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
-    margin-bottom: 12px;
-  }
-  .find-donors-results-bar p {
-    font-size: 0.86rem;
-  }
-  .find-donors-results-notice {
-    font-size: 0.75rem;
+    gap: 6px;
   }
 }
 
@@ -8705,62 +8340,7 @@ body {
 @media (max-width: 960px) {
   .profile-dashboard-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-@media (max-width: 600px) {
-  .user-profile-dashboard {
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-  }
-
-  .profile-dashboard-grid {
-    gap: 12px !important;
-  }
-
-  .profile-card {
-    padding: 16px 14px !important;
-    border-radius: 14px !important;
-    margin-bottom: 14px !important;
-  }
-
-  .profile-avatar-large,
-  .profile-avatar-img {
-    width: 68px !important;
-    height: 68px !important;
-    font-size: 1.6rem !important;
-    margin-bottom: 10px !important;
-  }
-
-  .profile-card h2 {
-    font-size: 1.15rem !important;
-  }
-
-  .profile-card-header {
-    margin-bottom: 12px !important;
-    padding-bottom: 8px !important;
-  }
-
-  .profile-card-title {
-    font-size: 0.95rem !important;
-  }
-
-  .profile-info-grid {
-    grid-template-columns: 1fr;
-    gap: 8px !important;
-  }
-
-  .profile-info-item {
-    padding: 8px 10px !important;
-  }
-
-  .profile-info-label {
-    font-size: 0.7rem !important;
-  }
-
-  .profile-info-value {
-    font-size: 0.88rem !important;
+    gap: 20px;
   }
 }
 
@@ -8997,82 +8577,6 @@ button,
 
 /* 4. Tablets & Portrait Screen Sizes (max-width: 768px) */
 @media (max-width: 768px) {
-  /* Profile Hero and Cards compact */
-  .find-donors-hero-section {
-    padding: 24px 16px 20px !important;
-  }
-
-  .find-donors-hero-title {
-    font-size: 1.6rem !important;
-  }
-
-  .find-donors-hero-sub {
-    font-size: 0.88rem !important;
-    line-height: 1.45 !important;
-  }
-
-  .profile-card {
-    padding: 16px 14px !important;
-    border-radius: 14px !important;
-    margin-bottom: 14px !important;
-  }
-
-  /* Compact Cards across all mobile views */
-  .donor-card {
-    padding: 14px 14px !important;
-    border-radius: 14px !important;
-  }
-
-  .donor-card-top {
-    margin-bottom: 10px !important;
-  }
-
-  .donor-card-user {
-    gap: 10px !important;
-  }
-
-  .donor-blood-tag {
-    font-size: 1rem !important;
-    padding: 3px 8px !important;
-    border-radius: 6px !important;
-  }
-
-  .donor-card-meta {
-    font-size: 0.8rem !important;
-    margin-bottom: 10px !important;
-    line-height: 1.4 !important;
-    gap: 3px !important;
-  }
-
-  .donor-meta-row {
-    gap: 6px !important;
-  }
-
-  .donor-card-bottom {
-    padding-top: 10px !important;
-  }
-
-  .request-card {
-    padding: 14px 14px !important;
-    border-radius: 12px !important;
-    gap: 10px !important;
-  }
-
-  .request-card-header {
-    gap: 8px !important;
-  }
-
-  .request-card .blood-badge {
-    font-size: 1rem !important;
-    padding: 3px 8px !important;
-  }
-
-  .request-card .request-details-grid {
-    gap: 6px 12px !important;
-    font-size: 0.82rem !important;
-    padding: 8px !important;
-  }
-
   .site-header {
     padding: 10px 14px;
     gap: 8px;
@@ -9093,24 +8597,6 @@ button,
     margin-left: auto;
   }
 
-  /* Auth Buttons in header on tablet/mobile */
-  .auth-nav-buttons {
-    gap: 6px !important;
-  }
-
-  .auth-signin-btn,
-  .auth-signup-btn {
-    padding: 6px 12px !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-    white-space: nowrap !important;
-  }
-
-  .mobile-nav-auth-section {
-    display: none;
-  }
-
   .lang-selector-btn {
     padding: 6px 8px;
     font-size: 0.8rem;
@@ -9126,25 +8612,24 @@ button,
   }
 
   .user-menu-trigger {
-    padding: 2px !important;
-    min-width: 36px !important;
-    min-height: 36px !important;
-    height: 36px !important;
-    border-radius: 50% !important;
-    justify-content: center !important;
-    border: 1px solid var(--border) !important;
+    padding: 4px 8px;
+    gap: 6px;
+    font-size: 0.82rem;
+    min-height: 36px;
+    height: 36px;
   }
 
-  .user-menu-trigger .user-menu-name-label,
-  .user-menu-trigger .user-menu-arrow-icon {
-    display: none !important;
+  .user-menu-trigger span:not(:last-child) {
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .user-nav-avatar {
-    width: 30px !important;
-    height: 30px !important;
-    font-size: 0.82rem !important;
-    margin: 0 !important;
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
   }
 
   .mobile-nav-toggle {
@@ -9162,32 +8647,18 @@ button,
 
   .camp-filter-responsive-form,
   .bank-filter-responsive-form,
-  .request-filter-responsive-form,
-  .donor-filter-responsive-form,
-  .donor-filter-form {
+  .request-filter-responsive-form {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
   .camp-filter-responsive-form .find-donors-btn-group,
   .bank-filter-responsive-form .find-donors-btn-group,
-  .request-filter-responsive-form .find-donors-btn-group,
-  .donor-filter-responsive-form .find-donors-btn-group,
-  .donor-filter-form .find-donors-btn-group,
-  .find-donors-search-form .find-donors-btn-group {
+  .request-filter-responsive-form .find-donors-btn-group {
     grid-column: 1;
     display: flex;
     gap: 8px;
     width: 100%;
-  }
-
-  .find-donors-btn-group .find-donors-search-btn {
-    flex: 1 1 70% !important;
-  }
-
-  .find-donors-btn-group .find-donors-reset-btn {
-    flex: 0 0 auto !important;
-    min-width: 80px;
   }
 
   .requests-grid {
@@ -9309,24 +8780,24 @@ button,
   }
 
   .user-menu-trigger {
-    padding: 2px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
-    height: 32px !important;
-    border-radius: 50% !important;
-    justify-content: center !important;
+    padding: 3px 6px;
+    gap: 4px;
+    font-size: 0.78rem;
+    min-height: 32px;
+    height: 32px;
   }
 
-  .user-menu-trigger .user-menu-name-label,
-  .user-menu-trigger .user-menu-arrow-icon {
-    display: none !important;
+  .user-menu-trigger span:not(:last-child) {
+    max-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .user-nav-avatar {
-    width: 26px !important;
-    height: 26px !important;
-    font-size: 0.75rem !important;
-    margin: 0 !important;
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
   }
 
   .mobile-nav-toggle {
@@ -9341,13 +8812,9 @@ button,
   }
 
   #authNavContainer .button,
-  #authNavContainer a.button,
-  .auth-signin-btn,
-  .auth-signup-btn {
+  #authNavContainer a.button {
     padding: 6px 10px !important;
-    font-size: 0.78rem !important;
-    white-space: nowrap !important;
-    border-radius: 6px !important;
+    font-size: 0.8rem !important;
   }
 
   .auth-card {
@@ -9385,20 +8852,18 @@ button,
     box-sizing: border-box !important;
   }
 
-  /* Cards & Requests Grid compact flow */
+  /* Cards & Requests Grid single column */
   .requests-grid,
   .find-donors-grid,
-  .donors-grid,
   .dashboard-grid,
   .profile-dashboard-grid {
     grid-template-columns: 1fr !important;
-    gap: 10px !important;
+    gap: 16px !important;
     width: 100% !important;
   }
 
   .requests-grid > *,
   .find-donors-grid > *,
-  .donors-grid > *,
   .dashboard-grid > *,
   .profile-dashboard-grid > * {
     width: 100% !important;
@@ -9406,85 +8871,17 @@ button,
     box-sizing: border-box !important;
   }
 
-  .donor-card {
-    padding: 10px 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .donor-card-top {
-    margin-bottom: 6px !important;
-  }
-
-  .donor-card-user {
-    gap: 8px !important;
-  }
-
-  .donor-card-user img,
-  .donor-card-user .user-nav-avatar {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 0.9rem !important;
-  }
-
-  .donor-blood-tag {
-    font-size: 0.95rem !important;
-    padding: 3px 8px !important;
-    border-radius: 6px !important;
-  }
-
-  .donor-card-meta {
-    font-size: 0.76rem !important;
-    margin-bottom: 6px !important;
-    gap: 2px !important;
-    line-height: 1.4 !important;
-  }
-
-  .donor-meta-row {
-    gap: 6px !important;
-  }
-
-  .donor-meta-row svg {
-    width: 13px !important;
-    height: 13px !important;
-    flex-shrink: 0;
-  }
-
-  .donor-card-bottom {
-    padding-top: 6px !important;
-  }
-
-  .donor-card-bottom .badge {
-    font-size: 0.72rem !important;
-    padding: 2px 7px !important;
-  }
-
-  .donor-card-bottom .send-donor-alert-btn {
-    font-size: 0.74rem !important;
-    padding: 4px 9px !important;
-    gap: 4px !important;
-  }
-
-  .donor-card-bottom .send-donor-alert-btn svg {
-    width: 12px !important;
-    height: 12px !important;
-  }
-
   .request-card {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 12px !important;
-    border-radius: 10px !important;
+    padding: 18px 16px !important;
     box-sizing: border-box !important;
-    gap: 8px !important;
   }
 
   .request-card .request-details-grid {
     width: 100% !important;
     box-sizing: border-box !important;
-    padding: 6px 8px !important;
-    font-size: 0.78rem !important;
-    gap: 4px 8px !important;
   }
 
   /* Modal Actions vertical stacking on narrow screens */
