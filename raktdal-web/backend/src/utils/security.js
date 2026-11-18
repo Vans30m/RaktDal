@@ -89,8 +89,9 @@ export async function createSession({ userId, userAgent, ipAddress }) {
   const refreshTokenHash = hashToken(rawRefreshToken);
   const tokenFamilyId = crypto.randomUUID();
 
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + env.refreshExpiresDays);
+  // User login session strictly expires after 1 hour (3600 seconds)
+  const sessionLifetimeMs = (env.refreshExpiresHours || 1) * 60 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + sessionLifetimeMs);
 
   const session = await Session.create({
     userId,
@@ -101,7 +102,7 @@ export async function createSession({ userId, userAgent, ipAddress }) {
     expiresAt
   });
 
-  return { session, rawRefreshToken };
+  return { session, rawRefreshToken, expiresAt };
 }
 
 /**
@@ -126,7 +127,7 @@ export async function rotateRefreshToken({ rawRefreshToken, userAgent, ipAddress
     throw new Error("Token reuse detected! Session family has been revoked.");
   }
 
-  // Check expiration
+  // Check expiration (Strict 1-hour session limit from initial login)
   if (new Date() > session.expiresAt) {
     session.isRevoked = true;
     await session.save();
@@ -137,12 +138,12 @@ export async function rotateRefreshToken({ rawRefreshToken, userAgent, ipAddress
   session.isRevoked = true;
   await session.save();
 
-  // Issue new token in the same token family
+  // Issue new token in the same token family, preserving the initial session's expiration timestamp
   const newRawRefreshToken = generateRandomToken(40);
   const newRefreshTokenHash = hashToken(newRawRefreshToken);
 
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + env.refreshExpiresDays);
+  // Preserve the exact 1-hour expiration timestamp from initial login
+  const expiresAt = session.expiresAt;
 
   const newSession = await Session.create({
     userId: session.userId,
@@ -156,6 +157,7 @@ export async function rotateRefreshToken({ rawRefreshToken, userAgent, ipAddress
   return {
     userId: session.userId,
     newSession,
-    newRawRefreshToken
+    newRawRefreshToken,
+    expiresAt
   };
 }

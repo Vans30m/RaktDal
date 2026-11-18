@@ -52,7 +52,8 @@ renderLogin(params) {
       account_suspended: "Your RaktDal account is suspended. Contact support.",
       identity_conflict: "This email is already linked with a different Google account.",
       auth_required: "Please sign in to access your donor account.",
-      admin_required: "Administrative authorization required. Please sign in with an Admin account."
+      admin_required: "Administrative authorization required. Please sign in with an Admin account.",
+      session_expired: "Your login session has expired after 1 hour for your security. Please sign in again."
     };
 
     const errorMessage = error ? (errorMap[error] || "An unexpected error occurred. Please try again.") : null;

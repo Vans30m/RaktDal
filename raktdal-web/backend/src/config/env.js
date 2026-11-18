@@ -21,7 +21,7 @@ export const env = {
 
   jwtSecret: process.env.JWT_SECRET || "rakt-dal-jwt-secret-key",
   accessExpiresIn: "15m", // Short-lived access token (15 mins)
-  refreshExpiresDays: 7, // Refresh token valid for 7 days
+  refreshExpiresHours: 1, // User session / refresh token valid for 1 hour (auto-removed after 1 hr)
   isProduction: process.env.NODE_ENV === "production",
 
   // Email Delivery Configuration

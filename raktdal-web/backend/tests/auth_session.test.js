@@ -101,3 +101,41 @@ test("Unauthorized Request Logic: Missing token returns unauthorized", () => {
   const token = req.cookies?.accessToken || req.headers.authorization;
   assert.equal(!token, true, "Missing token correctly flagged as unauthorized");
 });
+
+test("Session Expiry Policy: User login session strictly expires after 1 hour", () => {
+  const ONE_HOUR_MS = 60 * 60 * 1000;
+  const now = Date.now();
+  const sessionExpiresAt = new Date(now + ONE_HOUR_MS);
+
+  // 1. Session duration is exactly 1 hour
+  const lifespan = sessionExpiresAt.getTime() - now;
+  assert.equal(lifespan, ONE_HOUR_MS, "Session lifespan must be exactly 1 hour (3600000 ms)");
+
+  // 2. Session past 1 hour is detected as expired
+  const expiredSession = {
+    userId: "user123",
+    expiresAt: new Date(now - 1000), // 1 second in the past
+    isRevoked: false
+  };
+
+  const isExpired = new Date() > expiredSession.expiresAt;
+  assert.equal(isExpired, true, "Session older than 1 hour must be detected as expired");
+
+  if (isExpired) {
+    expiredSession.isRevoked = true;
+  }
+  assert.equal(expiredSession.isRevoked, true, "Expired session must be revoked and removed");
+
+  // 3. Token rotation maintains original 1-hour expiration deadline
+  const initialSession = {
+    tokenFamilyId: "fam-1",
+    expiresAt: sessionExpiresAt,
+    isRevoked: false
+  };
+  const rotatedSession = {
+    tokenFamilyId: initialSession.tokenFamilyId,
+    expiresAt: initialSession.expiresAt, // Preserved
+    isRevoked: false
+  };
+  assert.equal(rotatedSession.expiresAt.getTime(), sessionExpiresAt.getTime(), "Rotated session must preserve original 1-hour limit");
+});

@@ -29,7 +29,7 @@ const googleClient = new OAuth2Client(
 );
 
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000; // 15 mins
-const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 1000; // 1 hour (User login removed from device after 1 hr)
 
 // Forgot password resend cooldown & rate limiting (Map: email -> { lastSentAt, attempts, resetAt })
 const resetRateLimitMap = new Map();
@@ -252,7 +252,7 @@ export async function refresh(req, res) {
     const userAgent = req.headers["user-agent"] || "Unknown Device";
     const ipAddress = req.ip || req.connection?.remoteAddress || "Unknown IP";
 
-    const { userId, newRawRefreshToken } = await rotateRefreshToken({
+    const { userId, newRawRefreshToken, expiresAt } = await rotateRefreshToken({
       rawRefreshToken,
       userAgent,
       ipAddress
@@ -268,10 +268,20 @@ export async function refresh(req, res) {
       });
     }
 
+    const remainingMs = Math.max(0, expiresAt ? (new Date(expiresAt).getTime() - Date.now()) : REFRESH_TOKEN_MAX_AGE);
+    if (remainingMs <= 0) {
+      res.clearCookie("accessToken", getCookieOptions());
+      res.clearCookie("refreshToken", getCookieOptions());
+      return res.status(401).json({
+        success: false,
+        message: "Session has expired. Please sign in again."
+      });
+    }
+
     const newAccessToken = generateAccessToken(user);
 
-    res.cookie("accessToken", newAccessToken, getCookieOptions({ maxAge: ACCESS_TOKEN_MAX_AGE }));
-    res.cookie("refreshToken", newRawRefreshToken, getCookieOptions({ maxAge: REFRESH_TOKEN_MAX_AGE }));
+    res.cookie("accessToken", newAccessToken, getCookieOptions({ maxAge: Math.min(ACCESS_TOKEN_MAX_AGE, remainingMs) }));
+    res.cookie("refreshToken", newRawRefreshToken, getCookieOptions({ maxAge: remainingMs }));
 
     return res.json({
       success: true,

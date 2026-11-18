@@ -1,4 +1,4 @@
-import { verifyAccessToken, hashToken } from "../utils/security.js";
+import { verifyAccessToken, hashToken, getCookieOptions } from "../utils/security.js";
 import { User } from "../models/User.js";
 import { Session } from "../models/Session.js";
 import { Organization } from "../models/Organization.js";
@@ -58,6 +58,8 @@ export async function authenticate(req, res, next) {
       currentSession = await Session.findOne({ refreshTokenHash: tokenHash, userId: user._id });
 
       if (currentSession && (currentSession.isRevoked || new Date() > currentSession.expiresAt)) {
+        res.clearCookie("accessToken", getCookieOptions());
+        res.clearCookie("refreshToken", getCookieOptions());
         return res.status(401).json({
           success: false,
           message: "Session has been revoked or expired.",

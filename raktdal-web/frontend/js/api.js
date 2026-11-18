@@ -74,6 +74,11 @@ export const api = {
             credentials: "include",
             headers
           });
+        } else {
+          // Refresh failed - session has expired (after 1 hour) or was revoked
+          if (typeof window !== "undefined" && window.authState && window.authState.isAuthenticated()) {
+            window.authState.handleSessionExpired();
+          }
         }
       }
 
