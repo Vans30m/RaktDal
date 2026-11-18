@@ -147,18 +147,18 @@ export const notificationViews = {
       container.innerHTML = items.map(n => {
         let actionLink = "";
         if (n.relatedEntityType === "BloodRequest" && n.relatedEntityId) {
-          actionLink = `<div style="margin-top: 12px;">
-            <a href="#/requests/${n.relatedEntityId}" class="button button-primary" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px;">
+          actionLink = `
+            <a href="#/requests/${n.relatedEntityId}" class="button button-primary notif-view-btn">
               <span>View Request & Contact Donor</span>
             </a>
-          </div>`;
+          `;
         } else if (n.type === "REQUEST_RESPONSE_RECEIVED" && (n.metadata?.requestId || n.relatedEntityId)) {
           const reqId = n.metadata?.requestId || n.relatedEntityId;
-          actionLink = `<div style="margin-top: 12px;">
-            <a href="#/requests/${reqId}" class="button button-primary" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px;">
+          actionLink = `
+            <a href="#/requests/${reqId}" class="button button-primary notif-view-btn">
               <span>View Request & Contact Donor</span>
             </a>
-          </div>`;
+          `;
         }
 
         const isUnread = !n.isRead;
@@ -177,13 +177,15 @@ export const notificationViews = {
               </div>
               <h4 class="notif-card-title">${n.title}</h4>
               <p class="notif-card-msg">${n.message}</p>
-              ${actionLink ? `<div class="notif-card-actions">${actionLink}</div>` : ""}
             </div>
-            ${isUnread ? `
-              <div class="notif-card-side-btn">
-                <button class="mark-single-read-btn button button-outline" data-id="${n._id}">
-                  Mark Read
-                </button>
+            ${(actionLink || isUnread) ? `
+              <div class="notif-card-footer">
+                ${actionLink ? actionLink : ""}
+                ${isUnread ? `
+                  <button class="mark-single-read-btn button button-outline" data-id="${n._id}">
+                    Mark Read
+                  </button>
+                ` : ""}
               </div>
             ` : ""}
           </div>
@@ -341,6 +343,7 @@ export const notificationViews = {
     }
 
     modal.style.display = "flex";
+    document.body.classList.add("modal-open");
     modal.style.alignItems = "center";
     modal.style.justifyContent = "center";
     modal.style.position = "fixed";
@@ -416,6 +419,7 @@ export const notificationViews = {
 
     const close = () => {
       modal.style.display = "none";
+      document.body.classList.remove("modal-open");
     };
 
     document.getElementById("closeNotifModalBtn")?.addEventListener("click", close);

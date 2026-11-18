@@ -204,11 +204,11 @@ async renderBloodRequests(params) {
 
         <!-- 2. Main Form Wrapper -->
         <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
-          <div class="auth-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
+          <div class="auth-card donor-register-card request-create-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
 
             <div id="requestFormError" class="alert alert-error" style="display:none; margin-bottom: 20px;"></div>
 
-            <form id="createRequestForm" style="display:flex; flex-direction:column; gap:16px;">
+            <form id="createRequestForm" novalidate style="display:flex; flex-direction:column; gap:16px;">
               <div class="responsive-form-row">
                 <div class="form-group">
                   <label class="form-label" for="reqBloodGroup">Blood Group *</label>
@@ -257,8 +257,8 @@ async renderBloodRequests(params) {
                 <input type="text" id="reqHospital" class="form-input" placeholder="e.g. AIIMS Delhi" required>
               </div>
 
-              <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 4px 0 8px;">
-                <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Hospital Location</h4>
+              <div class="donor-form-section" style="border-top: 1px solid var(--border); padding-top: 16px; margin: 4px 0 8px;">
+                <h4 class="donor-form-section-title" style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Hospital Location</h4>
 
                 <div class="responsive-form-row-3">
                   <div class="form-group" style="position:relative;">
@@ -293,9 +293,9 @@ async renderBloodRequests(params) {
                 <textarea id="reqDesc" class="form-input" style="height:90px;" placeholder="Any additional notes or hospital contact details..."></textarea>
               </div>
 
-              <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
+              <div class="donor-form-actions" style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
                 <a href="#/requests" class="button button-outline">Cancel</a>
-                <button type="submit" id="submitRequestBtn" class="button button-primary" style="padding:10px 24px;">Submit Blood Request</button>
+                <button type="submit" id="submitRequestBtn" class="button button-primary">Submit Blood Request</button>
               </div>
             </form>
           </div>
@@ -774,6 +774,7 @@ async renderBloodRequests(params) {
     const container = document.getElementById("responseModalContainer");
     if (!container) return;
 
+    document.body.classList.add("modal-open");
     container.innerHTML = `
       <div class="modal-backdrop" id="modalBackdrop">
         <div class="modal-content" onclick="event.stopPropagation()">
@@ -811,7 +812,10 @@ async renderBloodRequests(params) {
       </div>
     `;
 
-    const close = () => { container.innerHTML = ""; };
+    const close = () => {
+      document.body.classList.remove("modal-open");
+      container.innerHTML = "";
+    };
     document.getElementById("closeModalBtn")?.addEventListener("click", close);
     document.getElementById("modalBackdrop")?.addEventListener("click", (e) => {
       if (e.target === document.getElementById("modalBackdrop")) {

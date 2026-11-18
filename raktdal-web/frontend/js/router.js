@@ -125,6 +125,7 @@ export class Router {
         if (overlay) overlay.classList.toggle("show", this.isMobileNavOpen);
         const header = document.getElementById("siteHeader");
         if (header) header.classList.toggle("nav-open", this.isMobileNavOpen);
+        document.body.classList.toggle("nav-open-lock", this.isMobileNavOpen);
         toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
       });
 
@@ -139,6 +140,12 @@ export class Router {
       if (overlay) {
         overlay.addEventListener("click", () => this.closeMobileNav());
       }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.isMobileNavOpen) {
+          this.closeMobileNav();
+        }
+      });
 
       // Close mobile menu when selecting any link
       mainNav.querySelectorAll("a").forEach(a => {
@@ -278,6 +285,7 @@ export class Router {
     }
     if (overlay) overlay.classList.remove("show");
     if (header) header.classList.remove("nav-open");
+    document.body.classList.remove("nav-open-lock");
     if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
   }
 
@@ -515,6 +523,9 @@ export class Router {
    */
   async handleRoute() {
     if (!this.appContainer) return;
+    document.body.classList.remove("modal-open");
+    const openCampModal = document.getElementById("campDetailModal");
+    if (openCampModal) openCampModal.style.display = "none";
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
