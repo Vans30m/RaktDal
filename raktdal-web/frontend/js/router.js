@@ -121,16 +121,10 @@ export class Router {
       toggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this.isMobileNavOpen = !this.isMobileNavOpen;
-        if (this.isMobileNavOpen) {
-          const header = document.getElementById("siteHeader");
-          const rect = header ? header.getBoundingClientRect() : null;
-          if (rect) {
-            mainNav.style.top = `${Math.round(rect.bottom + 8)}px`;
-          }
-        }
         mainNav.classList.toggle("mobile-open", this.isMobileNavOpen);
         if (overlay) overlay.classList.toggle("show", this.isMobileNavOpen);
-        document.body.classList.toggle("nav-open-lock", this.isMobileNavOpen);
+        const header = document.getElementById("siteHeader");
+        if (header) header.classList.toggle("nav-open", this.isMobileNavOpen);
         toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
       });
 
@@ -278,12 +272,12 @@ export class Router {
     const mainNav = document.getElementById("mainNav");
     const toggleBtn = document.getElementById("mobileNavToggle");
     const overlay = document.getElementById("mobileNavOverlay");
+    const header = document.getElementById("siteHeader");
     if (mainNav) {
       mainNav.classList.remove("mobile-open");
-      mainNav.style.removeProperty("top");
     }
     if (overlay) overlay.classList.remove("show");
-    document.body.classList.remove("nav-open-lock");
+    if (header) header.classList.remove("nav-open");
     if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
   }
 
