@@ -50,12 +50,12 @@ export const donorViews = {
 
               <div class="form-group" style="margin: 0;">
                 <label class="form-label" for="searchState">State</label>
-                <input type="text" id="searchState" class="form-input" placeholder="e.g. Maharashtra, Punjab" value="${escapeHtml(state)}">
+                <input type="text" id="searchState" class="form-input" placeholder="e.g. Maharashtra" value="${escapeHtml(state)}">
               </div>
 
               <div class="form-group" style="margin: 0;">
                 <label class="form-label" for="searchCity">City</label>
-                <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai, Delhi, Chandigarh" value="${escapeHtml(city)}">
+                <input type="text" id="searchCity" class="form-input" placeholder="e.g. Mumbai" value="${escapeHtml(city)}">
               </div>
 
               <div class="form-group" style="margin: 0;">
@@ -329,7 +329,7 @@ export const donorViews = {
 
         <!-- 2. Main Content Wrapper -->
         <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
-          <div class="auth-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
+          <div class="auth-card donor-register-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
 
           <div id="createDonorMsg"></div>
 
@@ -407,26 +407,26 @@ export const donorViews = {
           </div>
 
           <!-- Independent Consent Management -->
-          <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 20px;">
-            <h4 style="margin: 0 0 8px; font-size: 0.92rem; color: var(--primary);">Consent Preferences</h4>
+          <div class="donor-consent-box" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 10px; font-size: 0.92rem; font-weight: 700; color: var(--primary);">Consent Preferences</h4>
             
-            <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; cursor: pointer;">
-              <input type="checkbox" id="consentPublicDiscovery" checked style="margin-top: 3px;">
-              <span style="font-size: 0.85rem; color: var(--text-main);">
+            <label class="donor-consent-label" style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; cursor: pointer;">
+              <input type="checkbox" id="consentPublicDiscovery" checked style="width: 18px; height: 18px; min-width: 18px; accent-color: var(--primary); margin-top: 2px;">
+              <span style="font-size: 0.85rem; color: var(--text-main); line-height: 1.45;">
                 <strong>Public Donor Discovery:</strong> Allow verified requesters to discover your blood group and city in search results.
               </span>
             </label>
 
-            <label style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; cursor: pointer;">
-              <input type="checkbox" id="consentNotifications" checked style="margin-top: 3px;">
-              <span style="font-size: 0.85rem; color: var(--text-main);">
+            <label class="donor-consent-label" style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; cursor: pointer;">
+              <input type="checkbox" id="consentNotifications" checked style="width: 18px; height: 18px; min-width: 18px; accent-color: var(--primary); margin-top: 2px;">
+              <span style="font-size: 0.85rem; color: var(--text-main); line-height: 1.45;">
                 <strong>Emergency Notifications:</strong> Receive urgent blood donation alerts when patients in your area need your blood group.
               </span>
             </label>
 
-            <label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer;">
-              <input type="checkbox" id="consentContactSharing" style="margin-top: 3px;">
-              <span style="font-size: 0.85rem; color: var(--text-main);">
+            <label class="donor-consent-label" style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer;">
+              <input type="checkbox" id="consentContactSharing" style="width: 18px; height: 18px; min-width: 18px; accent-color: var(--primary); margin-top: 2px;">
+              <span style="font-size: 0.85rem; color: var(--text-main); line-height: 1.45;">
                 <strong>Contact Information Sharing:</strong> Share selected contact info directly on search cards. (Unchecked by default for privacy).
               </span>
             </label>
@@ -597,8 +597,8 @@ export const donorViews = {
         </section>
 
         <!-- 2. Main Content Wrapper -->
-        <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
-          <div class="auth-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
+        <div class="find-donors-body-wrapper" style="max-width: 860px;">
+          <div class="auth-card donor-register-card">
             <div id="editDonorMsg"></div>
             <div id="editDonorFormContainer">
               <div style="text-align:center; padding:30px;"><div class="spinner"></div></div>
@@ -625,36 +625,36 @@ export const donorViews = {
         <form id="editDonorForm" novalidate>
           <div class="responsive-form-row">
             <div class="form-group">
-              <label class="form-label" for="editBloodGroup">Blood Group</label>
+              <label class="form-label" for="editBloodGroup">Blood Group *</label>
               <select id="editBloodGroup" class="form-input" required>
                 ${BLOOD_GROUPS.map((bg) => `<option value="${bg}" ${d.bloodGroup === bg ? "selected" : ""}>${bg}</option>`).join("")}
               </select>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="editAge">Age (18 - 65)</label>
+              <label class="form-label" for="editAge">Age (18 - 65) *</label>
               <input type="number" id="editAge" class="form-input" min="18" max="65" value="${d.age}" required>
             </div>
           </div>
 
-          <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
-            <h4 style="margin: 0 0 12px; font-size: 0.95rem; color: var(--text-main);">Residential Location</h4>
+          <div class="donor-form-section">
+            <h4 class="donor-form-section-title">Residential Location</h4>
             
             <div class="responsive-form-row">
               <div class="form-group">
-                <label class="form-label" for="editCity">City</label>
+                <label class="form-label" for="editCity">City *</label>
                 <input type="text" id="editCity" class="form-input" value="${escapeHtml(d.location.city)}" required>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="editDistrict">District</label>
+                <label class="form-label" for="editDistrict">District *</label>
                 <input type="text" id="editDistrict" class="form-input" value="${escapeHtml(d.location.district)}" required>
               </div>
             </div>
 
             <div class="responsive-form-row">
               <div class="form-group">
-                <label class="form-label" for="editState">State</label>
+                <label class="form-label" for="editState">State *</label>
                 <input type="text" id="editState" class="form-input" value="${escapeHtml(d.location.state)}" required>
               </div>
 
@@ -665,35 +665,33 @@ export const donorViews = {
             </div>
           </div>
 
-          <div style="border-top: 1px solid var(--border); padding-top: 16px; margin: 8px 0 14px;">
+          <div class="donor-form-section">
+            <h4 class="donor-form-section-title">Availability & Contact</h4>
+
             <div class="responsive-form-row">
               <div class="form-group">
-                <label class="form-label" for="editContactMethod">Preferred Contact</label>
+                <label class="form-label" for="editContactMethod">Preferred Contact Channel</label>
                 <select id="editContactMethod" class="form-input">
-                  <option value="IN_APP" ${d.preferredContactMethod === "IN_APP" ? "selected" : ""}>In-App</option>
-                  <option value="EMAIL" ${d.preferredContactMethod === "EMAIL" ? "selected" : ""}>Email</option>
-                  <option value="PHONE" ${d.preferredContactMethod === "PHONE" ? "selected" : ""}>Phone</option>
+                  <option value="IN_APP" ${d.preferredContactMethod === "IN_APP" ? "selected" : ""}>In-App Notification</option>
+                  <option value="EMAIL" ${d.preferredContactMethod === "EMAIL" ? "selected" : ""}>Email Alerts</option>
+                  <option value="PHONE" ${d.preferredContactMethod === "PHONE" ? "selected" : ""}>Direct Phone Call</option>
                 </select>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="editLastDate">Last Donation Date (Private)</label>
+                <label class="form-label" for="editLastDate">Last Donation Date</label>
                 <input type="date" id="editLastDate" class="form-input" value="${formattedDate}" max="${new Date().toISOString().split("T")[0]}">
               </div>
             </div>
-
-            <div class="form-group">
-              <label class="form-label" for="editProfileStatus">Profile Status</label>
-              <select id="editProfileStatus" class="form-input">
-                <option value="ACTIVE" ${d.profileStatus === "ACTIVE" ? "selected" : ""}>Active (Visible in searches)</option>
-                <option value="INACTIVE" ${d.profileStatus === "INACTIVE" ? "selected" : ""}>Inactive (Hidden from searches)</option>
-              </select>
-            </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="submit" id="editSubmitBtn" class="button" style="flex: 1;">Save Changes</button>
-            <a href="#/donor/dashboard" class="button button-outline">Cancel</a>
+          <div class="donor-form-actions" style="display: flex; gap: 10px; margin-top: 16px;">
+            <button type="submit" id="editSubmitBtn" class="button button-primary" style="flex: 2; height: 38px; min-height: 38px; font-weight: 700; font-size: 0.88rem; border-radius: 8px;">
+              Save Changes
+            </button>
+            <a href="#/donor/dashboard" class="button button-outline" style="flex: 1; height: 38px; min-height: 38px; font-weight: 700; font-size: 0.88rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-align: center; text-decoration: none;">
+              Cancel
+            </a>
           </div>
         </form>
       `;
@@ -713,8 +711,7 @@ export const donorViews = {
             pinCode: document.getElementById("editPinCode").value.trim()
           },
           preferredContactMethod: document.getElementById("editContactMethod").value,
-          lastDonationDate: document.getElementById("editLastDate").value || null,
-          profileStatus: document.getElementById("editProfileStatus").value
+          lastDonationDate: document.getElementById("editLastDate").value || null
         };
 
         try {
@@ -736,7 +733,7 @@ export const donorViews = {
           msgEl.innerHTML = `<div class="alert alert-error">Network error.</div>`;
         } finally {
           btn.disabled = false;
-          btn.innerHTML = `<span>Save</span>`;
+          btn.innerHTML = `<span>Save Changes</span>`;
         }
       });
     } catch (e) {
@@ -959,12 +956,12 @@ function renderDonorCard(d) {
           <div class="donor-card-user">
             ${
               d.donor?.profileImage
-                ? `<img src="${d.donor.profileImage}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-nav-avatar\\' style=\\'width: 44px; height: 44px; font-size: 1.05rem; font-weight: 750;\\'>${initial}</div>';">`
-                : `<div class="user-nav-avatar" style="width: 44px; height: 44px; font-size: 1.05rem; font-weight: 750;">${initial}</div>`
+                ? `<img src="${d.donor.profileImage}" class="donor-avatar" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null; this.outerHTML='<div class=\\'donor-avatar\\'>${initial}</div>';">`
+                : `<div class="donor-avatar">${initial}</div>`
             }
-            <div>
-              <div style="font-weight: 750; font-size: 1rem; color: var(--navy); line-height: 1.25;">${escapeHtml(name)}</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">${d.age} yrs · ${escapeHtml(d.location.city)}</div>
+            <div class="donor-card-user-info">
+              <div class="donor-name">${escapeHtml(name)}</div>
+              <div class="donor-subtitle">${d.age} yrs · ${escapeHtml(d.location.city)}</div>
             </div>
           </div>
 
@@ -1076,11 +1073,11 @@ function renderActiveDashboard(container, donor) {
           </div>
 
           <div class="donor-hero-actions">
-            <a href="#/donor/edit" class="button button-outline" style="font-size:0.88rem; padding:8px 16px;">
+            <a href="#/donor/edit" class="button button-outline donor-hero-btn">
               Edit Profile
             </a>
-            <button type="button" id="dashUpdateStatusBtn" class="button button-primary" style="font-size:0.88rem; padding:8px 16px; cursor:pointer;">
-              Update Status
+            <button type="button" id="dashUpdateStatusBtn" class="button ${isAvailable ? "button-outline" : "button-primary"} donor-hero-btn" title="Toggle availability status">
+              ${isAvailable ? "Set Unavailable" : "Set Available"}
             </button>
           </div>
         </div>
@@ -1093,7 +1090,6 @@ function renderActiveDashboard(container, donor) {
         <div class="donor-panel">
           <div class="donor-panel-header">
             <h3>Donor Details</h3>
-            <a href="#/donor/edit" class="donor-panel-link">Edit</a>
           </div>
 
           <div class="donor-info-list">
@@ -1145,7 +1141,6 @@ function renderActiveDashboard(container, donor) {
         <div class="donor-panel">
           <div class="donor-panel-header">
             <h3>Privacy & Permissions</h3>
-            <a href="#/donor/consent" class="donor-panel-link">Preferences</a>
           </div>
 
           <!-- 1. Public Discovery Toggle -->
@@ -1205,133 +1200,61 @@ function renderActiveDashboard(container, donor) {
   attachConsentToggleHandler("dashToggleNotifications", donor, "notificationConsent", container);
   attachConsentToggleHandler("dashToggleContact", donor, "contactSharingConsent", container);
 
-  // Attach modal popup trigger for Update Status
+  // Direct 1-click availability status toggle (replaces modal popup)
   const updateStatusBtn = document.getElementById("dashUpdateStatusBtn");
   if (updateStatusBtn) {
-    updateStatusBtn.addEventListener("click", () => {
-      openAvailabilityModal(donor, (updatedStatus) => {
-        donor.availabilityStatus = updatedStatus;
-        const isNowAvailable = updatedStatus === "AVAILABLE";
-        const pill = container.querySelector(".donor-status-pill.available, .donor-status-pill.unavailable");
-        if (pill) {
-          pill.className = `donor-status-pill ${isNowAvailable ? "available" : "unavailable"}`;
-          pill.textContent = isNowAvailable ? "Available to Donate" : "Currently Unavailable";
+    updateStatusBtn.addEventListener("click", async () => {
+      const isCurrentlyAvailable = donor.availabilityStatus === "AVAILABLE";
+      const nextStatus = isCurrentlyAvailable ? "UNAVAILABLE" : "AVAILABLE";
+
+      updateStatusBtn.disabled = true;
+      const originalText = updateStatusBtn.textContent;
+      updateStatusBtn.textContent = "Updating...";
+
+      try {
+        const res = await api.updateDonorAvailability(nextStatus);
+        const data = await res.json();
+
+        if (res.ok) {
+          donor.availabilityStatus = nextStatus;
+          const isNowAvailable = nextStatus === "AVAILABLE";
+
+          // 1. Update status pill
+          const pill = container.querySelector(".donor-status-pill.available, .donor-status-pill.unavailable");
+          if (pill) {
+            pill.className = `donor-status-pill ${isNowAvailable ? "available" : "unavailable"}`;
+            pill.textContent = isNowAvailable ? "Available to Donate" : "Currently Unavailable";
+          }
+
+          // 2. Update toggle button appearance
+          updateStatusBtn.className = `button ${isNowAvailable ? "button-outline" : "button-primary"} donor-hero-btn`;
+          updateStatusBtn.textContent = isNowAvailable ? "Set Unavailable" : "Set Available";
+
+          toast.show({
+            title: isNowAvailable ? "Available to Donate" : "Marked Unavailable",
+            message: data.message || `Availability set to ${isNowAvailable ? "available" : "unavailable"}.`,
+            type: "success"
+          });
+        } else {
+          toast.show({
+            title: "Update Failed",
+            message: data.message || "Could not update availability status.",
+            type: "error"
+          });
+          updateStatusBtn.textContent = originalText;
         }
-      });
-    });
-  }
-}
-
-/**
- * Custom Modal Popup for Updating Donor Availability Status
- */
-function openAvailabilityModal(donor, onUpdate) {
-  const existing = document.getElementById("donorAvailabilityModal");
-  if (existing) existing.remove();
-
-  const isAvailable = donor.availabilityStatus === "AVAILABLE";
-
-  const backdrop = document.createElement("div");
-  backdrop.id = "donorAvailabilityModal";
-  backdrop.className = "modal-backdrop custom-confirm-backdrop";
-
-  backdrop.innerHTML = `
-    <div class="modal-content" style="max-width: 480px; border-radius: 18px; padding: 26px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); text-align: left; animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 8px;">
-        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--navy); line-height: 1.3;">Availability Status</h3>
-        <button type="button" id="closeAvailModalBtn" style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:color 0.15s ease;" title="Close dialog">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <p style="margin: 0 0 18px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
-        Quickly toggle whether you can respond to urgent blood donation calls.
-      </p>
-
-      <div id="modalAvailCard" style="background: var(--bg-card, #f8fafc); border: 1px solid var(--border, #e2e8f0); border-radius: 12px; padding: 18px; margin-bottom: 20px;">
-        <div style="font-weight: 700; font-size: 1.05rem; color: ${isAvailable ? "var(--success, #16a34a)" : "var(--text-muted, #64748b)"}; display:flex; align-items:center; gap:8px;">
-          <span>${isAvailable ? "● AVAILABLE TO DONATE" : "○ CURRENTLY UNAVAILABLE"}</span>
-        </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted, #64748b); margin: 6px 0 0; line-height: 1.45;">
-          ${isAvailable ? "You appear in search results as ready to donate." : "You are hidden from emergency matching until you re-enable availability."}
-        </p>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <button type="button" id="modalToggleAvailBtn" class="button ${isAvailable ? "button-outline" : "button-primary"}" style="width: 100%; padding: 10px 16px; font-size: 0.92rem; font-weight:600; border-radius:10px; cursor:pointer;">
-          ${isAvailable ? "Set Status to UNAVAILABLE" : "Set Status to AVAILABLE"}
-        </button>
-        <button type="button" id="modalCancelAvailBtn" class="button button-outline" style="width: 100%; padding: 9px 16px; font-size: 0.88rem; border-radius:10px; cursor:pointer;">
-          Cancel
-        </button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(backdrop);
-
-  const cleanup = () => {
-    backdrop.style.opacity = "0";
-    backdrop.style.transition = "opacity 0.15s ease";
-    setTimeout(() => backdrop.remove(), 150);
-  };
-
-  backdrop.querySelector("#closeAvailModalBtn")?.addEventListener("click", cleanup);
-  backdrop.querySelector("#modalCancelAvailBtn")?.addEventListener("click", cleanup);
-
-  backdrop.addEventListener("click", (e) => {
-    if (e.target === backdrop) cleanup();
-  });
-
-  const onKey = (e) => {
-    if (e.key === "Escape") {
-      cleanup();
-      document.removeEventListener("keydown", onKey);
-    }
-  };
-  document.addEventListener("keydown", onKey);
-
-  const toggleBtn = backdrop.querySelector("#modalToggleAvailBtn");
-  toggleBtn?.addEventListener("click", async () => {
-    const nextStatus = isAvailable ? "UNAVAILABLE" : "AVAILABLE";
-    toggleBtn.disabled = true;
-    toggleBtn.textContent = "Updating...";
-
-    try {
-      const res = await api.updateDonorAvailability(nextStatus);
-      const data = await res.json();
-
-      if (res.ok) {
+      } catch (err) {
         toast.show({
-          title: "Status Updated",
-          message: data.message || `Availability set to ${nextStatus.toLowerCase()}.`,
-          type: "success"
-        });
-        if (typeof onUpdate === "function") {
-          onUpdate(nextStatus);
-        }
-        cleanup();
-      } else {
-        toast.show({
-          title: "Update Failed",
-          message: data.message || "Could not update availability status.",
+          title: "Network Error",
+          message: "Failed to connect to server. Please try again.",
           type: "error"
         });
-        toggleBtn.disabled = false;
-        toggleBtn.textContent = isAvailable ? "Set Status to UNAVAILABLE" : "Set Status to AVAILABLE";
+        updateStatusBtn.textContent = originalText;
+      } finally {
+        updateStatusBtn.disabled = false;
       }
-    } catch (err) {
-      toast.show({
-        title: "Network Error",
-        message: "Failed to connect to server. Please try again.",
-        type: "error"
-      });
-      toggleBtn.disabled = false;
-      toggleBtn.textContent = isAvailable ? "Set Status to UNAVAILABLE" : "Set Status to AVAILABLE";
-    }
-  });
+    });
+  }
 }
 
 /**
@@ -1525,4 +1448,3 @@ function openDonorAlertModal(donorId, donorName, donorBg, donorCity) {
     }
   });
 }
-
