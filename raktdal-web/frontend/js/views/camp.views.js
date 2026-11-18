@@ -126,12 +126,12 @@ export const campViews = {
                   </div>
 
                   <h3 style="margin: 0 0 6px; font-size: 1.15rem; font-weight: 750; color: var(--text-main);">${camp.title}</h3>
-                  <p style="margin: 0 0 12px; color: var(--text-muted); font-size: 0.86rem; line-height: 1.45;">
-                    
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-      <circle cx="12" cy="10" r="3"></circle>
-    </svg> <strong>${camp.venueName}</strong>, ${camp.address}, ${camp.location.city} (${camp.location.pinCode})
+                  <p class="request-card-location" style="margin: 0 0 12px; color: var(--text-muted); font-size: 0.86rem; line-height: 1.45; display: flex; align-items: flex-start; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;" aria-hidden="true">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span><strong>${camp.venueName}</strong>, ${camp.address}, ${camp.location.city} (${camp.location.pinCode})</span>
                   </p>
 
                   <div style="background: #f8fafc; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 0.84rem; display: flex; flex-direction: column; gap: 6px;">
@@ -188,7 +188,27 @@ export const campViews = {
       document.body.appendChild(modal);
     }
 
+    const closeModal = () => {
+      modal.style.display = "none";
+      document.body.classList.remove("modal-open");
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
     modal.style.display = "grid";
+    document.body.classList.add("modal-open");
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    };
+
     modal.innerHTML = `
       <div class="modal-content" style="max-width: 560px; padding: 28px;">
         <div class="spinner" style="margin: 30px auto;"></div>
@@ -328,14 +348,12 @@ export const campViews = {
         </div>
       `;
 
-      document.getElementById("closeCampModalBtn")?.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
+      document.getElementById("closeCampModalBtn")?.addEventListener("click", closeModal);
 
       // Close modal on backdrop click
       modal.onclick = (e) => {
         if (e.target === modal) {
-          modal.style.display = "none";
+          closeModal();
         }
       };
 
@@ -349,7 +367,7 @@ export const campViews = {
         const userIsAuth = Boolean(currentState.isAuthenticated || currentState.user);
 
         if (!userIsAuth) {
-          modal.style.display = "none";
+          closeModal();
           toast.show("Please sign in to complete your camp registration.", "info");
           window.location.hash = `#/login?redirect=camps&registerCampId=${campId}`;
           return;
@@ -378,7 +396,7 @@ export const campViews = {
             throw new Error(data.message || data.error?.message || "Registration failed.");
           }
           toast.success("Camp registration confirmed.");
-          modal.style.display = "none";
+          closeModal();
           window.router?.renderCamps();
         } catch (err) {
           if (errEl) {
@@ -403,7 +421,7 @@ export const campViews = {
             throw new Error(data.message || data.error?.message || "Failed to cancel registration.");
           }
           toast.show("Registration cancelled successfully.", "info");
-          modal.style.display = "none";
+          closeModal();
           window.router?.renderCamps();
         } catch (err) {
           toast.show(err.message || "Failed to cancel registration.", "error");
@@ -413,9 +431,10 @@ export const campViews = {
       modal.innerHTML = `
         <div class="modal-content" style="padding: 24px;">
           <div class="alert alert-error">${err.message || "Failed to load camp details."}</div>
-          <button class="button" onclick="document.getElementById('campDetailModal').style.display='none'">Close</button>
+          <button id="closeCampErrBtn" class="button">Close</button>
         </div>
       `;
+      document.getElementById("closeCampErrBtn")?.addEventListener("click", closeModal);
     }
   },
 
@@ -473,11 +492,13 @@ export const campViews = {
               <span style="font-size:0.8rem; color:var(--text-muted);">${new Date(reg.registeredAt).toLocaleDateString()}</span>
             </div>
             <h3 style="margin:0 0 6px; font-size:1.2rem;">${camp.title}</h3>
-            <p style="margin:0 0 10px; color:var(--text-muted); font-size:0.88rem;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; flex-shrink:0;" aria-hidden="true">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-      <circle cx="12" cy="10" r="3"></circle>
-    </svg> ${camp.venueName}, ${camp.address}, ${camp.location?.city}</p>
+            <p class="request-card-location" style="margin:0 0 10px; color:var(--text-muted); font-size:0.88rem; display:flex; align-items:flex-start; gap:6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>${camp.venueName}, ${camp.address}, ${camp.location?.city}</span>
+            </p>
             <p style="margin:0 0 16px; font-size:0.88rem;"><strong>Drive Time:</strong> ${dateStr}</p>
             <button class="button button-outline cancel-my-booking-btn" data-id="${camp._id}" style="color:#dc2626; border-color:#dc2626; font-size:0.85rem; padding:6px 14px;">
               Cancel Booking
@@ -502,7 +523,8 @@ export const campViews = {
     } catch (err) {
       container.innerHTML = `<div class="alert alert-error">${err.message || "Failed to load bookings."}</div>`;
     }
-  },
+  }
+,
 
   async renderBloodBanks(params = {}) {
     const searchVal = params.search || "";
@@ -587,7 +609,7 @@ export const campViews = {
       }
 
       container.innerHTML = `
-        <div class="requests-grid" style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 20px;">
+        <div class="requests-grid" style="grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));">
           ${banks.map(bank => {
             const cityName = bank.address?.city || "City Center";
             const stateName = bank.address?.state || "State";
