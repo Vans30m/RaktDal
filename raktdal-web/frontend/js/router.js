@@ -53,6 +53,11 @@ export class Router {
     this.navContainer = document.getElementById(navContainerId);
     this.isMenuOpen = false;
     this.isMobileNavOpen = false;
+    try {
+      this.lastVisitedPage = sessionStorage.getItem("rakt_last_visited_page") || "#/";
+    } catch (_) {
+      this.lastVisitedPage = "#/";
+    }
 
     // Listen to hash changes and auth state changes
     window.addEventListener("hashchange", () => {
@@ -110,16 +115,31 @@ export class Router {
     const toggleBtn = document.getElementById("mobileNavToggle");
     const mainNav = document.getElementById("mainNav");
     const overlay = document.getElementById("mobileNavOverlay");
+    const closeBtn = document.getElementById("mobileNavClose");
 
     if (toggleBtn && mainNav) {
       toggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         this.isMobileNavOpen = !this.isMobileNavOpen;
+        if (this.isMobileNavOpen) {
+          const header = document.getElementById("siteHeader");
+          const rect = header ? header.getBoundingClientRect() : null;
+          if (rect) {
+            mainNav.style.top = `${Math.round(rect.bottom + 8)}px`;
+          }
+        }
         mainNav.classList.toggle("mobile-open", this.isMobileNavOpen);
         if (overlay) overlay.classList.toggle("show", this.isMobileNavOpen);
         document.body.classList.toggle("nav-open-lock", this.isMobileNavOpen);
         toggleBtn.setAttribute("aria-expanded", this.isMobileNavOpen ? "true" : "false");
       });
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.closeMobileNav();
+        });
+      }
 
       // Close mobile menu when clicking outside overlay
       if (overlay) {
@@ -186,6 +206,7 @@ export class Router {
   renderLanguageSelector() {
     const dropdown = document.getElementById("langDropdown");
     const currentLabel = document.getElementById("currentLangLabel");
+    const currentBadge = document.getElementById("currentLangBadge");
     const triggerBtn = document.getElementById("langSelectorBtn");
     if (!dropdown) return;
 
@@ -193,6 +214,9 @@ export class Router {
     const currentMeta = SUPPORTED_LANGUAGES.find(l => l.code === curLang) || SUPPORTED_LANGUAGES[0];
     if (currentLabel) {
       currentLabel.textContent = currentMeta.nativeName;
+    }
+    if (currentBadge) {
+      currentBadge.textContent = (currentMeta.code || "EN").toUpperCase();
     }
 
     dropdown.innerHTML = SUPPORTED_LANGUAGES.map((lang, index) => {
@@ -254,7 +278,10 @@ export class Router {
     const mainNav = document.getElementById("mainNav");
     const toggleBtn = document.getElementById("mobileNavToggle");
     const overlay = document.getElementById("mobileNavOverlay");
-    if (mainNav) mainNav.classList.remove("mobile-open");
+    if (mainNav) {
+      mainNav.classList.remove("mobile-open");
+      mainNav.style.removeProperty("top");
+    }
     if (overlay) overlay.classList.remove("show");
     document.body.classList.remove("nav-open-lock");
     if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
@@ -498,6 +525,15 @@ export class Router {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     const { path, params } = this.getRouteInfo();
+    const fullHash = window.location.hash || "#/";
+
+    // Record the last visited non-notification page so Back button always returns correctly
+    if (!path.startsWith("/notifications") && !path.startsWith("/login") && !path.startsWith("/register")) {
+      this.lastVisitedPage = fullHash;
+      try {
+        sessionStorage.setItem("rakt_last_visited_page", fullHash);
+      } catch (_) {}
+    }
 
     // Always render the rich 4-column footer on all pages
     const globalFooter = document.getElementById("globalSiteFooter");

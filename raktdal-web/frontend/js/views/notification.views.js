@@ -4,6 +4,17 @@ import { icons } from "../icons.js";
 
 export const notificationViews = {
   async renderNotificationCenter() {
+    let prevPage = "#/";
+    try {
+      const stored = sessionStorage.getItem("rakt_last_visited_page");
+      if (stored && !stored.startsWith("#/notifications")) {
+        prevPage = stored;
+      }
+    } catch (_) {}
+    if (prevPage === "#/" && window.router?.lastVisitedPage && !window.router.lastVisitedPage.startsWith("#/notifications")) {
+      prevPage = window.router.lastVisitedPage;
+    }
+
     this.appContainer.innerHTML = `
       <div class="find-donors-container notif-center-page">
         <!-- 1. Hero Section matching Find Donors -->
@@ -26,7 +37,7 @@ export const notificationViews = {
           <!-- Controls Bar Card -->
           <div class="find-donors-search-card notif-controls-card">
             <div class="notif-controls-left">
-              <a href="#/" id="notifBackBtn" class="button button-outline notif-action-btn">
+              <a href="${prevPage}" id="notifBackBtn" class="button button-outline notif-action-btn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12"></line>
                   <polyline points="12 19 5 12 12 5"></polyline>
@@ -61,6 +72,29 @@ export const notificationViews = {
 
     const container = document.getElementById("notifListContainer");
     const markAllBtn = document.getElementById("markAllReadBtn");
+    const backBtn = document.getElementById("notifBackBtn");
+
+    backBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      let target = null;
+      try {
+        const stored = sessionStorage.getItem("rakt_last_visited_page");
+        if (stored && !stored.startsWith("#/notifications")) {
+          target = stored;
+        }
+      } catch (_) {}
+      if (!target && window.router?.lastVisitedPage && !window.router.lastVisitedPage.startsWith("#/notifications")) {
+        target = window.router.lastVisitedPage;
+      }
+
+      if (target) {
+        window.location.hash = target;
+      } else if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.hash = "#/";
+      }
+    });
 
     markAllBtn?.addEventListener("click", async () => {
       try {
@@ -163,12 +197,7 @@ export const notificationViews = {
           const id = target.dataset.id;
           target.disabled = true;
           target.textContent = "Updating...";
-          // Open Notification Settings Popup Modal
-    document.getElementById("openNotifSettingsModalBtn")?.addEventListener("click", () => {
-      notificationViews.openNotificationSettingsModal();
-    });
-
-    try {
+          try {
             const res = await api.markNotificationAsRead(id);
             if (!res.ok) {
               const errData = await res.json().catch(() => ({}));
