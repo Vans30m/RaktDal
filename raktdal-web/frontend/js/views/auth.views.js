@@ -567,7 +567,7 @@ renderLogin(params) {
                   <div class="profile-info-label">${icons.users(13, "var(--text-muted)")} Full Name</div>
                   <div class="profile-info-value">${user.fullName || "—"}</div>
                 </div>
-                <div class="profile-info-item">
+                <div class="profile-info-item profile-info-span2">
                   <div class="profile-info-label">${icons.mail(13, "var(--text-muted)")} Email Address</div>
                   <div class="profile-info-value">${user.email}</div>
                 </div>
@@ -581,7 +581,7 @@ renderLogin(params) {
                     ${donorProfile ? donorProfile.bloodGroup : "Not registered"}
                   </div>
                 </div>
-                <div class="profile-info-item">
+                <div class="profile-info-item profile-info-span2">
                   <div class="profile-info-label">${icons.mapPin(13, "var(--text-muted)")} Location</div>
                   <div class="profile-info-value">
                     ${donorProfile?.location?.city ? `${donorProfile.location.city}, ${donorProfile.location.state || "IN"}` : "Pan-India"}
@@ -630,7 +630,7 @@ renderLogin(params) {
                       ${donorProfile.lastDonationDate ? new Date(donorProfile.lastDonationDate).toLocaleDateString() : "Never reported"}
                     </div>
                   </div>
-                  <div class="profile-info-item">
+                  <div class="profile-info-item profile-info-span2">
                     <div class="profile-info-label">Discovery Mode</div>
                     <div class="profile-info-value">
                       ${donorProfile.consents?.discoverable ? "Public in Directory" : "Private / Hospital Alert Only"}

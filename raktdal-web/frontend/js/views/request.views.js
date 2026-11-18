@@ -203,7 +203,7 @@ async renderBloodRequests(params) {
         </section>
 
         <!-- 2. Main Form Wrapper -->
-        <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 32px;">
+        <div class="find-donors-body-wrapper" style="max-width: 860px; padding-top: 12px;">
           <div class="auth-card donor-register-card request-create-card" style="max-width: 100%; margin: 0 auto; text-align: left; padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px); border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.06); border: 1px solid var(--border);">
 
             <div id="requestFormError" class="alert alert-error" style="display:none; margin-bottom: 20px;"></div>
