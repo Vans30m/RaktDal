@@ -120,7 +120,6 @@ export const notificationViews = {
         throw new Error(`Failed to load notifications (HTTP ${res.status})`);
       }
       const data = await res.json();
-      console.log("[NOTIFICATIONS RESPONSE]", data);
       const items = data.data?.items || data.items || [];
 
       // Update badge if available

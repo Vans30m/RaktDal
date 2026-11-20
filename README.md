@@ -10,7 +10,7 @@
 [![JavaScript](https://img.shields.io/badge/Vanilla_JS-SPA-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Google OAuth 2.0](https://img.shields.io/badge/Google_OAuth-2.0%20%7C%20PKCE-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/identity)
 [![Electron](https://img.shields.io/badge/Electron-33.x-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://electronjs.org)
-[![Tests](https://img.shields.io/badge/Tests-116%20Passed%20(100%25)-success?style=for-the-badge&logo=node.js&logoColor=white)](#automated-testing--qa-architecture)
+[![Tests](https://img.shields.io/badge/Tests-118%20Passed%20(100%25)-success?style=for-the-badge&logo=node.js&logoColor=white)](#automated-testing--qa-architecture)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge)](LICENSE)
 [![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
 
@@ -163,17 +163,10 @@
 RaktDal/
 ├── LICENSE
 ├── README.md
-├── docs/
-│   ├── TESTING_STRATEGY.md        # Testing methodology & quality gates
-│   ├── TEST_CASES.md              # 6 complete end-to-end user journeys
-│   ├── SECURITY_AUDIT.md          # OWASP Top 10 evaluation
-│   ├── BUG_REPORT.md              # Historical bug fix & regression log
-│   └── PRODUCTION_READINESS.md    # Deployment runbook & checklist
 ├── electron/
 │   ├── main.js                    # Electron main process & secure navigation
 │   ├── preload.js                 # Isolated renderer preload
-│   ├── package.json               # Desktop dependencies & packaging config
-│   └── dist/                      # Packaged Windows binaries (.exe)
+│   └── package.json               # Desktop dependencies & packaging config
 └── raktdal-web/                   # Web application platform
     ├── frontend/
     │   ├── index.html             # Single entrypoint HTML & dynamic head
@@ -504,7 +497,7 @@ npm test
 | Suite / Test File | Focus Areas & Security Controls | Assertions | Status |
 |---|---|:---:|:---:|
 | `tests/auth.test.js` | Access token JWT signing, expiration claims, tamper rejection, Argon2 hashing | 7 | **100% Pass** |
-| `tests/auth_session.test.js` | Refresh token hashing, token family rotation, reuse detection logic, multi-device revocation | 7 | **100% Pass** |
+| `tests/auth_session.test.js` | Refresh token hashing, token family rotation, reuse detection logic, multi-device revocation, 1-hour session expiration | 8 | **100% Pass** |
 | `tests/google_oauth.test.js` | PKCE S256 challenge, OAuth state nonce validation, token audience/issuer validation, account linking | 12 | **100% Pass** |
 | `tests/rbac.test.js` | Role-based authorization (`USER` vs `ADMIN`), privilege separation, ownership verification, role tampering defense | 10 | **100% Pass** |
 | `tests/donor_phase10.test.js` | Schema validation (age 18–65), Indian PIN code regex, `toPublicDiscovery()` PII concealment, NoSQL injection defense | 8 | **100% Pass** |
@@ -518,11 +511,11 @@ npm test
 | `tests/password_reset.test.js` | High-entropy random reset tokens, credential reuse prevention, session revocation on password change | 7 | **100% Pass** |
 | `tests/frontend_auth.test.js` | Base URL resolution, concurrency deduplication on token refresh, route guard mapping | 4 | **100% Pass** |
 | `tests/phase19_readiness.test.js` | Production audit verification, rate limiter boundaries, route sanitization | 4 | **100% Pass** |
-| `tests/health.test.js` | API runner availability and health response | 1 | **100% Pass** |
-| **TOTAL** | **Enterprise Test Suite (Unit, Integration & Security)** | **116** | **116 / 116 (100%)** |
+| `tests/health.test.js` | API runner availability and health response | 2 | **100% Pass** |
+| **TOTAL** | **Enterprise Test Suite (Unit, Integration & Security)** | **118** | **118 / 118 (100%)** |
 
-- **Execution Runtime:** ~3.2 seconds
-- **Test Results:** 116 Passing, 0 Failing, 0 Skipped
+- **Execution Runtime:** ~3.6 seconds
+- **Test Results:** 118 Passing, 0 Failing, 0 Skipped
 
 ---
 
