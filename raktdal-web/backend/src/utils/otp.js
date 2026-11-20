@@ -33,6 +33,9 @@ export function generateSixDigitOtp() {
  * Hashes an OTP or reset token with SHA-256 before saving to DB
  */
 export function hashOtp(otp) {
+  if (typeof otp !== "string") {
+    throw new TypeError("OTP to hash must be a string");
+  }
   return crypto.createHash("sha256").update(otp.trim()).digest("hex");
 }
 
