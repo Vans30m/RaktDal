@@ -19,7 +19,7 @@ export function sendSuccess(res, data = null, message = null, statusCode = 200) 
 export function sendError(res, message, statusCode = 400, errors = null) {
   const payload = {
     success: false,
-    message: message || "An unexpected error occurred."
+    message: typeof message === "string" ? message : "An unexpected error occurred."
   };
   if (errors) payload.errors = errors;
   return res.status(statusCode).json(payload);
