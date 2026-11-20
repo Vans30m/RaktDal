@@ -1903,8 +1903,8 @@ export const infoViews = {
             <span>Last Updated: November 2026</span>
             <div class="legal-compact-links">
               <a href="#/donor/dashboard" class="legal-compact-btn">Manage Privacy</a>
-              <a href="#/terms">Terms &rarr;</a>
-              <a href="#/disclaimer">Disclaimer &rarr;</a>
+              <a href="#/terms" class="legal-compact-btn legal-compact-btn-outline">Terms</a>
+              <a href="#/disclaimer" class="legal-compact-btn legal-compact-btn-outline">Disclaimer</a>
             </div>
           </div>
         </div>
@@ -1944,8 +1944,8 @@ export const infoViews = {
           <div class="legal-compact-footer">
             <span>Effective: November 2026</span>
             <div class="legal-compact-links">
-              <a href="#/privacy">&larr; Privacy Policy</a>
-              <a href="#/disclaimer">Medical Disclaimer &rarr;</a>
+              <a href="#/privacy" class="legal-compact-btn legal-compact-btn-outline">Privacy Policy</a>
+              <a href="#/disclaimer" class="legal-compact-btn legal-compact-btn-outline">Medical Disclaimer</a>
             </div>
           </div>
         </div>
@@ -1986,7 +1986,7 @@ export const infoViews = {
             <span>Protocol: NBTC Guidelines (Nov 2026)</span>
             <div class="legal-compact-links">
               <a href="#/blood-banks" class="legal-compact-btn">Find Blood Banks</a>
-              <a href="#/help">Help Center &rarr;</a>
+              <a href="#/help" class="legal-compact-btn legal-compact-btn-outline">Help Center</a>
             </div>
           </div>
         </div>
@@ -2027,8 +2027,8 @@ export const infoViews = {
             <span>Need more help?</span>
             <div class="legal-compact-links">
               <a href="#/contact" class="legal-compact-btn">Contact Us</a>
-              <a href="#/privacy">Privacy</a>
-              <a href="#/terms">Terms</a>
+              <a href="#/privacy" class="legal-compact-btn legal-compact-btn-outline">Privacy</a>
+              <a href="#/terms" class="legal-compact-btn legal-compact-btn-outline">Terms</a>
             </div>
           </div>
         </div>

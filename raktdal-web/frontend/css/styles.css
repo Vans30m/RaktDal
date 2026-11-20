@@ -12548,32 +12548,44 @@ button,
 .legal-compact-links {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .legal-compact-links a {
-  color: var(--primary);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.8rem;
-  transition: opacity 0.2s ease;
-}
-
-.legal-compact-links a:hover {
-  text-decoration: underline;
+  transition: all 0.2s ease;
 }
 
 .legal-compact-btn {
   background: var(--primary);
   color: #ffffff !important;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 6px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--primary);
 }
 
 .legal-compact-btn:hover {
   background: var(--red-dark);
+  border-color: var(--red-dark);
   text-decoration: none !important;
+}
+
+.legal-compact-btn-outline {
+  background: transparent;
+  color: var(--primary) !important;
+  border: 1px solid rgba(197, 31, 38, 0.35);
+}
+
+.legal-compact-btn-outline:hover {
+  background: #fee2e2;
+  border-color: var(--primary);
+  color: var(--red-dark) !important;
 }
 
 @media (max-width: 768px) {
