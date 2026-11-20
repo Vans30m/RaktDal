@@ -859,6 +859,7 @@ export const infoViews = {
           <div class="legal-compact-footer">
             <span>Effective: November 2026</span>
             <div class="legal-compact-links">
+              <a href="#/terms" class="legal-compact-btn">Terms</a>
               <a href="#/privacy" class="legal-compact-btn legal-compact-btn-outline">Privacy Policy</a>
               <a href="#/disclaimer" class="legal-compact-btn legal-compact-btn-outline">Medical Disclaimer</a>
             </div>
@@ -941,7 +942,7 @@ export const infoViews = {
           <div class="legal-compact-footer">
             <span>Need more help?</span>
             <div class="legal-compact-links">
-              <a href="#/contact" class="legal-compact-btn">Contact Us</a>
+              <a href="#/contact" class="legal-compact-btn">Help & Support</a>
               <a href="#/privacy" class="legal-compact-btn legal-compact-btn-outline">Privacy</a>
               <a href="#/terms" class="legal-compact-btn legal-compact-btn-outline">Terms</a>
             </div>
