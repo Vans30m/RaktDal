@@ -40,6 +40,9 @@ export function verifyCsrf(req, res, next) {
  * Computes deterministic SHA-256 hash of a string
  */
 export function hashToken(token) {
+  if (typeof token !== "string") {
+    throw new TypeError("Token to hash must be a string");
+  }
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
